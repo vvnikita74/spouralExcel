@@ -110,5 +110,5 @@ venv
 .ruff_cache/
 
 # IDE
-../.idea/
+./.idea/
 .vscode/
