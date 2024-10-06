@@ -112,3 +112,4 @@ venv
 # IDE
 ./.idea/
 .vscode/
+/.idea/workspace.xml
