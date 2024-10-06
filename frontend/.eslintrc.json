@@ -10,13 +10,13 @@
 		"plugin:prettier/recommended",
 		"plugin:tailwindcss/recommended",
 		"airbnb",
-		"prettier"
+		"prettier",
+		"plugin:@typescript-eslint/recommended",
+		"@babel/plugin-transform-private-property-in-object"
 	],
+	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
-		"ecmaFeatures": {
-			"jsx": true
-		},
-		"ecmaVersion": 12,
+		"ecmaVersion": 2020,
 		"sourceType": "module"
 	},
 	"plugins": [
@@ -53,7 +53,7 @@
 		"react/jsx-filename-extension": [
 			1,
 			{
-				"extensions": [".js", ".jsx"]
+				"extensions": [".js", ".jsx", ".tsx"]
 			}
 		],
 		"tailwindcss/no-custom-classname": "off",
@@ -63,7 +63,8 @@
 			"ignorePackages",
 			{
 				"js": "never",
-				"jsx": "never"
+				"jsx": "never",
+				"tsx": "never"
 			}
 		],
 		"jsx-a11y/anchor-is-valid": [
@@ -80,7 +81,7 @@
 		},
 		"import/resolver": {
 			"node": {
-				"extensions": [".js", ".jsx"]
+				"extensions": [".js", ".jsx", ".tsx"]
 			}
 		}
 	}
