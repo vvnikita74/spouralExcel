@@ -2,7 +2,7 @@ import React from 'react'
 
 const LoginPage: React.FC = () => (
 	<>
-		<h1>Hello World</h1>
+		<h1>Hello World WORLD</h1>
 
 		<hr />
 
