@@ -113,3 +113,6 @@ venv
 ./.idea/
 .vscode/
 /.idea/
+
+# Media files
+/backend/media
