@@ -22,7 +22,8 @@ services:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
     depends_on:
-      - db
+      db:
+        condition: service_healthy
   db:
     image: postgres:latest
     container_name: spoural_db
