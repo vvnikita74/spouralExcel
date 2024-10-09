@@ -83,7 +83,7 @@ DATABASES = {
         'USER': 'spoural',
         'PASSWORD': 'spoural',
         'HOST': '193.107.239.124',
-        'PORT': '5432',
+        'PORT': '8092',
     }
 }
 

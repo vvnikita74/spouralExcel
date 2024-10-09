@@ -21,3 +21,17 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+  db:
+    image: postgres:latest
+    container_name: spoural_db
+    environment:
+      POSTGRES_DB: spoural
+      POSTGRES_USER: spoural
+      POSTGRES_PASSWORD: spoural
+    ports:
+      - "8092:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
