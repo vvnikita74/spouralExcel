@@ -21,6 +21,8 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+    depends_on:
+      - db
   db:
     image: postgres:latest
     container_name: spoural_db
