@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -82,8 +83,8 @@ DATABASES = {
         'NAME': 'spoural',
         'USER': 'spoural',
         'PASSWORD': 'spoural',
-        'HOST': '193.107.239.124',
-        'PORT': '8092',
+        'HOST': (os.getenv("DBHOST") or '193.107.239.124'),
+        'PORT': '5432',
     }
 }
 

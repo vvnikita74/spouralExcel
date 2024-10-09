@@ -21,3 +21,19 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+      - DBHOST=pgdb
+    depends_on:
+      - pgdb
+      
+  pgdb:
+    image: postgres
+    environment:
+      - POSTGRES_DB=spoural
+      - POSTGRES_USER=spoural
+      - POSTGRES_PASSWORD=spoural
+    container_name: pgdb
+    volumes:
+      - pgdbdata:/var/lib/postgresql/data/
+
+volumes:
+  pgdbdata:
