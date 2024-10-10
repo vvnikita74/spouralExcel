@@ -14,6 +14,8 @@ SECRET_KEY = 'django-insecure-g_i2mc!vlown-sc660h5#8o$ksr67^2zeh&%x2gti)y5!1o+t_
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS=['http://localhost:8000', 'https://app-back.spo-ural.ru']
 
 # Application definition
 
@@ -130,4 +132,3 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=365 * 100),  # 100 years
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
