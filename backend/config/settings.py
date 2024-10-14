@@ -15,7 +15,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS=['http://localhost:8000', 'https://app-back.spo-ural.ru']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000',
+                        'https://app-back.spo-ural.ru']
 
 # Application definition
 
@@ -29,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'jsoneditor',
     'apps.user',
     'apps.excel_app',
 ]
@@ -132,4 +134,3 @@ from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=365 * 100),  # 100 years
 }
-
