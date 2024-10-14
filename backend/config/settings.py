@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'apps.user',
+    'apps.excel_app',
 ]
 
 MIDDLEWARE = [
