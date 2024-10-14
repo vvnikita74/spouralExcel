@@ -3,16 +3,16 @@ import json
 
 
 class Cell:
-    def __init__(self, index, merged=None, cell_data=''):
+    def __init__(self, index, merged=None, template=''):
         self.index = index
         self.merged = merged
-        self.cell_data = cell_data
+        self.template = template
 
     def to_dict(self):
         return {
             'index': self.index,
             'merged': self.merged,
-            'cell_data': self.cell_data
+            'template': self.template
         }
 
     @classmethod
@@ -20,7 +20,7 @@ class Cell:
         return cls(
             index=data['index'],
             merged=data.get('merged'),
-            cell_data=data.get('cell_data', '')
+            template=data.get('template', '')
         )
 
 
