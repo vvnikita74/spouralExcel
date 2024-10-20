@@ -34,3 +34,36 @@ class Sheet(models.Model):
     def get_data(self):
         cell_dicts = json.loads(self.data)
         return [Cell.from_dict(cell_dict) for cell_dict in cell_dicts]
+
+
+class Recommendations(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Defects(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    recommendations = models.OneToOneField('Recommendations', to_field='name',
+                                           on_delete=models.CASCADE,
+                                           related_name='+')
+
+    def __str__(self):
+        return self.name
+
+
+class Materials(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    defects = models.ForeignKey('Defects', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class ConstructionTypes(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    material = models.ForeignKey('Materials', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name

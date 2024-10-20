@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib import admin
 from jsoneditor.forms import JSONEditor
-from .models import Sheet
+from .models import (Sheet, ConstructionTypes, Recommendations, Defects,
+                     Materials)
 from .validators import validate_json_structure
 
 
@@ -45,3 +46,7 @@ class SheetAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Sheet, SheetAdmin)
+admin.site.register(Recommendations)
+admin.site.register(Defects)
+admin.site.register(Materials)
+admin.site.register(ConstructionTypes)
