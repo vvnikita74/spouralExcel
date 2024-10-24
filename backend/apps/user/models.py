@@ -38,6 +38,7 @@ class UserInput(models.Model):
     mask = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=255)
     placeholder = models.CharField(max_length=255)
+    settings = models.JSONField(blank=True, null=True)
     construction_type = models.OneToOneField('excel_app.ConstructionTypes',
                                              to_field='name',
                                              on_delete=models.SET_NULL,
