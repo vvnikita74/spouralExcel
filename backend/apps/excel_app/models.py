@@ -55,7 +55,8 @@ class Defects(models.Model):
 
 class Materials(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    defects = models.ForeignKey('Defects', on_delete=models.CASCADE)
+    defects = models.ManyToManyField('Defects')
+    recommendations = models.ManyToManyField('Recommendations')
 
     def __str__(self):
         return self.name
@@ -63,7 +64,7 @@ class Materials(models.Model):
 
 class ConstructionTypes(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    material = models.ForeignKey('Materials', on_delete=models.CASCADE)
+    material = models.ManyToManyField('Materials')
 
     def __str__(self):
         return self.name
