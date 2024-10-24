@@ -3,16 +3,16 @@ import json
 
 
 class Cell:
-    def __init__(self, index, merged=None, cell_data=''):
+    def __init__(self, index, merged=None, template=''):
         self.index = index
         self.merged = merged
-        self.cell_data = cell_data
+        self.template = template
 
     def to_dict(self):
         return {
             'index': self.index,
             'merged': self.merged,
-            'cell_data': self.cell_data
+            'template': self.template
         }
 
     @classmethod
@@ -20,7 +20,7 @@ class Cell:
         return cls(
             index=data['index'],
             merged=data.get('merged'),
-            cell_data=data.get('cell_data', '')
+            template=data.get('template', '')
         )
 
 
@@ -34,3 +34,36 @@ class Sheet(models.Model):
     def get_data(self):
         cell_dicts = json.loads(self.data)
         return [Cell.from_dict(cell_dict) for cell_dict in cell_dicts]
+
+
+class Recommendations(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Defects(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    recommendations = models.OneToOneField('Recommendations', to_field='name',
+                                           on_delete=models.CASCADE,
+                                           related_name='+')
+
+    def __str__(self):
+        return self.name
+
+
+class Materials(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    defects = models.ForeignKey('Defects', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class ConstructionTypes(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    material = models.ForeignKey('Materials', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
