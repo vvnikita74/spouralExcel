@@ -14,7 +14,7 @@ const webpackConfig = (env): Configuration => ({
 		? {}
 		: { devtool: 'eval-source-map' }),
 	resolve: {
-		extensions: ['.ts', '.tsx', '.js'],
+		extensions: ['.ts', '.tsx', '.js', '.jsx'],
 		plugins: [new TsconfigPathsPlugin()]
 	},
 	output: {
@@ -27,12 +27,22 @@ const webpackConfig = (env): Configuration => ({
 	module: {
 		rules: [
 			{
-				test: /\.tsx?$/,
+				test: /\.(ts|tsx)$/,
 				loader: 'ts-loader',
 				options: {
 					transpileOnly: true
 				},
 				exclude: /dist/
+			},
+			{
+				test: /\.(js|jsx)$/,
+				exclude: /node_modules/,
+				use: {
+					loader: 'babel-loader',
+					options: {
+						presets: ['@babel/preset-env', '@babel/preset-react']
+					}
+				}
 			},
 			{
 				test: /\.css$/,
