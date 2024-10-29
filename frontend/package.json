@@ -3,7 +3,6 @@
   "description": "Minimalist React 18 starter template with TypeScript ⚛",
   "version": "1.0.0",
   "main": "src/index.tsx",
-  "repository": "https://github.com/GR34SE/react-typescript-starter.git",
   "license": "MIT",
   "scripts": {
     "develop": "webpack-cli serve --mode=development --env development --open --hot",
@@ -39,8 +38,8 @@
     "@types/react-dom": "^18.3.0",
     "@types/webpack": "5.28.5",
     "@types/webpack-dev-server": "4.7.2",
-    "@typescript-eslint/eslint-plugin": "8.8.0",
-    "@typescript-eslint/parser": "8.8.0",
+    "@typescript-eslint/eslint-plugin": "8.12.2",
+    "@typescript-eslint/parser": "8.12.2",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "cssnano": "^7.0.6",

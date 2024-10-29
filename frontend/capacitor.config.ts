@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli'
 
 const config: CapacitorConfig = {
-	appId: 'com.spoural.excelapp',
-	appName: 'ExcelApp',
+	appId: 'com.app.id',
+	appName: 'appName',
 	webDir: 'dist',
 	// server: {
 	// 	url: 'http://192.168.0.176:3000',
@@ -16,9 +16,9 @@ const config: CapacitorConfig = {
 			statusBarContent: 'light',
 			navigationBarColor: '#000000',
 			navigationBarContent: 'light',
-			offset: 0,
-		},
-	},
+			offset: 0
+		}
+	}
 }
 
 export default config
