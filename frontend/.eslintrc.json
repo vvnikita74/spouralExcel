@@ -5,7 +5,8 @@
     "react",
     "react-hooks",
     "eslint-plugin-import",
-    "prettier"
+    "prettier",
+    "@tanstack/eslint-plugin-query"
   ],
   "env": {
     "browser": true

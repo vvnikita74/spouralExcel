@@ -26,6 +26,9 @@
   },
   "include": [
     "./src",
-    "./webpack.config.ts"
+    "./webpack.config.ts",
+    "./capacitor.config.ts",
+    "./tailwind.config.ts",
+    "./postcss.config.ts"
   ]
 }

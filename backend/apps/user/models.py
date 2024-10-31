@@ -32,14 +32,17 @@ class UserInput(models.Model):
         (EMAIL, 'Email'),
         (DATE, 'Date'),
     ]
-    #изменить choices на нужные нам
+    # изменить choices на нужные нам
     type = models.CharField(max_length=10, choices=CHOICES)
     key = models.CharField(max_length=255, unique=True)
-    mask = models.CharField(max_length=255, blank=True, null=True)
+    mask = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=255)
     placeholder = models.CharField(max_length=255)
+    settings = models.JSONField(blank=True, null=True)
     construction_type = models.OneToOneField('excel_app.ConstructionTypes',
-                                             to_field='name', on_delete=models.SET_NULL, blank=True, null=True)
+                                             to_field='name',
+                                             on_delete=models.SET_NULL,
+                                             blank=True, null=True)
 
     def __str__(self):
         return self.name
