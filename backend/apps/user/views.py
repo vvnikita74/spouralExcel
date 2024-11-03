@@ -1,13 +1,19 @@
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
-from rest_framework.views import APIView
+
 from rest_framework.parsers import MultiPartParser
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer
 from django.http import FileResponse, Http404
 import os
 from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import UserInput
+from .serializers import UserInputSerializer
+from rest_framework import status
 
 
 def default_view(request):
@@ -43,18 +49,6 @@ class FileUploadView(APIView):
         return JsonResponse(response_data)
 
 
-class LoginView(APIView):
-    def post(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        user = authenticate(username=username, password=password)
-
-        if user is not None:
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False}, status=401)
-
-
 class ImageView(APIView):
     def get(self, request, filename, *args, **kwargs):
         file_path = os.path.join(settings.MEDIA_ROOT, 'user_files', filename)
@@ -62,3 +56,23 @@ class ImageView(APIView):
             return FileResponse(open(file_path, 'rb'))
         else:
             raise Http404("Image not found")
+
+
+class UserInputListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_inputs = UserInput.objects.all()
+        serializer = UserInputSerializer(user_inputs, many=True)
+        return Response(serializer.data)
+
+
+class ProcessInputView(APIView):
+    def post(self, request):
+        data = request.data.get('input_data', [])
+        if not data:
+            return Response({'error': 'No input data provided'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        #обработка данных и вставка в Excel
+        return Response({'message': 'Data processed and inserted into Excel'},
+                        status=status.HTTP_200_OK)
