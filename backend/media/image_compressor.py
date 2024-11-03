@@ -13,7 +13,7 @@ def compress_images_in_directory(input_directory, output_directory,
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
 
-    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.bmp', '*.gif']
+    image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.bmp', '*.gif', '*.webp']
     for extension in image_extensions:
         for image_path in glob.glob(os.path.join(input_directory, extension)):
             output_image_path = os.path.join(output_directory,
