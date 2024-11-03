@@ -115,4 +115,5 @@ venv
 /.idea/
 
 # Media files
-/backend/media
+/backend/media/user_files
+/backend/media/compressed_images
