@@ -52,5 +52,5 @@ class UserInput(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = 'Ввод пользователя'
-        verbose_name_plural = 'Вводы пользователей'
+        verbose_name = 'Поле'
+        verbose_name_plural = 'Поля'

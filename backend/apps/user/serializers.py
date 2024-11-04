@@ -18,6 +18,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserInputSerializer(serializers.ModelSerializer):
+
+    # related_objects = RelatedModelSerializer(many=True, read_only=True)
+    
     class Meta:
         model = UserInput
-        exclude = ['construction_type']  # Убираем relations
+        fields = '__all__'
+
+# For relations model
+# class RelatedModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RelatedModel
+#         fields = '__all__'
