@@ -10,7 +10,7 @@ def validate_json_structure(value):
     if not isinstance(data, list):
         raise ValidationError("JSON data must be a list")
 
-    required_keys = {"index", "merged", "cell_data"}
+    required_keys = {"index", "merged", "template"}
     for item in data:
         if not isinstance(item, dict):
             raise ValidationError("Each item in the list must be a dictionary")

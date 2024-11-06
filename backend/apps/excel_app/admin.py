@@ -12,18 +12,13 @@ class SheetAdminForm(forms.ModelForm):
             {
                 "index": "A1",
                 "merged": null,
-                "cell_data": "Data for A1"
+                "template": "template string"
             },
             {
                 "index": "B1",
-                "merged": "A1",
-                "cell_data": "Data for B1"
+                "merged": "C1",
+                "template": "template string"
             },
-            {
-                "index": "C1",
-                "merged": null,
-                "cell_data": "Data for C1"
-            }
         ]''',
         widget=JSONEditor(attrs={
             'options': {
