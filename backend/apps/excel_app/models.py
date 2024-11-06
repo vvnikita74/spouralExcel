@@ -1,18 +1,56 @@
-from django.db import models
 import json
+from django.db import models
+
+
+class Fields(models.Model):
+    TEXT = 'text'
+    NUMBER = 'number'
+    SELECT = 'select'
+    MULTISELECT = 'multiselect'
+    MULTINUMBER = 'multinumber'
+    DOCUMENTATION = 'documentation'
+    DATE = 'date'
+    CHOICES = [
+        (TEXT, 'Text'),
+        (NUMBER, 'Number'),
+        (DATE, 'Date'),
+        (SELECT, 'Select'),
+        (MULTISELECT, 'MultiSelect'),
+        (MULTINUMBER, 'MultiNumber'),
+        (DOCUMENTATION, 'Documentation'),
+    ]
+    type = models.CharField(max_length=15, choices=CHOICES)
+    key = models.CharField(max_length=255, unique=True)
+    mask = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+    placeholder = models.CharField(max_length=255)
+    settings = models.JSONField(blank=True, null=True)
+    construction_type = models.OneToOneField('excel_app.ConstructionTypes',
+                                             to_field='name',
+                                             on_delete=models.SET_NULL,
+                                             blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Поле'
+        verbose_name_plural = 'Поля'
 
 
 class Cell:
-    def __init__(self, index, merged=None, template=''):
+    def __init__(self, index, merged=None, template='', inputKey=None):
         self.index = index
         self.merged = merged
         self.template = template
+        self.inputKey = inputKey
 
     def to_dict(self):
         return {
             'index': self.index,
             'merged': self.merged,
-            'template': self.template
+            'template': self.template,
+            'inputKey': self.inputKey
         }
 
     @classmethod
@@ -20,12 +58,15 @@ class Cell:
         return cls(
             index=data['index'],
             merged=data.get('merged'),
-            template=data.get('template', '')
+            template=data.get('template', ''),
+            inputKey=data.get('inputKey')
         )
 
 
 class Sheet(models.Model):
     index = models.IntegerField()
+    name = models.CharField(max_length=255)
+    countCell = models.CharField(max_length=10, default='AK56')
     data = models.JSONField()
 
     def set_data(self, cells):

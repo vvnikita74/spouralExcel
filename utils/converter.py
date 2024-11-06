@@ -1,23 +1,38 @@
 import os
-import win32com.client as win32
+import pandas as pd
+from fpdf import FPDF
 
-def convert_excel_to_pdf(input_excel_path, output_pdf_path):
-    input_excel_path = os.path.abspath(input_excel_path)
-    output_pdf_path = os.path.abspath(output_pdf_path)
+def convert_excel_to_pdf(input_file, output_file):
+    # Чтение xlsx файла
+    df = pd.read_excel(input_file)
 
-    # Initialize Excel application
-    excel = win32.Dispatch('Excel.Application')
-    excel.Visible = False
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
 
-    # Open the Excel workbook
-    workbook = excel.Workbooks.Open(input_excel_path)
+    # Проход по всем листам в xlsx файле
+    for sheet_name in df.keys():
+        sheet_data = df[sheet_name]
 
-    # Export as PDF
-    workbook.ExportAsFixedFormat(0, output_pdf_path)
+        # Добавление заголовка
+        pdf.cell(200, 10, "Sheet Name: " + sheet_name, ln=True)
+        pdf.ln(10)
 
-    # Close the workbook and quit Excel
-    workbook.Close(False)
-    excel.Quit()
+        # Преобразование Series в DataFrame
+        if isinstance(sheet_data, pd.Series):
+            sheet_data = pd.DataFrame(sheet_data)
 
-# Example usage
-convert_excel_to_pdf("report.xlsx", "report.pdf")
+        # Добавление таблицы
+        for index, row in sheet_data.iterrows():
+            encoded_row = [str(cell).encode('utf-8') for cell in row]
+            pdf.multi_cell(0, 10, b" ".join(encoded_row).decode('utf-8'))
+        pdf.ln(10)
+
+    # Сохранение PDF файла
+    pdf.output(output_file)
+
+if __name__ == "__main__":
+    input_file = os.path.abspath("report.xlsx")
+    output_file = os.path.abspath("report.pdf")
+
+    convert_excel_to_pdf(input_file, output_file)

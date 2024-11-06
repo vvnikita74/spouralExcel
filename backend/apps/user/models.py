@@ -28,16 +28,21 @@ class UserData(models.Model):
 class UserInput(models.Model):
     TEXT = 'text'
     NUMBER = 'number'
-    EMAIL = 'email'
+    SELECT = 'select'
+    MULTISELECT = 'multiselect'
+    MULTINUMBER = 'multinumber'
+    DOCUMENTATION = 'documentation'
     DATE = 'date'
     CHOICES = [
         (TEXT, 'Text'),
         (NUMBER, 'Number'),
-        (EMAIL, 'Email'),
         (DATE, 'Date'),
+        (SELECT, 'Select'),
+        (MULTISELECT, 'MultiSelect'),
+        (MULTINUMBER, 'MultiNumber'),
+        (DOCUMENTATION, 'Documentation'),
     ]
-    # изменить choices на нужные нам
-    type = models.CharField(max_length=10, choices=CHOICES)
+    type = models.CharField(max_length=15, choices=CHOICES)
     key = models.CharField(max_length=255, unique=True)
     mask = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
