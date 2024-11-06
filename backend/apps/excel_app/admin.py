@@ -12,12 +12,14 @@ class SheetAdminForm(forms.ModelForm):
             {
                 "index": "A1",
                 "merged": null,
-                "template": "template string"
+                "template": "template string",
+                "inputKey": "inputKey"
             },
             {
                 "index": "B1",
                 "merged": "C1",
-                "template": "template string"
+                "template": "template string",
+                "inputKey": "inputKey"
             },
         ]''',
         widget=JSONEditor(attrs={
@@ -38,6 +40,8 @@ class SheetAdminForm(forms.ModelForm):
 
 class SheetAdmin(admin.ModelAdmin):
     form = SheetAdminForm
+    list_display = ('name', 'index')
+    ordering = ('index',)
 
 
 admin.site.register(Sheet, SheetAdmin)

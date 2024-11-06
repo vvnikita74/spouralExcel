@@ -9,6 +9,6 @@ class ProcessInputView(APIView):
         if not data:
             return Response({'error': 'No input data provided'},
                             status=status.HTTP_400_BAD_REQUEST)
-        #обработка данных и вставка в Excel
+        # обработка данных и вставка в Excel
         return Response({'message': 'Data processed and inserted into Excel'},
                         status=status.HTTP_200_OK)

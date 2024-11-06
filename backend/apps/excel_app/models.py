@@ -3,16 +3,18 @@ import json
 
 
 class Cell:
-    def __init__(self, index, merged=None, template=''):
+    def __init__(self, index, merged=None, template='', inputKey=None):
         self.index = index
         self.merged = merged
         self.template = template
+        self.inputKey = inputKey
 
     def to_dict(self):
         return {
             'index': self.index,
             'merged': self.merged,
-            'template': self.template
+            'template': self.template,
+            'inputKey': self.inputKey
         }
 
     @classmethod
@@ -20,12 +22,15 @@ class Cell:
         return cls(
             index=data['index'],
             merged=data.get('merged'),
-            template=data.get('template', '')
+            template=data.get('template', ''),
+            inputKey=data.get('inputKey')
         )
 
 
 class Sheet(models.Model):
     index = models.IntegerField()
+    name = models.CharField(max_length=255)
+    countCell = models.CharField(max_length=10, default='AK56')
     data = models.JSONField()
 
     def set_data(self, cells):
