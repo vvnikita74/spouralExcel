@@ -1,9 +1,9 @@
 from django import forms
 from jsoneditor.forms import JSONEditor
-from .models import UserInput
+from .models import Fields
 
 
-class UserInputAdminForm(forms.ModelForm):
+class FieldsAdminForm(forms.ModelForm):
     settings = forms.CharField(
         widget=JSONEditor(attrs={
             'options': {
@@ -16,5 +16,5 @@ class UserInputAdminForm(forms.ModelForm):
     )
 
     class Meta:
-        model = UserInput
+        model = Fields
         fields = '__all__'
