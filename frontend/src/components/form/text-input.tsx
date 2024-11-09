@@ -1,0 +1,49 @@
+import { memo, InputHTMLAttributes } from 'react'
+
+const TextInput = memo(
+	({
+		name = '',
+		type = 'text',
+		label = '',
+		placeholder = '',
+		error = 'Абоба',
+		inputProps = {}
+	}: {
+		name?: string
+		type?: string
+		label?: string
+		placeholder?: string
+		error?: string
+		inputProps?: InputHTMLAttributes<HTMLInputElement>
+	}) => {
+		return (
+			<label
+				className={`relative block caret-black transition-colors
+					${error ? 'border-red-500' : 'border-indigo-500'}`}
+				htmlFor={name}>
+				{label ? (
+					<span className='base-text mb-1 block px-2.5'>
+						{label}
+					</span>
+				) : (
+					<span className='sr-only'>{placeholder || name}</span>
+				)}
+				<input
+					name={name}
+					type={type}
+					placeholder={placeholder}
+					className='base-text block rounded-xl border border-indigo-500 px-2.5 py-1'
+					{...inputProps}
+				/>
+				<span
+					className={`block text-right text-sm text-red-500 transition-[opacity,height]
+						${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
+					id='error-text'>
+					{error || 'Абоба'}
+				</span>
+			</label>
+		)
+	}
+)
+
+export default TextInput

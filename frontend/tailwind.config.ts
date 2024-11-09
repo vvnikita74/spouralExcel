@@ -23,6 +23,9 @@ export const theme = {
 			'2xs': '360px',
 			xs: '480px',
 			...defaultTheme.screens
+		},
+		transitionDuration: {
+			DEFAULT: '300ms'
 		}
 	}
 }

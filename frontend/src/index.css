@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+	input {
+		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-60 w-full
+	}
+	form { 
+		> label:not(:first-child), > button:not(:first-child) {
+			@apply mt-4;
+		}
+	}
+	.base-text {
+		@apply text-base sm:text-lg;
+	}
+}
+
 @layer utilities {
 	.scrollbar-hide::-webkit-scrollbar {
 		display: none;
