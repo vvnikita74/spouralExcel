@@ -15,19 +15,19 @@ class FieldsAdmin(admin.ModelAdmin):
 class SheetAdminForm(forms.ModelForm):
     data = forms.CharField(
         initial='''[
-            {
-                "index": "A1",
-                "merged": null,
-                "template": "template string",
-                "inputKey": "inputKey"
-            },
-            {
-                "index": "B1",
-                "merged": "C1",
-                "template": "template string",
-                "inputKey": "inputKey"
-            },
-        ]''',
+    {
+        "index": "A1",
+        "merged": null,
+        "template": "template string",
+        "inputKey": "inputKey"
+    },
+    {
+        "index": "B1",
+        "merged": "C1",
+        "template": "template string",
+        "inputKey": "inputKey"
+    }
+]]''',
         widget=JSONEditor(attrs={
             'options': {
                 'mode': 'code',
