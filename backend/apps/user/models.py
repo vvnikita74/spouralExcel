@@ -44,9 +44,9 @@ class UserInput(models.Model):
     ]
     type = models.CharField(max_length=15, choices=CHOICES)
     key = models.CharField(max_length=255, unique=True)
-    mask = models.CharField(max_length=255)
+    mask = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
-    placeholder = models.CharField(max_length=255)
+    placeholder = models.CharField(max_length=255, null=True, blank=True)
     settings = models.JSONField(blank=True, null=True)
     construction_type = models.OneToOneField('excel_app.ConstructionTypes',
                                              to_field='name',
