@@ -10,6 +10,7 @@ class Fields(models.Model):
     MULTINUMBER = 'multinumber'
     DOCUMENTATION = 'documentation'
     DATE = 'date'
+    BOOL = 'bool'
     CHOICES = [
         (TEXT, 'Text'),
         (NUMBER, 'Number'),
@@ -18,6 +19,7 @@ class Fields(models.Model):
         (MULTISELECT, 'MultiSelect'),
         (MULTINUMBER, 'MultiNumber'),
         (DOCUMENTATION, 'Documentation'),
+        (BOOL, 'Bool')
     ]
     type = models.CharField(max_length=15, choices=CHOICES)
     key = models.CharField(max_length=255, unique=True)
