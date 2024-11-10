@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import CustomTokenObtainPairSerializer
+from .models import UserData
+from .serializers import CustomTokenObtainPairSerializer, UserDataSerializer
 from ..excel_app.models import Fields
 from ..excel_app.serializers import FieldsSerializer
 
@@ -32,4 +33,12 @@ class UserInputListView(APIView):
     def get(self, _):
         user_inputs = Fields.objects.all().order_by('step', 'position')
         serializer = FieldsSerializer(user_inputs, many=True)
+        return Response(serializer.data)
+
+class UserDataListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_data = UserData.objects.filter(user=request.user)
+        serializer = UserDataSerializer(user_data, many=True)
         return Response(serializer.data)
