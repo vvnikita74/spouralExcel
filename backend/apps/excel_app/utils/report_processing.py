@@ -12,10 +12,11 @@ def patched_getargspec(func):
     fullargspec = inspect.getfullargspec(func)
     return fullargspec.args, fullargspec.varargs, fullargspec.varkw, fullargspec.defaults
 
+
 inspect.getargspec = patched_getargspec
 
-
 morph = pymorphy2.MorphAnalyzer()
+
 
 def get_gender(word):
     parse = morph.parse(word)[0]
@@ -28,6 +29,7 @@ def get_gender(word):
         return 'neut'
 
     return None
+
 
 def change_gender(word, target_gender):
     parse = morph.parse(word)[0]
@@ -58,18 +60,18 @@ def generate_report(data, username):
                         if gender:
                             inflected_word = change_gender(word, gender)
                             if inflected_word:
-                                template = template.replace(f'${word}.{key}$',  
+                                template = template.replace(f'${word}.{key}$',
                                                             inflected_word)
             cell.value = template
-        
+
         if sheet.countCell:
-          ws[sheet.countCell] = count
-        
+            ws[sheet.countCell] = count
+
         sheet.save()
 
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
-        
+
     report_dir = os.path.join(os.path.dirname(__file__), '..', 'media',
                               'reports')
     os.makedirs(report_dir, exist_ok=True)
@@ -79,6 +81,6 @@ def generate_report(data, username):
 
     os.system(
         f'libreoffice --headless --convert-to pdf {report_full_filename}')
-    
+
     report_filename = os.path.basename(report_full_filename)
     return report_filename

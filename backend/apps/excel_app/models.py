@@ -31,6 +31,8 @@ class Fields(models.Model):
                                              to_field='name',
                                              on_delete=models.SET_NULL,
                                              blank=True, null=True)
+    step = models.IntegerField(default=0)
+    position = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -68,7 +70,8 @@ class Cell:
 class Sheet(models.Model):
     index = models.IntegerField()
     name = models.CharField(max_length=255)
-    countCell = models.CharField(max_length=10, default='AK56', null=True, blank=True)
+    countCell = models.CharField(max_length=10, default='AK56', null=True,
+                                 blank=True)
     data = models.JSONField()
 
     def set_data(self, cells):

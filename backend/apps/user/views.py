@@ -30,6 +30,6 @@ class UserInputListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, _):
-        user_inputs = Fields.objects.all()
+        user_inputs = Fields.objects.all().order_by('step', 'position')
         serializer = FieldsSerializer(user_inputs, many=True)
         return Response(serializer.data)

@@ -1,4 +1,10 @@
 from django.contrib import admin
 from .models import UserData
+from .forms import UserDataAdminForm
 
-admin.site.register(UserData)
+
+class UserDataAdmin(admin.ModelAdmin):
+    form = UserDataAdminForm
+
+
+admin.site.register(UserData, UserDataAdmin)
