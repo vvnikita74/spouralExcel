@@ -116,5 +116,6 @@ venv
 
 # Media files
 
-/media/reports/
-/media/user_images/
+backend/media/reports/
+backend/media/user_images/
+
