@@ -4,11 +4,10 @@ import uuid
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.http import JsonResponse
-from report_scripts.report_generator import generate_report
+
+from .utils.report_processing import generate_report
 
 from ..user.models import UserData
-
 
 class TaskManager:
     def __init__(self):
@@ -23,7 +22,6 @@ class TaskManager:
         }
 
     def update_task(self, task_id, status, result=None):
-        # print(f'Updating task {task_id} with status {status}')
         if task_id in self.tasks:
             self.tasks[task_id]['status'] = status
             if result:
@@ -62,12 +60,5 @@ class ProcessInputView(APIView):
             UserData.objects.filter(id=user_data_id).update(file_name=report_file)
 
         except Exception as e:
-            print(e)
             task_manager.update_task(task_id, 'Failed', str(e))
             UserData.objects.filter(id=user_data_id).update(isReady=2)
-
-
-class TaskStatusView(APIView):
-    def get(self, request, task_id):
-        task_status = task_manager.get_task_status(task_id)
-        return JsonResponse(task_status)

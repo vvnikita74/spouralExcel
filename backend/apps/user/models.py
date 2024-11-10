@@ -24,39 +24,3 @@ class UserData(models.Model):
     class Meta:
         verbose_name = 'Данные пользователя'
         verbose_name_plural = 'Данные пользователей'
-
-
-class UserInput(models.Model):
-    TEXT = 'text'
-    NUMBER = 'number'
-    SELECT = 'select'
-    MULTISELECT = 'multiselect'
-    MULTINUMBER = 'multinumber'
-    DOCUMENTATION = 'documentation'
-    DATE = 'date'
-    CHOICES = [
-        (TEXT, 'Text'),
-        (NUMBER, 'Number'),
-        (DATE, 'Date'),
-        (SELECT, 'Select'),
-        (MULTISELECT, 'MultiSelect'),
-        (MULTINUMBER, 'MultiNumber'),
-        (DOCUMENTATION, 'Documentation'),
-    ]
-    type = models.CharField(max_length=15, choices=CHOICES)
-    key = models.CharField(max_length=255, unique=True)
-    mask = models.CharField(max_length=255, null=True, blank=True)
-    name = models.CharField(max_length=255)
-    placeholder = models.CharField(max_length=255, null=True, blank=True)
-    settings = models.JSONField(blank=True, null=True)
-    construction_type = models.OneToOneField('excel_app.ConstructionTypes',
-                                             to_field='name',
-                                             on_delete=models.SET_NULL,
-                                             blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'Поле'
-        verbose_name_plural = 'Поля'

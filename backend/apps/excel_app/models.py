@@ -59,9 +59,9 @@ class Cell:
     def from_dict(cls, data):
         return cls(
             index=data['index'],
-            merged=data.get('merged'),
-            template=data.get('template', ''),
-            inputKey=data.get('inputKey')
+            merged=data.get('merged', ''),
+            template=data.get('template'),
+            inputKey=data.get('inputKey', '')
         )
 
 

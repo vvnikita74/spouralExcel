@@ -16,14 +16,8 @@ class SheetAdminForm(forms.ModelForm):
     data = forms.CharField(
         initial='''[
     {
-        "index": "A1",
+        "index": "cellIndex",
         "merged": null,
-        "template": "template string",
-        "inputKey": "inputKey"
-    },
-    {
-        "index": "B1",
-        "merged": "C1",
         "template": "template string",
         "inputKey": "inputKey"
     }
