@@ -60,5 +60,6 @@ class ProcessInputView(APIView):
             UserData.objects.filter(id=user_data_id).update(file_name=report_file)
 
         except Exception as e:
+            print(e)
             task_manager.update_task(task_id, 'Failed', str(e))
             UserData.objects.filter(id=user_data_id).update(isReady=2)
