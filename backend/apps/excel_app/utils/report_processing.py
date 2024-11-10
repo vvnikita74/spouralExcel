@@ -64,9 +64,9 @@ def generate_report(data, username):
     report_full_filename = os.path.join(report_dir,
                                         f'{datetime.now().strftime("%H-%M_%d.%m.%Y")}-{username}.xlsx')
     wb.save(report_full_filename)
-    report_filename = os.path.basename(report_full_filename)
-    os.system(f'libreoffice --headless --convert-to pdf --outdir'
-              f' {report_dir} {report_filename}')
+    report_filename = os.path.splitext(os.path.basename(report_full_filename))[0]
+    # os.system(f'libreoffice --headless --convert-to pdf --outdir'
+    #           f' {report_dir} {report_filename}')
     return report_filename
 
 
