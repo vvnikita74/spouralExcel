@@ -13,6 +13,7 @@ class UserData(models.Model):
         (ERROR, 'Error'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file_name = models.CharField(max_length=255)
     data = models.JSONField()
     isReady = models.IntegerField(choices=STATUS_CHOICES, default=LOADING)
     date_created = models.DateTimeField(auto_now_add=True)

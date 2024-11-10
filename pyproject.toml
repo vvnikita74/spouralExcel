@@ -26,6 +26,8 @@ django-cors-headers = "4.4.0"
 openpyxl = "^3.1.5"
 reportlab = "^4.2.5"
 fpdf = "^1.7.2"
+aiofiles = "^24.1.0"
+pymorphy2 = "^0.9.1"
 
 
 [build-system]
