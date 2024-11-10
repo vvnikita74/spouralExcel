@@ -18,13 +18,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
-class ImageView(APIView):
-    def get(self, _, filename):
-        file_path = os.path.join(settings.MEDIA_ROOT, filename)
-        if os.path.exists(file_path):
-            return FileResponse(open(file_path, 'rb'))
-        else:
-            raise Http404("Image not found")
+class MediaView(APIView):
+    def get(self, request, filename):
+        for root, dirs, files in os.walk(settings.MEDIA_ROOT):
+            if filename in files:
+                file_path = os.path.join(root, filename)
+                return FileResponse(open(file_path, 'rb'), as_attachment=True)
+        raise Http404("Media not found")
 
 
 class UserInputListView(APIView):

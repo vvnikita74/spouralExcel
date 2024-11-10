@@ -23,7 +23,7 @@ def compress_images_in_directory(input_directory, output_directory,
 
 
 def main():
-    input_directory = 'user_files'
+    input_directory = 'user_images'
     output_directory = 'compressed_images'
     compress_images_in_directory(os.path.abspath(input_directory),
                                  output_directory, quality=75)
