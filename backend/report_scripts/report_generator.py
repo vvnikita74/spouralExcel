@@ -7,8 +7,7 @@ from apps.excel_app.models import Sheet
 
 
 def generate_report(data, username):
-    template_path = os.path.join(os.path.dirname(__file__), '..', '..',
-                                 'utils', 'report.xlsx')
+    template_path = os.path.join(os.path.dirname(__file__), 'report.xlsx')
     wb = openpyxl.load_workbook(template_path)
     count = 0
     for sheet in Sheet.objects.all():
