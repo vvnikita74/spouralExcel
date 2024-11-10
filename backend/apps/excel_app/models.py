@@ -68,7 +68,7 @@ class Cell:
 class Sheet(models.Model):
     index = models.IntegerField()
     name = models.CharField(max_length=255)
-    countCell = models.CharField(max_length=10, default='AK56')
+    countCell = models.CharField(max_length=10, default='AK56', null=True, blank=True)
     data = models.JSONField()
 
     def set_data(self, cells):
