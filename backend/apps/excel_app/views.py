@@ -9,12 +9,6 @@ class ProcessInputView(APIView):
     def post(self, request):
         data = request.data
 
-        # удалился последний лист
-        # wb = ...
-        # wb.save(f'{date.now()}-{userName}.xlsx')
-        # script execute. to pdf
-        #{date.now()}-{userName}.pdf
-        #...
         print(data.get('customer'))
         print(data.get('objectType'))
 
@@ -26,9 +20,16 @@ class ProcessInputView(APIView):
             # list.template processing
             # list.countCell processing
 
+        # удалился последний лист
+        # wb = ...
+        # wb.save(f'{date.now()}-{userName}.xlsx')
+        # script execute. to pdf
+        #{date.now()}-{userName}.pdf
+        #...
+
         if not data:
             return Response({'error': 'No input data provided'},
                             status=status.HTTP_400_BAD_REQUEST)
         # обработка данных и вставка в Excel
-        return Response({'message': 'Data processed and inserted into Excel'},
+        return Response({'message': 'Success'},
                         status=status.HTTP_200_OK)
