@@ -24,6 +24,9 @@
       ],
       "utils/*": [
         "src/utils/*"
+      ],
+      "public/*": [
+        "public/*"
       ]
     }
   },
@@ -33,6 +36,8 @@
     "./capacitor.config.ts",
     "./tailwind.config.ts",
     "./postcss.config.ts",
+  ],
+  "files": [
     "./declarations.d.ts"
   ]
 }

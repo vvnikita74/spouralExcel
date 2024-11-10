@@ -6,7 +6,7 @@ const TextInput = memo(
 		type = 'text',
 		label = '',
 		placeholder = '',
-		error = 'Абоба',
+		error = '',
 		inputProps = {}
 	}: {
 		name?: string
@@ -31,7 +31,7 @@ const TextInput = memo(
 					name={name}
 					type={type}
 					placeholder={placeholder}
-					className={`base-text block rounded-xl border px-2.5 py-2 transition-colors
+					className={`base-text base-padding block rounded-xl border transition-colors
 						${error ? 'border-red-500 placeholder:text-red-500 focus:border-red-500' : 'border-indigo-500 focus:border-indigo-800'}`}
 					{...inputProps}
 				/>
@@ -39,7 +39,7 @@ const TextInput = memo(
 					className={`block text-right text-sm text-red-500 transition-[opacity,height]
 						${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
 					id='error-text'>
-					{error || 'Абоба'}
+					{error || ''}
 				</span>
 			</label>
 		)

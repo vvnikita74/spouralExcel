@@ -61,6 +61,10 @@ const webpackConfig = (env: {
 						}
 					}
 				]
+			},
+			{
+				test: /\.svg$/,
+				use: ['@svgr/webpack']
 			}
 		]
 	},

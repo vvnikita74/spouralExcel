@@ -1,22 +1,20 @@
 import LoginForm from 'components/auth/login-form'
-import logo from '../../public/logo.webp'
+import logoText from 'public/logo-text.webp'
 
 export default function LoginPage() {
 	return (
-		<div
-			className='relative flex h-screen w-screen flex-col items-center
-				justify-center overflow-hidden p-4'>
+		<section
+			className='relative flex size-full flex-col items-center justify-center
+				overflow-hidden p-4'>
 			<img
-				src={logo}
+				src={logoText}
 				alt='СПО-Урал'
-				loading='lazy'
-				className='absolute left-4 top-4 h-12 w-auto max-w-[calc(100%-2rem)]
-					object-contain sm:h-16'
+				className='absolute left-4 top-4 h-14 w-auto object-contain sm:h-20'
 			/>
-			<h1 className='text-center text-xl font-medium sm:text-2xl'>
+			<h2 className='text-xl font-medium sm:text-2xl'>
 				Авторизация
-			</h1>
+			</h2>
 			<LoginForm className='mt-6 w-full max-w-96' />
-		</div>
+		</section>
 	)
 }

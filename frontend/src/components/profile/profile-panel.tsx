@@ -1,0 +1,23 @@
+import UserIcon from 'public/user.svg'
+import { Link } from 'react-router-dom'
+
+import useAuthUser from 'react-auth-kit/hooks/useAuthUser'
+
+export default function ProfilePanel({ className = '' }) {
+	const { username } = (useAuthUser() as {
+		username: string
+	}) || { username: ' ' }
+
+	return (
+		<Link
+			to='/'
+			className={`flex flex-row items-center overflow-hidden rounded-xl
+				bg-indigo-500 px-2.5 py-2 text-white ${className}
+				transition-colors lg:hover:bg-indigo-800`}>
+			<UserIcon className='mr-1.5 size-6' />
+			<span className='base-text'>
+				{username || 'Неизвестный пользователь'}
+			</span>
+		</Link>
+	)
+}

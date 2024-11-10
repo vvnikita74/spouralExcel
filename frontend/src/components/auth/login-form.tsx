@@ -100,8 +100,8 @@ export default function LoginForm({ className = '' }) {
 			<button
 				type='submit'
 				ref={btnRef}
-				className='base-text btn-loader relative w-full rounded-xl bg-indigo-500
-					px-2.5 py-2 text-white'>
+				className='base-text btn-loader base-padding relative w-full rounded-xl
+					bg-indigo-500 text-white'>
 				<span className='pointer-events-none text-inherit transition-opacity'>
 					Войти
 				</span>
