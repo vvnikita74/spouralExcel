@@ -12,10 +12,10 @@ const config: CapacitorConfig = {
 		SafeArea: {
 			enabled: true,
 			customColorsForSystemBars: true,
-			statusBarColor: '#000000',
-			statusBarContent: 'light',
-			navigationBarColor: '#000000',
-			navigationBarContent: 'light',
+			statusBarColor: '#ffffff',
+			statusBarContent: 'dark',
+			navigationBarColor: '#ffffff',
+			navigationBarContent: 'dark',
 			offset: 0
 		}
 	}

@@ -21,6 +21,9 @@
     "paths": {
       "components/*": [
         "src/components/*"
+      ],
+      "utils/*": [
+        "src/utils/*"
       ]
     }
   },
@@ -29,6 +32,7 @@
     "./webpack.config.ts",
     "./capacitor.config.ts",
     "./tailwind.config.ts",
-    "./postcss.config.ts"
+    "./postcss.config.ts",
+    "./declarations.d.ts"
   ]
 }

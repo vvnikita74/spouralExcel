@@ -14,6 +14,7 @@ import AuthProvider from 'react-auth-kit'
 import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 
 import LoginPage from './pages/login'
+import HomePage from './pages/home'
 
 const store = createStore({
 	authName: '_auth',
@@ -27,7 +28,7 @@ const router = createBrowserRouter(
 			<Route
 				element={<AuthOutlet fallbackPath='/login' />}
 				errorElement={null}>
-				<Route path='/' element={null} />
+				<Route path='/' element={<HomePage />} />
 			</Route>
 		</>
 	)

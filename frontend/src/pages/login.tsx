@@ -1,4 +1,5 @@
 import LoginForm from 'components/auth/login-form'
+import logo from '../../public/logo.webp'
 
 export default function LoginPage() {
 	return (
@@ -6,7 +7,7 @@ export default function LoginPage() {
 			className='relative flex h-screen w-screen flex-col items-center
 				justify-center overflow-hidden p-4'>
 			<img
-				src='/logo.webp'
+				src={logo}
 				alt='СПО-Урал'
 				loading='lazy'
 				className='absolute left-4 top-4 h-12 w-auto max-w-[calc(100%-2rem)]

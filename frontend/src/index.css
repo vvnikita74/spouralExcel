@@ -4,7 +4,7 @@
 
 @layer base {
 	input {
-		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-60 w-full
+		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full
 	}
 	form { 
 		> label:not(:first-child), > button:not(:first-child) {
@@ -44,3 +44,19 @@ body {
 	margin: 0 auto;
 }
 
+.btn-loader {
+	figure {
+		opacity: 0;
+	}
+	span {
+		opacity: 1;
+	}
+	&.loading {
+		figure {
+			opacity: 1;
+		}
+		span {
+			opacity: 0;
+		}	
+	}
+}

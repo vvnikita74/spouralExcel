@@ -18,8 +18,7 @@ const TextInput = memo(
 	}) => {
 		return (
 			<label
-				className={`relative block caret-black transition-colors
-					${error ? 'border-red-500' : 'border-indigo-500'}`}
+				className='relative block caret-black transition-colors'
 				htmlFor={name}>
 				{label ? (
 					<span className='base-text mb-1 block px-2.5'>
@@ -32,7 +31,8 @@ const TextInput = memo(
 					name={name}
 					type={type}
 					placeholder={placeholder}
-					className='base-text block rounded-xl border border-indigo-500 px-2.5 py-1'
+					className={`base-text block rounded-xl border px-2.5 py-2 transition-colors
+						${error ? 'border-red-500 placeholder:text-red-500 focus:border-red-500' : 'border-indigo-500 focus:border-indigo-800'}`}
 					{...inputProps}
 				/>
 				<span
