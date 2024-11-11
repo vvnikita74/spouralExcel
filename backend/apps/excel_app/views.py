@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .utils.report_processing import generate_report
+from .utils.report.processing import generate_report
 
 from ..user.models import UserData
 
