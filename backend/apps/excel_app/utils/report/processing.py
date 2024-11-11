@@ -74,14 +74,14 @@ def generate_report(data, username):
         wb.remove(wb.worksheets[-1])
 
     filename = f'{datetime.now().strftime("%H-%M_%d.%m.%Y")}-{username}.xlsx'
-
     report_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
     os.makedirs(report_dir, exist_ok=True)
-    
-    wb.save(os.path.join(report_dir, filename))
+    os_filename = os.path.join(report_dir, filename)
+
+    wb.save(os_filename)
 
     os.system(f'libreoffice --headless --convert-to pdf --outdir'
-              f' {report_dir} {filename}')
+              f' {report_dir} {os_filename}')
     
     return filename
 
