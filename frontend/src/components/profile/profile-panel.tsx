@@ -1,4 +1,4 @@
-import UserIcon from 'public/user.svg'
+import UserIcon from 'public/icons/user.svg'
 import { Link } from 'react-router-dom'
 
 import useAuthUser from 'react-auth-kit/hooks/useAuthUser'

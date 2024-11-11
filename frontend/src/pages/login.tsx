@@ -1,5 +1,5 @@
 import LoginForm from 'components/auth/login-form'
-import logoText from 'public/logo-text.webp'
+import logoText from 'public/images/logo-text.webp'
 
 export default function LoginPage() {
 	return (

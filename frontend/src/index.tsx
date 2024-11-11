@@ -6,6 +6,7 @@ import {
 	createBrowserRouter,
 	createRoutesFromElements,
 	redirect,
+	defer,
 	Route,
 	RouterProvider
 } from 'react-router-dom'
@@ -79,25 +80,31 @@ const router = createBrowserRouter(
 						loader={async () => {
 							const { authHeader } = getAuthStore()
 
-							return queryClient.fetchQuery({
-								queryKey: ['emergencyreport'],
-								queryFn: async () => {
-									try {
-										const req = await fetch(`${API_URL}/data`, {
-											headers: {
-												Authorization: authHeader
-											}
-										})
-										return req.json()
-									} catch {
-										return (
-											queryClient.getQueryData([
-												'emergencyreport'
-											]) || null
-										)
-									}
-								},
-								staleTime: 7200
+							return defer({
+								fields: queryClient.fetchQuery({
+									queryKey: ['emergencyreport'],
+									queryFn: async () => {
+										try {
+											const req = await fetch(
+												`${API_URL}/data`,
+												{
+													headers: {
+														Authorization: authHeader
+													}
+												}
+											)
+
+											return req.json()
+										} catch {
+											return (
+												queryClient.getQueryData([
+													'emergencyreport'
+												]) || null
+											)
+										}
+									},
+									staleTime: 7200
+								})
 							})
 						}}
 					/>

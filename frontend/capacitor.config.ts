@@ -4,10 +4,10 @@ const config: CapacitorConfig = {
 	appId: 'com.app.id',
 	appName: 'appName',
 	webDir: 'dist',
-	server: {
-		url: 'http://192.168.80.1:8081',
-		cleartext: true
-	},
+	// server: {
+	// 	url: 'http://192.168.80.1:8081',
+	// 	cleartext: true
+	// },
 	plugins: {
 		SafeArea: {
 			enabled: true,

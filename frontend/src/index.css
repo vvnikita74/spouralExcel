@@ -52,7 +52,7 @@ body {
 .root {
 	width: 100%;
 	height: 100%;
-	padding: var(--safe-area-inset-top) var(--safe-area-inset-right) var(--safe-area-inset-bottom) var(--safe-area-inset-left);
+	padding: var(--safe-area-inset-top, 0px) var(--safe-area-inset-right, 0px) var(--safe-area-inset-bottom, 0px) var(--safe-area-inset-left, 0px);
 }
 
 .btn-loader {

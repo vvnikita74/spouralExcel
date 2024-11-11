@@ -73,7 +73,7 @@ def generate_report(data, username):
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
-    filename = f'{datetime.now().strftime("%H-%M_%d.%m.%Y")}-{username}.xlsx'
+    filename = f'{username}-{datetime.now().strftime("%H-%M_%d.%m.%Y")}.xlsx'
     report_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
     os.makedirs(report_dir, exist_ok=True)
     os_filename = os.path.join(report_dir, filename)
