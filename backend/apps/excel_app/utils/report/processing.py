@@ -7,7 +7,7 @@ from django.conf import settings
 from datetime import datetime
 from apps.excel_app.models import Sheet
 
-gentArr = {
+gent_tags = {
     "Родительный": "gent",
     "Именительный": "nomn",
     'Дательный': 'datv',
@@ -16,6 +16,13 @@ gentArr = {
     'Предложный': 'loct',
     'Звательный': 'voct',
 }
+
+gender_tags = {
+    'masc': 'masc',
+    'femn': 'femn',
+    'neut': 'neut'
+}
+
 
 # Python 3.13 bug fix
 def patched_getargspec(func):
@@ -31,14 +38,10 @@ morph = pymorphy2.MorphAnalyzer()
 def get_gender(word):
     parse = morph.parse(word)[0]
 
-    # TODO: Оптимизировать
-    if 'masc' in parse.tag:
-        return 'masc'
-    elif 'femn' in parse.tag:
-        return 'femn'
-    elif 'neut' in parse.tag:
-        return 'neut'
-
+    for gender, tag in gender_tags.items():
+        if gender in parse.tag:
+            return tag
+    
     return None
 
 
@@ -95,7 +98,7 @@ def substitute_placeholders(template, data):
         match length:
             case 2:
                 word, key = keyArr
-                if key in gentArr:
+                if key in gent_tags:
                     initial = data.get(word, '')
                     gender = get_gender(initial.split(' ')[-1])
                     if gender:
