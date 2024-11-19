@@ -25,6 +25,22 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import { API_URL } from 'utils/config'
 
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			gcTime: 1000 * 60 * 60 * 24,
+			staleTime: 1000 * 60,
+			retry: false,
+			refetchOnWindowFocus: false,
+			networkMode: 'offlineFirst'
+		}
+	}
+})
+
+const persister = createSyncStoragePersister({
+	storage: window.localStorage
+})
+
 const store = createStore({
 	authName: '_auth',
 	authType: 'localstorage'
@@ -40,22 +56,6 @@ const getAuthStore = () => {
 
 	return { userState, authHeader }
 }
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			gcTime: 1000 * 60 * 60 * 24,
-			staleTime: 1000 * 60 * 60 * 24,
-			retry: false,
-			refetchOnWindowFocus: false,
-			networkMode: 'offlineFirst'
-		}
-	}
-})
-
-const persister = createSyncStoragePersister({
-	storage: window.localStorage
-})
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -103,7 +103,6 @@ const router = createBrowserRouter(
 											)
 										}
 									},
-									staleTime: 7200
 								})
 							})
 						}}

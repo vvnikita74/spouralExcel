@@ -46,6 +46,9 @@ def get_gender(word):
 
 
 def change_gender(word, target_gender):
+    if not target_gender:
+        return ''
+    
     parse = morph.parse(word)[0]
     inflected = parse.inflect({target_gender})
     return inflected.word if inflected else None
@@ -98,20 +101,15 @@ def substitute_placeholders(template, data):
         match length:
             case 2:
                 word, key = keyArr
+                # TODO: Оптимизировать. Сделать чтобы понятно было
                 if key in gent_tags:
                     initial = data.get(word, '')
-                    gender = get_gender(initial.split(' ')[-1])
-                    if gender:
-                        inflected_word = change_gender(word, gender)
-                        if inflected_word:
-                            return inflected_word
                 elif key in data:
                     initial = data[key]
-                    gender = get_gender(initial.split(' ')[-1])
-                    if gender:
-                        inflected_word = change_gender(word, gender)
-                        if inflected_word:
-                            return inflected_word
+
+                inflected_word = change_gender(word, get_gender(initial.split(' ')[-1]))
+                if inflected_word:
+                    return inflected_word
             case 3:
                 # Обработка случая с тремя частями в ключе
                 pass
