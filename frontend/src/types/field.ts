@@ -1,4 +1,4 @@
-export interface Field {
+export default interface Field {
 	type:
 		| 'text'
 		| 'number'

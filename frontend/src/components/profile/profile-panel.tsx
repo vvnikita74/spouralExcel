@@ -10,7 +10,7 @@ export default function ProfilePanel({ className = '' }) {
 
 	return (
 		<Link
-			to='/'
+			to='/profile'
 			className={`flex flex-row items-center overflow-hidden rounded-xl
 				bg-indigo-500 px-2.5 py-2 text-white ${className}
 				transition-colors lg:hover:bg-indigo-800`}>

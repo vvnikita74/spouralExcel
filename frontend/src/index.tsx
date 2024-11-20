@@ -15,10 +15,11 @@ import createStore from 'react-auth-kit/createStore'
 import AuthProvider from 'react-auth-kit'
 import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 
-import IndexLayout from './layout/index-layout'
-import LoginPage from './pages/login'
-import HomePage from './pages/home'
-import EmergencyReportPage from './pages/emergency-report'
+import IndexLayout from 'layout/index-layout'
+import LoginPage from 'pages/login'
+import HomePage from 'pages/home'
+import EmergencyReportPage from 'pages/emergency-report'
+import ProfilePage from 'pages/profile'
 
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
@@ -57,6 +58,29 @@ const getAuthStore = () => {
 	return { userState, authHeader }
 }
 
+const getLoader = (path = '', queryKey = [''], objKey = '') => {
+	const { authHeader } = getAuthStore()
+
+	return defer({
+		[objKey]: queryClient.fetchQuery({
+			queryKey,
+			queryFn: async () => {
+				try {
+					const req = await fetch(`${API_URL}/${path}`, {
+						headers: {
+							Authorization: authHeader
+						}
+					})
+
+					return req.json()
+				} catch {
+					return queryClient.getQueryData(queryKey) || null
+				}
+			}
+		})
+	})
+}
+
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
@@ -75,37 +99,18 @@ const router = createBrowserRouter(
 				<Route path='/' element={<IndexLayout />}>
 					<Route index element={<HomePage />} />
 					<Route
+						path='profile'
+						element={<ProfilePage />}
+						loader={() =>
+							getLoader('user-data', ['user-data'], 'userData')
+						}
+					/>
+					<Route
 						path='emergencyreport'
 						element={<EmergencyReportPage />}
-						loader={async () => {
-							const { authHeader } = getAuthStore()
-
-							return defer({
-								fields: queryClient.fetchQuery({
-									queryKey: ['emergencyreport'],
-									queryFn: async () => {
-										try {
-											const req = await fetch(
-												`${API_URL}/data`,
-												{
-													headers: {
-														Authorization: authHeader
-													}
-												}
-											)
-
-											return req.json()
-										} catch {
-											return (
-												queryClient.getQueryData([
-													'emergencyreport'
-												]) || null
-											)
-										}
-									},
-								})
-							})
-						}}
+						loader={() =>
+							getLoader('data', ['emergency-report'], 'fields')
+						}
 					/>
 				</Route>
 			</Route>
