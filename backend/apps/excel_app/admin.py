@@ -17,11 +17,10 @@ class SheetAdminForm(forms.ModelForm):
         initial='''[
     {
         "index": "cellIndex",
-        "merged": null,
         "template": "template string",
         "inputKey": "inputKey"
     }
-]]''',
+]''',
         widget=JSONEditor(attrs={
             'options': {
                 'mode': 'code',

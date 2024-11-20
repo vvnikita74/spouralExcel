@@ -43,16 +43,14 @@ class Fields(models.Model):
 
 
 class Cell:
-    def __init__(self, index, merged=None, template='', inputKey=None):
+    def __init__(self, index, type=None, template='', inputKey=None):
         self.index = index
-        self.merged = merged
         self.template = template
         self.inputKey = inputKey
 
     def to_dict(self):
         return {
             'index': self.index,
-            'merged': self.merged,
             'template': self.template,
             'inputKey': self.inputKey
         }
@@ -61,7 +59,6 @@ class Cell:
     def from_dict(cls, data):
         return cls(
             index=data['index'],
-            merged=data.get('merged', ''),
             template=data.get('template'),
             inputKey=data.get('inputKey', '')
         )
