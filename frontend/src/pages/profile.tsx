@@ -10,8 +10,6 @@ export default function ProfilePage() {
 		userData: Report[]
 	}
 
-	console.log(data)
-
 	return (
 		<Suspense
 			fallback={
@@ -21,10 +19,13 @@ export default function ProfilePage() {
 				</div>
 			}>
 			<Await resolve={data.userData} errorElement={<p>error</p>}>
-				{userData => {
-					console.log(userData)
-					return <ReportsList data={userData} />
-				}}
+				{userData => (
+					<ReportsList
+						data={userData}
+						queryKey={['user-data']}
+						path='user-data'
+					/>
+				)}
 			</Await>
 		</Suspense>
 	)

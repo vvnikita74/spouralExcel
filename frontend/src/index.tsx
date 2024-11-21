@@ -24,13 +24,13 @@ import ProfilePage from 'pages/profile'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
-import { API_URL } from 'utils/config'
+import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			gcTime: 1000 * 60 * 60 * 24,
-			staleTime: 1000 * 60,
+			staleTime: 2500,
 			retry: false,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
@@ -62,22 +62,7 @@ const getLoader = (path = '', queryKey = [''], objKey = '') => {
 	const { authHeader } = getAuthStore()
 
 	return defer({
-		[objKey]: queryClient.fetchQuery({
-			queryKey,
-			queryFn: async () => {
-				try {
-					const req = await fetch(`${API_URL}/${path}`, {
-						headers: {
-							Authorization: authHeader
-						}
-					})
-
-					return req.json()
-				} catch {
-					return queryClient.getQueryData(queryKey) || null
-				}
-			}
-		})
+		[objKey]: queryFetch(queryClient, queryKey, authHeader, path)
 	})
 }
 
