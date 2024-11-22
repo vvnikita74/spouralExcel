@@ -1,19 +1,16 @@
-// import { useQuery } from '@tanstack/react-query'
-import Spinner from 'components/icons/Spinner'
 import { Suspense } from 'react'
 import { Await, useLoaderData } from 'react-router-dom'
-import { Field } from 'types/input-model'
+
+import type Field from 'types/field'
+
+import Spinner from 'components/icons/Spinner'
 
 export default function EmergencyReportPage() {
-	// const { data } = useQuery<Field[]>({
-	// 	queryKey: ['emergencyreport']
-	// })
-
 	const data = useLoaderData() as {
 		fields: Field[]
 	}
 
-	console.log(data)
+	console.log(data.fields)
 
 	return (
 		<Suspense
@@ -25,7 +22,9 @@ export default function EmergencyReportPage() {
 			}>
 			<Await resolve={data.fields} errorElement={<p>error</p>}>
 				{(fields: Field[]) => (
-					<h1>{fields.map(el => el.type).join(', ')}</h1>
+					<h1 className='block'>
+						{fields.map(el => el.type).join(', ')}
+					</h1>
 				)}
 			</Await>
 		</Suspense>
