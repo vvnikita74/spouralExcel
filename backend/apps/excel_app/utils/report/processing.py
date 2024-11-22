@@ -64,12 +64,17 @@ def generate_report(data, username):
     for sheet in Sheet.objects.all():
         ws = wb.worksheets[sheet.index]
         count += 1
-        
+
         for cell_data in sheet.get_data():
             cell = ws[cell_data.index]
             template = cell_data.template
-            template = substitute_placeholders(template, data)
-            cell.value = template
+            input_value = data.get(cell_data.inputKey)
+
+            if not template and not input_value:
+                cell.value = cell_data.defaultValue
+            else:
+                template = substitute_placeholders(template, data)
+                cell.value = template
 
         if sheet.countCell:
             ws[sheet.countCell] = count

@@ -33,6 +33,7 @@ class Fields(models.Model):
                                              blank=True, null=True)
     step = models.IntegerField(default=0)
     position = models.IntegerField(default=0)
+    required = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -43,24 +44,34 @@ class Fields(models.Model):
 
 
 class Cell:
-    def __init__(self, index, type=None, template='', inputKey=None):
+    def __init__(self, index, type=None, template='', inputKey=None,
+                 defaultValue=None, example=None):
         self.index = index
+        self.type = type
         self.template = template
         self.inputKey = inputKey
+        self.defaultValue = defaultValue
+        self.example = example
 
     def to_dict(self):
         return {
             'index': self.index,
+            'type': self.type,
             'template': self.template,
-            'inputKey': self.inputKey
+            'inputKey': self.inputKey,
+            'defaultValue': self.defaultValue,
+            'example': self.example
         }
 
     @classmethod
     def from_dict(cls, data):
         return cls(
             index=data['index'],
+            type=data.get('type', None),
             template=data.get('template'),
-            inputKey=data.get('inputKey', '')
+            inputKey=data.get('inputKey', ''),
+            defaultValue=data.get('defaultValue', ''),
+            example=data.get('example', None)
         )
 
 

@@ -39,6 +39,6 @@ class UserDataListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_data = UserData.objects.filter(user=request.user)
+        user_data = UserData.objects.filter(user=request.user).order_by('-date_created')
         serializer = UserDataSerializer(user_data, many=True)
         return Response(serializer.data)
