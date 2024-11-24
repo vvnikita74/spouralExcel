@@ -10,10 +10,9 @@ export default function ProfilePanel({ className = '' }) {
 
 	return (
 		<Link
-			to='/'
-			className={`flex flex-row items-center overflow-hidden rounded-xl
-				bg-indigo-500 px-2.5 py-2 text-white ${className}
-				transition-colors lg:hover:bg-indigo-800`}>
+			to='/profile'
+			className={`base-padding flex flex-row items-center overflow-hidden
+				rounded-xl bg-indigo-500 text-white ${className}`}>
 			<UserIcon className='mr-1.5 size-6' />
 			<span className='base-text'>
 				{username || 'Неизвестный пользователь'}

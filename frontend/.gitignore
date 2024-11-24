@@ -4,4 +4,4 @@ android/
 ios/
 .cache/
 .idea/
-package-lock.json
+# package-lock.json
