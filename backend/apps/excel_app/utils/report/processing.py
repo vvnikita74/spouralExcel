@@ -70,8 +70,8 @@ def generate_report(data, username):
             template = cell_data.template
             input_value = data.get(cell_data.inputKey)
 
-            if not template and not input_value:
-                cell.value = cell_data.defaultValue
+            if not template:
+                cell.value = cell_data.defaultValue if not input_value else input_value
             else:
                 template = substitute_placeholders(template, data)
                 cell.value = template
