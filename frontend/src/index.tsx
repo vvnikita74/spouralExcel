@@ -6,7 +6,7 @@ import {
 	createBrowserRouter,
 	createRoutesFromElements,
 	redirect,
-	defer,
+	// defer,
 	Route,
 	RouterProvider
 } from 'react-router-dom'
@@ -17,15 +17,15 @@ import AuthProvider from 'react-auth-kit'
 import IndexLayout from 'layout/index-layout'
 import LoginPage from 'pages/login'
 import HomePage from 'pages/home'
-import EmergencyReportPage from 'pages/emergency-report'
-import ProfilePage from 'pages/profile'
+// import EmergencyReportPage from 'pages/emergency-report'
+// import ProfilePage from 'pages/profile'
 
 import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
-import queryFetch from 'utils/query-fetch'
+// import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -59,13 +59,13 @@ const getAuthStore = () => {
 	return { userState, authHeader }
 }
 
-const getLoader = (path = '', queryKey = [''], objKey = '') => {
-	const { authHeader } = getAuthStore()
+// const getLoader = (path = '', queryKey = [''], objKey = '') => {
+// 	const { authHeader } = getAuthStore()
 
-	return defer({
-		[objKey]: queryFetch(queryClient, queryKey, authHeader, path)
-	})
-}
+// 	return defer({
+// 		[objKey]: queryFetch(queryClient, queryKey, authHeader, path)
+// 	})
+// }
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -84,7 +84,7 @@ const router = createBrowserRouter(
 				errorElement={null}>
 				<Route path='/' element={<IndexLayout />}>
 					<Route index element={<HomePage />} />
-					<Route
+					{/* <Route
 						path='profile'
 						element={<ProfilePage />}
 						loader={() =>
@@ -97,7 +97,7 @@ const router = createBrowserRouter(
 						loader={() =>
 							getLoader('data', ['emergency-report'], 'fields')
 						}
-					/>
+					/> */}
 				</Route>
 			</Route>
 		</>
