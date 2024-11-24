@@ -13,7 +13,6 @@ import {
 
 import createStore from 'react-auth-kit/createStore'
 import AuthProvider from 'react-auth-kit'
-import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 
 import IndexLayout from 'layout/index-layout'
 import LoginPage from 'pages/login'
@@ -21,9 +20,11 @@ import HomePage from 'pages/home'
 import EmergencyReportPage from 'pages/emergency-report'
 import ProfilePage from 'pages/profile'
 
+import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+
 import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
