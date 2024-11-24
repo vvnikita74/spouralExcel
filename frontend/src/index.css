@@ -8,17 +8,11 @@
 	}
 	form { 
 		> label:not(:first-child), > button:not(:first-child) {
-			@apply mt-2.5;
+			@apply mt-4;
 		}
 	}
-	a {
-		@apply select-none
-	}
 	.base-text {
-		@apply text-base leading-normal sm:text-lg sm:leading-normal font-normal;
-	}
-	.title-text {
-		@apply text-xl font-medium sm:text-2xl leading-normal sm:leading-normal
+		@apply text-base leading-normal sm:text-lg sm:leading-normal;
 	}
 	.base-padding {
 		@apply px-2.5 py-2;

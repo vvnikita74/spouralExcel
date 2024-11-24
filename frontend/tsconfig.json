@@ -19,12 +19,6 @@
     "moduleResolution": "Node",
     "downlevelIteration": true,
     "paths": {
-      "pages/*" : [
-        "src/pages/*"
-      ],
-      "layout/*": [
-        "src/layout/*"
-      ],
       "components/*": [
         "src/components/*"
       ],
