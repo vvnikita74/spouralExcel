@@ -4,7 +4,7 @@
 
 @layer base {
 	input {
-		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full
+		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full focus:outline-none
 	}
 	form { 
 		> label:not(:first-child), > button:not(:first-child) {
