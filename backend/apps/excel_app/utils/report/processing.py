@@ -70,8 +70,8 @@ def generate_report(data, username):
             template = cell_data.template
             input_value = data.get(cell_data.inputKey)
 
-            if not template and not input_value:
-                cell.value = cell_data.defaultValue
+            if not template:
+                cell.value = cell_data.defaultValue if not input_value else input_value
             else:
                 template = substitute_placeholders(template, data)
                 cell.value = template
@@ -84,10 +84,10 @@ def generate_report(data, username):
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
-    filename = f'{username}-{datetime.now().strftime("%H-%M_%d.%m.%Y")}.xlsx'
+    filename = f'{username}-{datetime.now().strftime("%H-%M_%d.%m.%Y")}'
     report_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
     os.makedirs(report_dir, exist_ok=True)
-    os_filename = os.path.join(report_dir, filename)
+    os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
 

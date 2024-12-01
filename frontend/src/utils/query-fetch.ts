@@ -18,7 +18,10 @@ export default function queryFetch(
 				})
 				return req.json()
 			} catch {
-				return queryClient.getQueryData(queryKey) || null
+				const data = queryClient.getQueryData(queryKey) || null
+
+				if (data) return data
+				throw new Error('Ошибка получения данных')
 			}
 		}
 	})

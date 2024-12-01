@@ -8,6 +8,16 @@ const forms: { [key: string]: string[] } = {
 	год: ['год', 'года', 'лет']
 }
 
+const units: { name: string; seconds: number }[] = [
+	{ name: 'секунда', seconds: 1 },
+	{ name: 'минута', seconds: 60 },
+	{ name: 'час', seconds: 3600 },
+	{ name: 'день', seconds: 86400 },
+	{ name: 'неделя', seconds: 604800 },
+	{ name: 'месяц', seconds: 2592000 },
+	{ name: 'год', seconds: 31536000 }
+]
+
 const getPluralForm = (count: number, unit: string): string => {
 	if (count % 10 === 1 && count % 100 !== 11) {
 		return forms[unit][0]
@@ -27,16 +37,6 @@ export default function timeAgo(isoDate: string): string {
 	const diffInSeconds = Math.floor(
 		(now.getTime() - past.getTime()) / 1000
 	)
-
-	const units: { name: string; seconds: number }[] = [
-		{ name: 'секунда', seconds: 1 },
-		{ name: 'минута', seconds: 60 },
-		{ name: 'час', seconds: 3600 },
-		{ name: 'день', seconds: 86400 },
-		{ name: 'неделя', seconds: 604800 },
-		{ name: 'месяц', seconds: 2592000 },
-		{ name: 'год', seconds: 31536000 }
-	]
 
 	for (let i = units.length - 1; i >= 0; i -= 1) {
 		const unit = units[i]

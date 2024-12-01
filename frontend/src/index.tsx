@@ -6,9 +6,9 @@ import {
 	createBrowserRouter,
 	createRoutesFromElements,
 	redirect,
-	defer,
 	Route,
-	RouterProvider
+	RouterProvider,
+	defer
 } from 'react-router-dom'
 
 import createStore from 'react-auth-kit/createStore'
@@ -24,6 +24,7 @@ import ProfilePage from 'pages/profile'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
+
 import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
