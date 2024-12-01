@@ -26,9 +26,13 @@ class UserData(models.Model):
         return f"{self.user.username} - {self.data}"
 
     def delete(self, *args, **kwargs):
-        file_path = os.path.join(settings.MEDIA_ROOT, self.file_name)
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        xlsx_file_path = os.path.join(settings.MEDIA_ROOT, self.file_name)
+        if os.path.exists(xlsx_file_path):
+            os.remove(xlsx_file_path)
+
+        pdf_file_path = os.path.splitext(xlsx_file_path)[0] + '.pdf'
+        if os.path.exists(pdf_file_path):
+            os.remove(pdf_file_path)
         super().delete(*args, **kwargs)
     class Meta:
         verbose_name = 'Данные пользователя'
