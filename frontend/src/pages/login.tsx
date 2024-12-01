@@ -12,6 +12,7 @@ export default function LoginPage() {
 				<img
 					src={logoText}
 					alt='СПО-Урал'
+					loading='lazy'
 					className='h-14 w-auto object-contain sm:h-16'
 				/>
 				<h2 className='text-xl font-medium sm:text-2xl'>

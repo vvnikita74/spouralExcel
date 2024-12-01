@@ -83,7 +83,9 @@ const webpackConfig = (env: {
 			)
 		}),
 		new ForkTsCheckerWebpackPlugin(),
-		new ESLintPlugin({ files: './src/**/*.{ts,tsx,js,jsx}' })
+		new ESLintPlugin({
+			files: './src/**/*.{ts,tsx,js,jsx}'
+		})
 	]
 })
 
