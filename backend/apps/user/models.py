@@ -26,7 +26,7 @@ class UserData(models.Model):
         return f"{self.user.username} - {self.data}"
 
     def delete(self, *args, **kwargs):
-        pdf_file_path = os.path.join(settings.MEDIA_ROOT, self.file_name)
+        pdf_file_path = os.path.splitext(os.path.join(settings.MEDIA_ROOT, self.file_name))[0] + '.pdf'
         if os.path.exists(pdf_file_path):
             os.remove(pdf_file_path)
         super().delete(*args, **kwargs)
