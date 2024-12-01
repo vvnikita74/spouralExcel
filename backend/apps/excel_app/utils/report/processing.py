@@ -102,6 +102,7 @@ def substitute_placeholders(template, data):
         key = match.group(1)
         keyArr = key.split('.')
         length = len(keyArr)
+        initial = ''
         match length:
             case 2:
                 word, key = keyArr
