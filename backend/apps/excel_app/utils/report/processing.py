@@ -41,24 +41,23 @@ def get_gender(word):
     for gender, tag in gender_tags.items():
         if gender in parse.tag:
             return tag
-    
+
     return None
 
 
 def change_gender(word, target_gender):
     if not target_gender:
         return ''
-    
+
     parse = morph.parse(word)[0]
     inflected = parse.inflect({target_gender})
     return inflected.word if inflected else None
 
 
 def generate_report(data, username):
-    
     template_path = os.path.join(os.path.dirname(__file__), 'report.xlsx')
     wb = openpyxl.load_workbook(template_path)
-    
+
     count = 0
 
     for sheet in Sheet.objects.all():
@@ -93,9 +92,9 @@ def generate_report(data, username):
 
     os.system(f'libreoffice --headless --convert-to pdf --outdir'
               f' {report_dir} {os_filename}')
-    
-    return filename
 
+    os.remove(os_filename)
+    return filename
 
 
 def substitute_placeholders(template, data):
@@ -112,13 +111,14 @@ def substitute_placeholders(template, data):
                 elif key in data:
                     initial = data[key]
 
-                inflected_word = change_gender(word, get_gender(initial.split(' ')[-1]))
+                inflected_word = change_gender(word, get_gender(
+                    initial.split(' ')[-1]))
                 if inflected_word:
                     return inflected_word
             case 3:
                 # Обработка случая с тремя частями в ключе
                 pass
-            case _: 
+            case _:
                 return data.get(key, f'${key}$')
 
     return re.sub(r'\$(\w+(\.\w+)*)\$', replace_match, template)
