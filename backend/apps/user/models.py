@@ -3,7 +3,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 
-from backend.config import settings
+from django.conf import settings
 
 
 class UserData(models.Model):
