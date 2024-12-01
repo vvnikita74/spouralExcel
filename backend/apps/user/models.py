@@ -26,9 +26,19 @@ class UserData(models.Model):
         return f"{self.user.username} - {self.data}"
 
     def delete(self, *args, **kwargs):
-        pdf_file_path = os.path.splitext(os.path.join(settings.MEDIA_ROOT, self.file_name))[0] + '.pdf'
-        if os.path.exists(pdf_file_path):
-            os.remove(pdf_file_path)
+        # Ensure the file name includes the correct extension
+        file_name_with_extension = self.file_name if self.file_name.endswith(
+            '.pdf') else self.file_name + '.pdf'
+
+        # Construct the file path
+        file_path = os.path.join(settings.MEDIA_ROOT, 'reports',
+                                 file_name_with_extension)
+
+        # Check if the file exists and delete it
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+        # Call the superclass delete method
         super().delete(*args, **kwargs)
 
     class Meta:
