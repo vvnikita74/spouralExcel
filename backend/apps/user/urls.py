@@ -7,4 +7,5 @@ urlpatterns = [
     path('media/<str:filename>/', MediaView.as_view(), name='image_view'),
     path('data/', UserInputListView.as_view(), name='user_input_list'),
     path('user-data/', UserDataListView.as_view(), name='user_data_list'),
+    path('user-data/<int:pk>/', UserDataListView.as_view(), name='user_data_detail'),
 ]
