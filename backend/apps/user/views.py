@@ -4,10 +4,10 @@ from django.http import FileResponse, Http404
 from django.conf import settings
 
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from .models import UserData
 from .serializers import CustomTokenObtainPairSerializer, UserDataSerializer
 from ..excel_app.models import Fields
@@ -42,3 +42,11 @@ class UserDataListView(APIView):
         user_data = UserData.objects.filter(user=request.user).order_by('-date_created')
         serializer = UserDataSerializer(user_data, many=True)
         return Response(serializer.data)
+
+    def delete(self, request, pk):
+        try:
+            user_data = UserData.objects.get(pk=pk, user=request.user)
+            user_data.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except UserData.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
