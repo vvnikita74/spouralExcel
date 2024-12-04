@@ -56,11 +56,7 @@ class SheetAdminForm(forms.ModelForm):
         initial='''[
     {
         "index": "cellIndex",
-        "type": "cellType",
         "template": "template string",
-        "inputKey": "inputKey",
-        "defaultValue": "default value",
-        "example": "example value"
     }
 ]''',
         widget=JSONEditor(attrs={
