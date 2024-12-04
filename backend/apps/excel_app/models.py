@@ -44,11 +44,11 @@ class Fields(models.Model):
 
 
 class Cell:
-    def __init__(self, index, type=None, template='', inputKey=None,
+    def __init__(self, index,template='', type=None,  inputKey=None,
                  defaultValue=None, example=None):
         self.index = index
-        self.type = type
         self.template = template
+        self.type = type
         self.inputKey = inputKey
         self.defaultValue = defaultValue
         self.example = example
@@ -56,8 +56,8 @@ class Cell:
     def to_dict(self):
         return {
             'index': self.index,
-            'type': self.type,
             'template': self.template,
+            'type': self.type,
             'inputKey': self.inputKey,
             'defaultValue': self.defaultValue,
             'example': self.example
@@ -67,8 +67,8 @@ class Cell:
     def from_dict(cls, data):
         return cls(
             index=data['index'],
-            type=data.get('type', None),
             template=data.get('template'),
+            type=data.get('type', None),
             inputKey=data.get('inputKey', ''),
             defaultValue=data.get('defaultValue', ''),
             example=data.get('example', None)
