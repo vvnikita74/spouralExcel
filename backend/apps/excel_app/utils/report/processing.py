@@ -67,7 +67,7 @@ def generate_report(data, username):
         for cell_data in sheet.get_data():
             cell = ws[cell_data.index]
             template = cell_data.template
-            input_value = data.get(cell_data.inputKey)
+            input_value = get_nested_value(data, cell_data.inputKey)
 
             if not template:
                 cell.value = cell_data.defaultValue if not input_value else input_value
@@ -95,6 +95,16 @@ def generate_report(data, username):
 
     os.remove(os_filename)
     return filename
+
+
+def get_nested_value(data, key):
+    keys = key.split('.')
+    value = data
+    for k in keys:
+        value = value.get(k, None)
+        if value is None:
+            return None
+    return value
 
 
 def substitute_placeholders(template, data):
