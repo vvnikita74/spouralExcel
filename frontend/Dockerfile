@@ -16,6 +16,8 @@ COPY . .
 # Собираем приложение
 RUN npm run build
 
+RUN npm cache clean --force
+
 # Этап 2: Развертывание приложения
 FROM nginx:alpine
 
