@@ -77,7 +77,9 @@ def generate_report(data, username):
     :param username: Имя пользователя
     :return: Имя файла отчета
     """
-    template_path = os.path.join(os.path.dirname(__file__), 'report.xlsx')
+    template_path = os.path.join(os.path.dirname(__file__), '..', '..', '..',
+                                 '..','..', 'report_template', 'report.xlsx')
+    template_path = os.path.abspath(template_path)
     wb = openpyxl.load_workbook(template_path)
 
     count = 0
@@ -116,10 +118,10 @@ def generate_report(data, username):
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
-    os.system(f'libreoffice --headless --convert-to pdf --outdir'
-              f' {report_dir} {os_filename}')
-
-    os.remove(os_filename)
+    # os.system(f'libreoffice --headless --convert-to pdf --outdir'
+    #           f' {report_dir} {os_filename}')
+    #
+    # os.remove(os_filename)
     return filename
 
 
