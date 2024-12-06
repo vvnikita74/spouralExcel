@@ -2,6 +2,7 @@ import threading
 import uuid
 
 from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
@@ -12,12 +13,15 @@ from ..user.models import UserData
 
 class ProcessInputView(APIView):
     def post(self, request):
+        if 'Authorization' not in request.headers:
+            raise AuthenticationFailed('Authorization header missing')
+
         data = request.data
-        username = request.user.username
+        
         if not data:
             return Response({'error': 'No input data provided'},
                             status=status.HTTP_400_BAD_REQUEST)
-
+        username = request.user.username
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0)
 
