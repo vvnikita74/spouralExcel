@@ -78,7 +78,7 @@ def generate_report(data, username):
     :return: Имя файла отчета
     """
     template_path = os.path.join(os.path.dirname(__file__), '..', '..', '..',
-                                 '..','..', 'report_template', 'report.xlsx')
+                                 '..', '..', 'report_template', 'report.xlsx')
     template_path = os.path.abspath(template_path)
     wb = openpyxl.load_workbook(template_path)
 
@@ -118,10 +118,10 @@ def generate_report(data, username):
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
-    # os.system(f'libreoffice --headless --convert-to pdf --outdir'
-    #           f' {report_dir} {os_filename}')
-    #
-    # os.remove(os_filename)
+    os.system(f'libreoffice --headless --convert-to pdf --outdir'
+              f' {report_dir} {os_filename}')
+
+    os.remove(os_filename)
     return filename
 
 
@@ -134,7 +134,8 @@ def process_documentation(ws, cell_data, input_value):
     :param input_value: JSON строка с данными документации
     """
     # Парсим JSON строку в массив объектов
-    documentation_objects = json.loads(input_value)
+    documentation_objects = [Documentation.from_dict(doc) for doc in
+                             json.loads(input_value)]
 
     # Начальная ячейка
     start_cell = cell_data.index
@@ -150,9 +151,9 @@ def process_documentation(ws, cell_data, input_value):
         ws.cell(row=current_row, column=start_col, value=idx + 1)
 
         # Вставляем имя, год и разработчика в соответствующие ячейки
-        ws[cell_data.nameIndex.replace('11', str(current_row))] = doc['name']
-        ws[cell_data.yearIndex.replace('11', str(current_row))] = doc['year']
-        ws[cell_data.developerIndex.replace('11', str(current_row))] = doc['developer']
+        ws[cell_data.nameIndex.replace('11', str(current_row))] = doc.name
+        ws[cell_data.yearIndex.replace('11', str(current_row))] = doc.year
+        ws[cell_data.developerIndex.replace('11', str(current_row))] = doc.developer
 
         # Устанавливаем границы для ячеек
         set_border(ws, f'C{current_row}', f'D{current_row + 2}')
@@ -165,6 +166,21 @@ def process_documentation(ws, cell_data, input_value):
     set_border(ws, 'E11', 'V13')
     set_border(ws, 'W11', 'AA13')
     set_border(ws, 'AB11', 'AM13')
+
+
+class Documentation:
+    def __init__(self, name, year, developer):
+        self.name = name
+        self.year = year
+        self.developer = developer
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            name=data.get('name'),
+            year=data.get('year'),
+            developer=data.get('developer')
+        )
 
 
 def set_border(ws, top_left, bottom_right):
@@ -217,6 +233,7 @@ def substitute_placeholders(template, data):
     :param data: Словарь данных
     :return: Шаблон с замененными плейсхолдерами
     """
+
     def replace_match(match):
         key = match.group(1)
         keyArr = key.split('.')
@@ -230,7 +247,8 @@ def substitute_placeholders(template, data):
                 elif key in data:
                     initial = data[key]
 
-                inflected_word = change_gender(word, get_gender(initial.split(' ')[-1]))
+                inflected_word = change_gender(word, get_gender(
+                    initial.split(' ')[-1]))
                 if inflected_word:
                     return inflected_word
             case 3:
