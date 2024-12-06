@@ -1,9 +1,6 @@
-import json
-
 from django.db import models
 from django import forms
 from django.contrib import admin
-from django.core.exceptions import ValidationError
 from jsoneditor.forms import JSONEditor
 from .models import (Sheet, ConstructionTypes, Recommendations, Defects,
                      Materials, Fields)
@@ -73,18 +70,6 @@ class SheetAdminForm(forms.ModelForm):
     class Meta:
         model = Sheet
         fields = '__all__'
-
-    def clean_data(self):
-        data = self.cleaned_data['data']
-        cells = json.loads(data)
-        for cell in cells:
-            cell_type = cell.get('type')
-            example = cell.get('example')
-            if cell_type in ['documentation', 'conclusion',
-                             'defects'] and not example:
-                raise ValidationError(f"Поле 'example' обязательно, "
-                                      f"когда тип ячейки '{cell_type}'")
-        return data
 
 
 class SheetAdmin(admin.ModelAdmin):
