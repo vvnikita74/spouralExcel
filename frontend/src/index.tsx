@@ -88,7 +88,7 @@ const router = createBrowserRouter(
 						path='profile'
 						element={<ProfilePage />}
 						loader={() =>
-							getLoader('user-data', ['user-data'], 'userData')
+							getLoader('/user/data', ['user-data'], 'userData')
 						}
 					/>
 					<Route
