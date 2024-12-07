@@ -53,7 +53,7 @@ export default function ReportsList({
 			btn.disabled = true
 
 			try {
-				const req = await fetch(`${API_URL}/user-data/${id}/`, {
+				const req = await fetch(`${API_URL}/user/data/${id}`, {
 					method: 'DELETE',
 					headers: {
 						Authorization: authHeader
