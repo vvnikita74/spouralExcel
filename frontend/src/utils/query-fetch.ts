@@ -1,5 +1,5 @@
-import { API_URL } from 'utils/config'
 import type { QueryClient } from '@tanstack/react-query'
+import { API_URL } from 'utils/config'
 
 export default function queryFetch(
 	queryClient: QueryClient,
@@ -16,10 +16,9 @@ export default function queryFetch(
 						Authorization: authHeader
 					}
 				})
-				return req.json()
+				return await req.json()
 			} catch {
 				const data = queryClient.getQueryData(queryKey) || null
-
 				if (data) return data
 				throw new Error('Ошибка получения данных')
 			}
