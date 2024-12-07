@@ -1,0 +1,30 @@
+import { useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import ConnectOffIcon from 'public/icons/connect-off.svg'
+
+import { useWebConnectionContext } from './global-context'
+
+export default function ErrorView() {
+	const navigate = useNavigate()
+	const webConnection = useWebConnectionContext()
+	const location = useLocation()
+
+	useEffect(() => {
+		if (location.state?.msg) {
+			alert(location.state.msg || 'Внутренняя ошибка')
+			navigate(location.pathname, { state: null })
+		}
+	}, [location, navigate])
+
+	if (!webConnection)
+		return (
+			<div
+				className='base-padding pointer-events-none mr-4 w-fit rounded-xl border
+					border-red-500 text-red-500'>
+				<ConnectOffIcon className='size-6' />
+			</div>
+		)
+
+	return null
+}
