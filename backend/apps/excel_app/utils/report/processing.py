@@ -4,10 +4,12 @@ import inspect
 import re
 import pymorphy2
 import openpyxl
-from django.conf import settings
+
 from datetime import datetime
-from apps.excel_app.models import Sheet
 from openpyxl.styles import Border, Side
+
+from django.conf import settings
+from apps.excel_app.models import Sheet
 
 gent_tags = {
     "Родительный": "gent",
@@ -31,9 +33,7 @@ def patched_getargspec(func):
     fullargspec = inspect.getfullargspec(func)
     return fullargspec.args, fullargspec.varargs, fullargspec.varkw, fullargspec.defaults
 
-
 inspect.getargspec = patched_getargspec
-
 morph = pymorphy2.MorphAnalyzer()
 
 
@@ -78,7 +78,7 @@ def generate_report(data, username):
     :return: Имя файла отчета
     """
     template_path = os.path.join(os.path.dirname(__file__), '..', '..', '..',
-                                 '..', '..', 'report_template', 'report.xlsx')
+                                 '..', '..', 'static', 'report.xlsx')
     template_path = os.path.abspath(template_path)
     wb = openpyxl.load_workbook(template_path)
 
