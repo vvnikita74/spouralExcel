@@ -7,7 +7,7 @@ export default function HomePage() {
 				className='flex w-full flex-col overflow-hidden rounded-xl border
 					border-indigo-500 p-4 sm:flex-row sm:items-center
 					sm:justify-between'>
-				<h2 className='title-text'>Аварийные объектыы</h2>
+				<h2 className='title-text'>Аварийные объекты</h2>
 				<div className='base-text flex w-full flex-col items-center sm:w-fit sm:flex-row'>
 					<Link
 						to='emergencyreport'

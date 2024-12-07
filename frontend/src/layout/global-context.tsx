@@ -34,8 +34,6 @@ export default function GlobalContext({ children }) {
 		[setWebConnection]
 	)
 
-	console.log(webConnection)
-
 	useEffect(() => {
 		const updateNetworkStatus = () => {
 			setWebConnection(navigator.onLine)
