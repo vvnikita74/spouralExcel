@@ -38,7 +38,7 @@ export default function LoginForm({ className = '' }) {
 			toggleLoader(true)
 
 			try {
-				const req = await fetch(`${API_URL}/token/`, {
+				const req = await fetch(`${API_URL}/token`, {
 					method: 'POST',
 					headers: {
 						'Content-type': 'application/json'
