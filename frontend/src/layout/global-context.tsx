@@ -10,13 +10,9 @@ type GlobalSetters = {
 	setWebConnection: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const WebConnectionStateContext = createContext<boolean | null>(
-	null
-)
+const WebConnectionStateContext = createContext<boolean | null>(null)
 
-const GlobalSettersContext = createContext<GlobalSetters | null>(
-	null
-)
+const GlobalSettersContext = createContext<GlobalSetters | null>(null)
 
 export const useWebConnectionContext = (): boolean =>
 	useContext(WebConnectionStateContext)

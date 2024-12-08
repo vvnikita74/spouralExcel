@@ -11,8 +11,8 @@ export default function IndexLayout() {
 		<GlobalContext>
 			<main className='relative size-full overflow-hidden p-4'>
 				<div
-					className='sticky top-[calc(var(--safe-area-inset-top,0px))] z-10 flex
-						w-full flex-row justify-between'>
+					className='sticky top-[calc(var(--safe-area-inset-top,0px))] z-10 flex w-full
+						flex-row justify-between'>
 					<div className='relative flex flex-row items-center justify-start'>
 						<Link to='/'>
 							<img

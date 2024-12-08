@@ -3,6 +3,7 @@ import { Await, useLoaderData } from 'react-router-dom'
 
 import type Field from 'types/field'
 
+import FormManager from 'components/form/form-manager'
 import Spinner from 'components/icons/Spinner'
 
 export default function EmergencyReportPage() {
@@ -19,11 +20,7 @@ export default function EmergencyReportPage() {
 				</div>
 			}>
 			<Await resolve={data.fields} errorElement={<p>error</p>}>
-				{(fields: Field[]) => (
-					<h1 className='block'>
-						{fields.map(el => el.type).join(', ')}
-					</h1>
-				)}
+				{(fields: Field[]) => <FormManager fields={fields} />}
 			</Await>
 		</Suspense>
 	)
