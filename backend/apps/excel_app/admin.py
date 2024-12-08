@@ -9,6 +9,15 @@ from .validators import validate_json_structure
 from .forms import FieldsAdminForm
 
 
+@admin.action(description="Скопировать выбранные объекты")
+def copy_object(modeladmin, request, queryset):
+    for obj in queryset:
+        obj.pk = None  # Чтобы создавался новый объект, вместо обновления
+        # старого
+        obj.name = f'{obj.name}-копия'
+        obj.save()
+
+
 @admin.action(description='Изменить обязательность')
 def toggle_required(modeladmin, request, queryset):
     for field in queryset:
@@ -44,7 +53,7 @@ class FieldsAdmin(admin.ModelAdmin):
     form = FieldsAdminForm
     list_display = ('name', 'step', 'position', 'required')
     actions = [toggle_required, decrease_step_value, increase_step_value,
-               decrease_order_value, increase_order_value]
+               decrease_order_value, increase_order_value, copy_object]
     ordering = ('step', 'position')
 
 
