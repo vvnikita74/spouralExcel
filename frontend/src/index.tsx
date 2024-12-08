@@ -5,25 +5,25 @@ import ReactDOM from 'react-dom/client'
 import {
 	createBrowserRouter,
 	createRoutesFromElements,
+	defer,
 	redirect,
 	Route,
-	RouterProvider,
-	defer
+	RouterProvider
 } from 'react-router-dom'
 
-import createStore from 'react-auth-kit/createStore'
-import AuthProvider from 'react-auth-kit'
 import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
+import AuthProvider from 'react-auth-kit'
+import createStore from 'react-auth-kit/createStore'
 
 import IndexLayout from 'layout/index-layout'
-import LoginPage from 'pages/login'
-import HomePage from 'pages/home'
 import EmergencyReportPage from 'pages/emergency-report'
+import HomePage from 'pages/home'
+import LoginPage from 'pages/login'
 import ProfilePage from 'pages/profile'
 
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
 import queryFetch from 'utils/query-fetch'
 
@@ -79,16 +79,14 @@ const router = createBrowserRouter(
 					return null
 				}}
 			/>
-			<Route
-				element={<AuthOutlet fallbackPath='/login' />}
-				errorElement={null}>
+			<Route element={<AuthOutlet fallbackPath='/login' />}>
 				<Route path='/' element={<IndexLayout />}>
 					<Route index element={<HomePage />} />
 					<Route
 						path='profile'
 						element={<ProfilePage />}
 						loader={() =>
-							getLoader('user-data', ['user-data'], 'userData')
+							getLoader('user/data', ['user-data'], 'userData')
 						}
 					/>
 					<Route

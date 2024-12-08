@@ -10,8 +10,6 @@ export default function EmergencyReportPage() {
 		fields: Field[]
 	}
 
-	console.log(data.fields)
-
 	return (
 		<Suspense
 			fallback={
