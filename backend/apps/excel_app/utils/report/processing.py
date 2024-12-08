@@ -94,7 +94,7 @@ def generate_report(data, username):
             cell = ws[cell_data.index]
             template = cell_data.template
             type = cell_data.type
-            input_value = get_nested_value(data, cell_data.inputKey)
+            input_value = get_nested_value(data, cell_data.inputKey,cell_data.defaultValue)
             if type == 'documentation' and input_value:
                 process_documentation(ws, cell_data, input_value)
             else:
@@ -208,12 +208,13 @@ def set_border(ws, top_left, bottom_right):
             cell.border = thin_border
 
 
-def get_nested_value(data, key):
+def get_nested_value(data, key,default_value=None):
     """
     Получает вложенное значение из словаря по ключу.
 
     :param data: Словарь данных
     :param key: Ключ для поиска
+    :param default_value: Значение по умолчанию
     :return: Значение по ключу
     """
     keys = key.split('.')
@@ -221,7 +222,7 @@ def get_nested_value(data, key):
     for k in keys:
         value = value.get(k, None)
         if value is None:
-            return None
+            return default_value
     return value
 
 
