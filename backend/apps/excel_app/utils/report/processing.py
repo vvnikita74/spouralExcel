@@ -118,10 +118,10 @@ def generate_report(data, username):
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
-    # os.system(f'libreoffice --headless --convert-to pdf --outdir'
-    #           f' {report_dir} {os_filename}')
-    #
-    # os.remove(os_filename)
+    os.system(f'libreoffice --headless --convert-to pdf --outdir'
+              f' {report_dir} {os_filename}')
+
+    os.remove(os_filename)
     return filename
 
 
