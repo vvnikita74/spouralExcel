@@ -41,7 +41,7 @@
 			"jsxBracketSameLine": true,
 			"bracketSpacing": true,
 			"bracketSameLine": false,
-			"printWidth": 65,
+			"printWidth": 70,
 			"plugins": [
 				"prettier-plugin-tailwindcss",
 				"prettier-plugin-classnames",

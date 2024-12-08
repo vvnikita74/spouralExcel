@@ -6,7 +6,7 @@
 	input {
 		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full focus:outline-none
 	}
-	form { 
+	form {
 		> label:not(:first-child), > button:not(:first-child) {
 			@apply mt-2.5;
 		}
@@ -29,12 +29,12 @@
 	.scrollbar-hide::-webkit-scrollbar {
 		display: none;
 	}
-	
+
 	/* For IE, Edge and Firefox */
 	.scrollbar-hide {
 		-ms-overflow-style: none; /* IE and Edge */
 		scrollbar-width: none; /* Firefox */
-	}	
+	}
 }
 
 body {
@@ -74,6 +74,26 @@ body {
 		}
 		span {
 			opacity: 0;
-		}	
+		}
 	}
+}
+
+.accordion-opened {
+  @apply border-indigo-800 h-[calc(var(--height)*2rem+0.5rem+2px)] sm:h-[calc(var(--height)*2.1875rem+0.5rem+2px)] mt-2.5;
+  &.with-error {
+    @apply border-red-500;
+  }
+}
+
+.accordion-btn-opened {
+  @apply border-indigo-800;
+  svg {
+    @apply text-indigo-800 rotate-0;
+  }
+  &.with-error {
+    @apply border-red-500;
+    svg {
+      @apply text-red-500 rotate-0;
+    }
+  }
 }

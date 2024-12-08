@@ -16,4 +16,5 @@ export default interface Field {
 	constructionType: object
 	step: number
 	position: number
+	required: boolean
 }

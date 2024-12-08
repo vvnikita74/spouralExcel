@@ -35,6 +35,9 @@ const queryClient = new QueryClient({
 			retry: false,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
+		},
+		mutations: {
+			networkMode: 'offlineFirst'
 		}
 	}
 })
@@ -67,6 +70,27 @@ const getLoader = (path = '', queryKey = [''], objKey = '') => {
 	})
 }
 
+// queryClient.setMutationDefaults(['emergency-report'], {
+// 	mutationFn: async ({
+// 		data,
+// 		authHeader
+// 	}: {
+// 		data: FormData
+// 		authHeader: string
+// 	}) => {
+// 		const req = await fetch(`${API_URL}/report/emergency`, {
+// 			method: 'POST',
+// 			body: data,
+// 			headers: {
+// 				Authorization: authHeader
+// 			}
+// 		})
+
+// 		const res = await req.json()
+// 		return res
+// 	}
+// })
+
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
@@ -93,7 +117,7 @@ const router = createBrowserRouter(
 						path='emergencyreport'
 						element={<EmergencyReportPage />}
 						loader={() =>
-							getLoader('data', ['emergency-report'], 'fields')
+							getLoader('data', ['emergency-report-fields'], 'fields')
 						}
 					/>
 				</Route>
@@ -105,7 +129,11 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<PersistQueryClientProvider
 		client={queryClient}
-		persistOptions={{ persister }}>
+		persistOptions={{ persister }}
+		onSuccess={() => {
+			// resume mutations after initial restore from localStorage was successful
+			queryClient.resumePausedMutations()
+		}}>
 		<AuthProvider store={store}>
 			<RouterProvider router={router} />
 		</AuthProvider>
