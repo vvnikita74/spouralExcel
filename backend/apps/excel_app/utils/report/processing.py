@@ -11,14 +11,14 @@ from openpyxl.styles import Border, Side
 from django.conf import settings
 from apps.excel_app.models import Sheet
 
-gent_tags = {
-    "Родительный": "gent",
-    "Именительный": "nomn",
-    'Дательный': 'datv',
-    'Винительный': 'accs',
-    'Творительный': 'ablt',
-    'Предложный': 'loct',
-    'Звательный': 'voct',
+case_tags = {
+    'gent': 'gent',  # Родительный
+    "nomn": "nomn",  # Именительный
+    'datv': 'datv',  # Дательный
+    'accs': 'accs',  # Винительный
+    'ablt': 'ablt',  # Творительный
+    'loct': 'loct',  # Предложный
+    'voct': 'voct',  # Звательный
 }
 
 gender_tags = {
@@ -32,6 +32,7 @@ gender_tags = {
 def patched_getargspec(func):
     fullargspec = inspect.getfullargspec(func)
     return fullargspec.args, fullargspec.varargs, fullargspec.varkw, fullargspec.defaults
+
 
 inspect.getargspec = patched_getargspec
 morph = pymorphy2.MorphAnalyzer()
@@ -53,20 +54,27 @@ def get_gender(word):
     return None
 
 
-def change_gender(word, target_gender):
+def change_case(phrase, target_case):
     """
-    Изменяет род слова на заданный.
+    Изменяет род слова и падеж слова на заданные.
 
-    :param word: Слово для изменения
-    :param target_gender: Целевой род
-    :return: Слово с измененным родом
+    :param phrase: Фраза для изменения
+    :param target_case: Целевой падеж
+    :return: Фраза с измененным падежом
     """
-    if not target_gender:
-        return ''
+    words = phrase.split(' ')
+    inflected_words = []
+    for word in words:
+        parsed_word = morph.parse(word)[0]
+        inflected_word = parsed_word.inflect({target_case})
+        if inflected_word:
+            inflected_words.append(inflected_word.word)
 
-    parse = morph.parse(word)[0]
-    inflected = parse.inflect({target_gender})
-    return inflected.word if inflected else None
+    if len(inflected_words) > 1:
+        gender = get_gender(inflected_words[-1])
+        parsed_word = morph.parse(inflected_words[0])[0]
+        inflected_words[0] = parsed_word.inflect({gender}).word
+    return ' '.join(inflected_words)
 
 
 def generate_report(data, username):
@@ -94,7 +102,8 @@ def generate_report(data, username):
             cell = ws[cell_data.index]
             template = cell_data.template
             type = cell_data.type
-            input_value = get_nested_value(data, cell_data.inputKey,cell_data.defaultValue)
+            input_value = get_nested_value(data, cell_data.inputKey,
+                                           cell_data.defaultValue)
             if type == 'documentation' and input_value:
                 process_documentation(ws, cell_data, input_value)
             else:
@@ -153,7 +162,8 @@ def process_documentation(ws, cell_data, input_value):
         # Вставляем имя, год и разработчика в соответствующие ячейки
         ws[cell_data.nameIndex.replace('11', str(current_row))] = doc.name
         ws[cell_data.yearIndex.replace('11', str(current_row))] = doc.year
-        ws[cell_data.developerIndex.replace('11', str(current_row))] = doc.developer
+        ws[cell_data.developerIndex.replace('11',
+                                            str(current_row))] = doc.developer
 
         # Устанавливаем границы для ячеек
         set_border(ws, f'C{current_row}', f'D{current_row + 2}')
@@ -208,7 +218,7 @@ def set_border(ws, top_left, bottom_right):
             cell.border = thin_border
 
 
-def get_nested_value(data, key,default_value=None):
+def get_nested_value(data, key, default_value=None):
     """
     Получает вложенное значение из словаря по ключу.
 
@@ -243,13 +253,13 @@ def substitute_placeholders(template, data):
         match length:
             case 2:
                 word, key = keyArr
-                if key in gent_tags:
+                if key in case_tags:
                     initial = data.get(word, '')
+                    inflected_word = change_case(initial, key)
                 elif key in data:
                     initial = data[key]
-
-                inflected_word = change_gender(word, get_gender(
-                    initial.split(' ')[-1]))
+                    inflected_word = change_case(word, get_gender(
+                        initial.split(' ')[-1]))
                 if inflected_word:
                     return inflected_word
             case 3:
