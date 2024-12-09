@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom'
 
 import useSignIn from 'react-auth-kit/hooks/useSignIn'
 
-import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-import TextInput from 'components/form/text-input'
 import Spinner from 'components/icons/Spinner'
+import TextInput from 'components/input/text-input'
 
-import useLoader from 'utils/use-loader'
 import { API_URL } from 'utils/config'
+import useLoader from 'utils/use-loader'
 
 const schema = z.object({
 	username: z.string().min(1, 'Обязательное поле'),
@@ -80,9 +80,7 @@ export default function LoginForm({ className = '' }) {
 	)
 
 	return (
-		<form
-			className={className}
-			onSubmit={handleSubmit(onSubmit)}>
+		<form className={className} onSubmit={handleSubmit(onSubmit)}>
 			<TextInput
 				name='username'
 				placeholder='Имя пользователя'

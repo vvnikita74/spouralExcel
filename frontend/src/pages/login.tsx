@@ -7,8 +7,8 @@ export default function LoginPage() {
 			className='relative flex size-full flex-col items-center justify-center
 				overflow-hidden p-4'>
 			<div
-				className='absolute left-4 top-4 flex w-[calc(100%-2rem)] flex-row
-					items-center justify-between'>
+				className='absolute left-4 top-4 flex w-[calc(100%-2rem)] flex-row items-center
+					justify-between'>
 				<img
 					src={logoText}
 					alt='СПО-Урал'
