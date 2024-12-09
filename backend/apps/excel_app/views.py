@@ -17,25 +17,27 @@ class ProcessInputView(APIView):
             raise AuthenticationFailed('Authorization header missing')
 
         data = request.data
-        
+        filename = data.pop('filename', None)
+        date_created = data.pop('date_created', None)
         if not data:
             return Response({'error': 'No input data provided'},
                             status=status.HTTP_400_BAD_REQUEST)
-        username = request.user.username
+
         user_data = UserData.objects.create(user=request.user, data=data,
-                                            isReady=0)
+                                            isReady=0, filename=filename,
+                                            date_created=date_created)
 
         threading.Thread(target=self.process_data,
-                         args=(data, username, user_data.id)).start()
+                         args=(data, user_data.id, filename)).start()
 
-        return Response({'message': 'Processing started'},
+        return Response(user_data,
                         status=status.HTTP_200_OK)
 
-    def process_data(self, data, username, user_data_id):
+    def process_data(self, data, user_data_id, filename):
         try:
-            report_file = generate_report(data, username)
+            generate_report(data, filename)
             UserData.objects.filter(id=user_data_id).update(isReady=1,
-                                                            file_name=report_file)
+                                                            file_name=filename)
         except Exception as e:
             print(e)
             UserData.objects.filter(id=user_data_id).update(isReady=2)

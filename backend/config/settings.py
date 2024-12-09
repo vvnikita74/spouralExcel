@@ -12,7 +12,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = ['http://localhost:8000',
-                        'https://app-back.spo-ural.ru']
+                        'https://app-back.spo-ural.ru',
+                        'http://192.168.0.239:8080',
+                        'http://192.168.0.234:8080',
+                        ]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
