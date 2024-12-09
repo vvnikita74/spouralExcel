@@ -20,7 +20,7 @@ class UserData(models.Model):
     file_name = models.CharField(max_length=255)
     data = models.JSONField()
     isReady = models.IntegerField(choices=STATUS_CHOICES, default=LOADING)
-    date_created = models.DateTimeField(auto_now_add=True)
+    date_created = models.DateTimeField(auto_now_add=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.data}"
