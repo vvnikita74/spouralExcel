@@ -80,7 +80,7 @@ const SelectInput = memo(
 						${error ? 'with-error border-red-500' : 'border-indigo-500'}`}>
 					<span
 						id={`text-${name}`}
-						className='opacity-50 transition-opacity'>
+						className='truncate opacity-50 transition-opacity'>
 						{placeholder}
 					</span>
 					<ChevronDown
@@ -99,7 +99,7 @@ const SelectInput = memo(
 							type='button'
 							onClick={onChange(handleChange)}
 							data-btn-id={name}
-							className='base-text mt-2 px-2.5 text-left last:mb-2'
+							className='base-text mt-2 truncate px-2.5 text-left last:mb-2'
 							key={`${name}-${valueName}`}
 							data-name={name}
 							data-value={value}>
