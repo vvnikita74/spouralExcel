@@ -7,7 +7,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 import { API_URL } from 'utils/config'
-import formatDate from 'utils/format-date'
+import { formatDate } from 'utils/format-date'
 import queryFetch from 'utils/query-fetch'
 import timeAgo from 'utils/time-ago'
 
@@ -29,15 +29,9 @@ export default function ReportsList({
 
 	useEffect(() => {
 		const interval = setInterval(async () => {
-			const newData = await queryFetch(
-				queryClient,
-				queryKey,
-				authHeader,
-				path
+			setCurrentData(
+				await queryFetch(queryClient, queryKey, authHeader, path)
 			)
-			const cachedData = queryClient.getQueryData(queryKey)
-
-			console.log(newData, cachedData)
 		}, 5000)
 
 		return () => {

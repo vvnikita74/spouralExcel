@@ -25,6 +25,7 @@ import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persist
 import { QueryClient } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 
+import { reqPostMutation } from 'utils/mutations'
 import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
@@ -70,26 +71,7 @@ const getLoader = (path = '', queryKey = [''], objKey = '') => {
 	})
 }
 
-// queryClient.setMutationDefaults(['emergency-report'], {
-// 	mutationFn: async ({
-// 		data,
-// 		authHeader
-// 	}: {
-// 		data: FormData
-// 		authHeader: string
-// 	}) => {
-// 		const req = await fetch(`${API_URL}/report/emergency`, {
-// 			method: 'POST',
-// 			body: data,
-// 			headers: {
-// 				Authorization: authHeader
-// 			}
-// 		})
-
-// 		const res = await req.json()
-// 		return res
-// 	}
-// })
+queryClient.setMutationDefaults(['req-post'], reqPostMutation)
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -131,7 +113,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		client={queryClient}
 		persistOptions={{ persister }}
 		onSuccess={() => {
-			// resume mutations after initial restore from localStorage was successful
 			queryClient.resumePausedMutations()
 		}}>
 		<AuthProvider store={store}>

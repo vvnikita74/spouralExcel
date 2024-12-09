@@ -3,7 +3,15 @@ import type Field from 'types/field'
 import { z } from 'zod'
 import FormView from './form-view'
 
-export default function FormManager({ fields }: { fields: Field[] }) {
+export default function FormManager({
+	fields,
+	queryKey,
+	path
+}: {
+	fields: Field[]
+	queryKey: string[]
+	path: string
+}) {
 	const schemaShape = {}
 	const defaultValues = {}
 
@@ -36,6 +44,8 @@ export default function FormManager({ fields }: { fields: Field[] }) {
 			defaultValues={defaultValues}
 			validationSchema={z.object(schemaShape)}
 			fields={fields}
+			queryKey={queryKey}
+			path={path}
 		/>
 	)
 }

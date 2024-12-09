@@ -1,15 +1,15 @@
 import type Field from 'types/field'
+import type Report from 'types/report'
+import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
 
-// import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { API_URL } from 'utils/config'
 
 import Spinner from 'components/icons/Spinner'
 import SelectInput from 'components/input/select-input'
@@ -18,12 +18,47 @@ import TextInput from 'components/input/text-input'
 export default function FormView({
 	validationSchema,
 	fields,
-	defaultValues
+	defaultValues,
+	queryKey,
+	path
 }: {
 	validationSchema: ZodType
 	fields: Field[]
 	defaultValues: { [key: string]: string }
+	queryKey: string[]
+	path: string
 }) {
+	const date = new Date().toISOString()
+
+	const authHeader = useAuthHeader()
+	const queryClient = useQueryClient()
+
+	const mutation = useMutation<
+		unknown,
+		unknown,
+		PostMutationVariables
+	>({
+		mutationKey: ['req-post'],
+		onSettled: data => {
+			queryClient.setQueryData(queryKey, (prev: Report[]) => {
+				if (data) {
+					return [...prev, data]
+				} else {
+					if (
+						prev.filter(item => item.file_name === data).length === 0
+					) {
+						return [
+							...prev,
+							{ file_name: data, date_created: data, isReady: 0 }
+						]
+					} else return prev
+				}
+			})
+		}
+	})
+
+	const { btnRef, toggleLoader } = useLoader()
+
 	const {
 		register,
 		handleSubmit,
@@ -35,12 +70,6 @@ export default function FormView({
 		defaultValues
 	})
 
-	const { btnRef, toggleLoader } = useLoader()
-	const authHeader = useAuthHeader()
-	const navigate = useNavigate()
-
-	// const mutation = useMutation({ mutationKey: ['emergency-report'] })
-
 	const onSubmit = useCallback(
 		async (data: { [key: string]: string }) => {
 			toggleLoader(true)
@@ -51,20 +80,18 @@ export default function FormView({
 				formData.append(key, data[key] || '')
 			}
 
-			// mutation.mutate({ data: formData, authHeader })
+			formData.append('dateCreated', date)
+			formData.append('filename', date)
 
-			const req = await fetch(`${API_URL}/report/emergency`, {
-				method: 'POST',
-				headers: {
-					Authorization: authHeader
-				},
-				body: formData
+			mutation.mutate({
+				data: formData,
+				authHeader,
+				path
 			})
 
-			if (req.status === 200) navigate('/profile')
 			toggleLoader(false)
 		},
-		[toggleLoader, navigate, authHeader]
+		[toggleLoader, authHeader, mutation, path, date]
 	)
 
 	const handleSelectChange = useCallback(
