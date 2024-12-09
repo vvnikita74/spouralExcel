@@ -19,7 +19,6 @@ export default function IndexLayout() {
 								loading='lazy'
 								className='h-10 w-auto object-contain sm:h-[2.69rem]'
 							/>
-							a
 						</Link>
 						<ErrorView />
 					</div>
