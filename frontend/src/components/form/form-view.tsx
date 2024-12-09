@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,26 +34,32 @@ export default function FormView({
 	const authHeader = useAuthHeader()
 	const queryClient = useQueryClient()
 
+	const navigate = useNavigate()
+
 	const mutation = useMutation<
 		unknown,
 		unknown,
 		PostMutationVariables
 	>({
 		mutationKey: ['req-post'],
-		onSettled: data => {
+		onMutate: () => {
 			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				if (data) {
-					return [...prev, data]
-				} else {
-					if (
-						prev.filter(item => item.file_name === data).length === 0
-					) {
-						return [
-							...prev,
-							{ file_name: data, date_created: data, isReady: 0 }
-						]
-					} else return prev
-				}
+				return [
+					...prev,
+					{ file_name: date, date_created: date, isReady: 0 }
+				]
+			})
+
+			navigate('/profile')
+
+			toggleLoader(false)
+		},
+		onSuccess: () => {
+			queryClient.setQueryData(queryKey, (prev: Report[]) => {
+				return [
+					...[prev.pop()],
+					{ file_name: date, date_created: date, isReady: 1 }
+				]
 			})
 		}
 	})
@@ -88,8 +95,6 @@ export default function FormView({
 				authHeader,
 				path
 			})
-
-			toggleLoader(false)
 		},
 		[toggleLoader, authHeader, mutation, path, date]
 	)

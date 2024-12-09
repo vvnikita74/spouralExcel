@@ -20,8 +20,8 @@ export default function ErrorView() {
 	if (!webConnection)
 		return (
 			<div
-				className='base-padding pointer-events-none ml-4 w-fit rounded-xl border
-					border-red-500 text-red-500'>
+				className='pointer-events-none ml-4 w-fit rounded-xl border border-red-500 p-1.5
+					text-red-500'>
 				<ConnectOffIcon className='size-6' />
 			</div>
 		)

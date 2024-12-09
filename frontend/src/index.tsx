@@ -28,12 +28,14 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { reqPostMutation } from 'utils/mutations'
 import queryFetch from 'utils/query-fetch'
 
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			gcTime: 1000 * 60 * 60 * 24,
 			staleTime: 2500,
-			retry: false,
+			retry: 1,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
 		},
@@ -118,5 +120,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		<AuthProvider store={store}>
 			<RouterProvider router={router} />
 		</AuthProvider>
+		{/* <ReactQueryDevtools initialsIsOpen /> */}
 	</PersistQueryClientProvider>
 )
