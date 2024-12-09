@@ -77,12 +77,11 @@ def change_case(phrase, target_case):
     return ' '.join(inflected_words)
 
 
-def generate_report(data, username):
+def generate_report(data,filename):
     """
     Генерирует отчет на основе данных и сохраняет его в файл.
 
     :param data: Входные данные
-    :param username: Имя пользователя
     :return: Имя файла отчета
     """
     template_path = os.path.join(os.path.dirname(__file__), '..', '..', '..',
@@ -121,7 +120,6 @@ def generate_report(data, username):
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
-    filename = f'{username}-{datetime.now().strftime("%H-%M_%d.%m.%Y")}'
     report_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
     os.makedirs(report_dir, exist_ok=True)
     os_filename = os.path.join(report_dir, filename + '.xlsx')
@@ -131,7 +129,6 @@ def generate_report(data, username):
               f' {report_dir} {os_filename}')
 
     os.remove(os_filename)
-    return filename
 
 
 def process_documentation(ws, cell_data, input_value):
