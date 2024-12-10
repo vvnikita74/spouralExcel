@@ -20,7 +20,13 @@ export default function EmergencyReportPage() {
 				</div>
 			}>
 			<Await resolve={data.fields} errorElement={<p>error</p>}>
-				{(fields: Field[]) => <FormManager fields={fields} />}
+				{(fields: Field[]) => (
+					<FormManager
+						fields={fields}
+						queryKey={['user-data']}
+						path='emergency'
+					/>
+				)}
 			</Await>
 		</Suspense>
 	)
