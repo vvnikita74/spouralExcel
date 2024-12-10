@@ -44,7 +44,9 @@ class Fields(models.Model):
 
 
 class Cell:
-    def __init__(self, index, template='', type=None, inputKey=None, defaultValue=None, nameIndex=None, yearIndex=None, developerIndex=None, verticalGap=None, lastColumn=None):
+    def __init__(self, index, template='', type=None, inputKey=None,
+                 defaultValue=None, nameIndex=None, yearIndex=None,
+                 developerIndex=None, verticalGap=None, lastColumn=None):
         self.index = index
         self.template = template
         self.type = type
@@ -88,10 +90,13 @@ class Cell:
 
 class Sheet(models.Model):
     index = models.IntegerField()
+    section = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
     countCell = models.CharField(max_length=10, default='AK56', null=True,
                                  blank=True)
     data = models.JSONField()
+    subsections = models.JSONField(blank=True, null=True, default=list)
+    contentSection = models.BooleanField(default=False)
 
     def set_data(self, cells):
         self.data = json.dumps([cell.to_dict() for cell in cells])

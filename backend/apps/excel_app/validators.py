@@ -28,3 +28,12 @@ def validate_json_structure(value):
             if not required_keys.issubset(item.keys()):
                 raise ValidationError(
                     f"Элементы с type='documentation' должны содержать ключи: {required_keys}")
+
+def validate_subsections_json_structure(value):
+    try:
+        data = json.loads(value)
+    except json.JSONDecodeError:
+        raise ValidationError("Неверный формат JSON")
+
+    if not isinstance(data, list):
+        raise ValidationError("Данные JSON должны быть списком")
