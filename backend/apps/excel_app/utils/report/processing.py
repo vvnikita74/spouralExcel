@@ -101,9 +101,14 @@ def generate_report(data, filename):
             cell = ws[cell_data.index]
             template = cell_data.template
             cell_type = cell_data.type
+            if cell_type == 'table':
+                table_type = cell_data.inputKey
+            else:
+                table_type = None
+
             input_value = get_nested_value(data, cell_data.inputKey,
                                            cell_data.defaultValue)
-            if cell_type == 'documentation' and input_value:
+            if table_type == 'documentation' and input_value:
                 process_documentation(ws, cell_data, input_value)
             else:
                 if not template:
@@ -148,6 +153,36 @@ def generate_report(data, filename):
     os.remove(os_filename)
 
 
+def apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
+                      alignment):
+    """
+    Вычисляет границы, устанавливает границы, объединяет ячейки и применяет стили.
+
+    :param ws: Рабочий лист Excel
+    :param start_row: Начальная строка
+    :param start_col: Начальный столбец
+    :param end_row: Конечная строка
+    :param end_col: Конечный столбец
+    :param font: Шрифт для применения
+    :param alignment: Выравнивание для применения
+    """
+    # Установка границ
+    set_border(ws,
+               f'{ws.cell(row=start_row, column=start_col).coordinate}',
+               f'{ws.cell(row=end_row, column=end_col).coordinate}')
+
+    # Объединение ячеек
+    ws.merge_cells(start_row=start_row, start_column=start_col,
+                   end_row=end_row, end_column=end_col)
+
+    # Применение стилей
+    for row in range(start_row, end_row + 1):
+        for col in range(start_col, end_col + 1):
+            cell = ws.cell(row=row, column=col)
+            cell.font = font
+            cell.alignment = alignment
+
+
 def process_documentation(ws, cell_data, input_value):
     """
     Обрабатывает данные типа 'documentation' и вставляет их в соответствующие ячейки.
@@ -163,33 +198,51 @@ def process_documentation(ws, cell_data, input_value):
     # Начальная ячейка
     start_cell = cell_data.index
     start_col = ws[start_cell].column
-    start_row = ws[start_cell].row + cell_data.verticalGap
+    start_row = ws[start_cell].row
+    vertical_gap = cell_data.verticalGap
 
-    # Итерация по объектам документации и вставка их в рабочий лист
+    # Определение стилей
+    font = Font(size=12, bold=False)
+    center_alignment = Alignment(horizontal='center', vertical='center')
+
+    # Применение стилей и объединение ячеек для первой строки
+    for cell_info in cell_data.cells:
+        width = cell_info.get('width')
+        end_col = start_col + width - 1
+        end_row = start_row + vertical_gap - 1
+        apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
+                          center_alignment)
+        value = cell_info.get('title')
+        ws.cell(row=start_row, column=start_col, value=value)
+        start_col = end_col + 1
+
+    # Переход к следующей строке для вставки значений
+    start_row += vertical_gap
+    start_col = ws[cell_data.index].column
+
     for idx, doc in enumerate(documentation_objects):
-        # Вычисляем строку для текущего объекта
-        current_row = start_row + idx * cell_data.verticalGap
+        for cell_info in cell_data.cells:
+            key = cell_info.get('key')
+            width = cell_info.get('width')
 
-        # Вставляем ID объекта (индекс + 1) в начальную ячейку
-        ws.cell(row=current_row, column=start_col, value=idx + 1)
+            # Вычисление правой нижней ячейки
+            end_col = start_col + width - 1
+            end_row = start_row + vertical_gap - 1
+            # Вставка значений
+            if key == 'index':
+                value = idx + 1  # Значение индекса объекта
+            else:
+                value = getattr(doc, key, '')
+            ws.cell(row=start_row, column=start_col, value=value)
 
-        # Вставляем имя, год и разработчика в соответствующие ячейки
-        ws[cell_data.nameIndex.replace('11', str(current_row))] = doc.name
-        ws[cell_data.yearIndex.replace('11', str(current_row))] = doc.year
-        ws[cell_data.developerIndex.replace('11',
-                                            str(current_row))] = doc.developer
+            apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
+                              center_alignment)
+            # Переход к следующей ячейке справа
+            start_col = end_col + 1
 
-        # Устанавливаем границы для ячеек
-        set_border(ws, f'C{current_row}', f'D{current_row + 2}')
-        set_border(ws, f'E{current_row}', f'V{current_row + 2}')
-        set_border(ws, f'W{current_row}', f'AA{current_row + 2}')
-        set_border(ws, f'AB{current_row}', f'AM{current_row + 2}')
-
-    # Устанавливаем границы для указанных ячеек
-    set_border(ws, 'C11', 'D13')
-    set_border(ws, 'E11', 'V13')
-    set_border(ws, 'W11', 'AA13')
-    set_border(ws, 'AB11', 'AM13')
+        # Переход к следующей строке
+        start_row += vertical_gap
+        start_col = ws[cell_data.index].column
 
 
 class Documentation:
@@ -205,6 +258,9 @@ class Documentation:
             year=data.get('year'),
             developer=data.get('developer')
         )
+
+    def __str__(self):
+        return f'Name: {self.name}, Year: {self.year}, Developer: {self.developer}'
 
 
 def set_border(ws, top_left, bottom_right):
