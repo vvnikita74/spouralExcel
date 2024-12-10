@@ -45,18 +45,14 @@ class Fields(models.Model):
 
 class Cell:
     def __init__(self, index, template='', type=None, inputKey=None,
-                 defaultValue=None, nameIndex=None, yearIndex=None,
-                 developerIndex=None, verticalGap=None, lastColumn=None):
+                 defaultValue=None, verticalGap=None, cells=None):
         self.index = index
         self.template = template
         self.type = type
         self.inputKey = inputKey
         self.defaultValue = defaultValue
-        self.nameIndex = nameIndex
-        self.yearIndex = yearIndex
-        self.developerIndex = developerIndex
         self.verticalGap = verticalGap
-        self.lastColumn = lastColumn
+        self.cells = cells if cells is not None else []
 
     def to_dict(self):
         return {
@@ -65,26 +61,20 @@ class Cell:
             'type': self.type,
             'inputKey': self.inputKey,
             'defaultValue': self.defaultValue,
-            'nameIndex': self.nameIndex,
-            'yearIndex': self.yearIndex,
-            'developerIndex': self.developerIndex,
             'verticalGap': self.verticalGap,
-            'lastColumn': self.lastColumn
+            'cells': self.cells
         }
 
     @classmethod
     def from_dict(cls, data):
         return cls(
-            index=data['index'],
+            index=data.get('index'),
             template=data.get('template'),
             type=data.get('type', None),
             inputKey=data.get('inputKey', ''),
             defaultValue=data.get('defaultValue', ''),
-            nameIndex=data.get('nameIndex', None),
-            yearIndex=data.get('yearIndex', None),
-            developerIndex=data.get('developerIndex', None),
             verticalGap=data.get('verticalGap', None),
-            lastColumn=data.get('lastColumn', None)
+            cells=data.get('cells', [])
         )
 
 
