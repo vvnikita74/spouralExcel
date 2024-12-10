@@ -6,7 +6,7 @@ import pymorphy2
 import openpyxl
 
 from datetime import datetime
-from openpyxl.styles import Border, Side
+from openpyxl.styles import Border, Side, Font, Alignment
 
 from django.conf import settings
 from apps.excel_app.models import Sheet
@@ -77,7 +77,7 @@ def change_case(phrase, target_case):
     return ' '.join(inflected_words)
 
 
-def generate_report(data,filename):
+def generate_report(data, filename):
     """
     Генерирует отчет на основе данных и сохраняет его в файл.
 
@@ -90,7 +90,7 @@ def generate_report(data,filename):
     wb = openpyxl.load_workbook(template_path)
 
     count = 0
-
+    sections = []
     sheets = sorted(Sheet.objects.all(), key=lambda sheet: sheet.index)
 
     for sheet in sheets:
@@ -100,10 +100,10 @@ def generate_report(data,filename):
         for cell_data in sheet.get_data():
             cell = ws[cell_data.index]
             template = cell_data.template
-            type = cell_data.type
+            cell_type = cell_data.type
             input_value = get_nested_value(data, cell_data.inputKey,
                                            cell_data.defaultValue)
-            if type == 'documentation' and input_value:
+            if cell_type == 'documentation' and input_value:
                 process_documentation(ws, cell_data, input_value)
             else:
                 if not template:
@@ -115,16 +115,33 @@ def generate_report(data,filename):
         if sheet.countCell:
             ws[sheet.countCell] = count
 
+        if sheet.contentSection:
+            section = Section(section_id=sheet.section, \
+                              section_name=sheet.name,
+                              sheet_id=count)
+            sections.append(section)
+            if sheet.subsections:
+                subsections = json.loads(sheet.subsections)
+                for subsection in subsections:
+                    section = Section(
+                        section_id=subsection.get('sectionId'),
+                        section_name=subsection.get('sectionName'),
+                        sheet_id=count
+                    )
+                    sections.append(section)
+
         sheet.save()
 
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
+    fill_content(wb, sections)
     report_dir = os.path.join(settings.MEDIA_ROOT, 'reports')
     os.makedirs(report_dir, exist_ok=True)
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
+
     os.system(f'libreoffice --headless --convert-to pdf --outdir'
               f' {report_dir} {os_filename}')
 
@@ -266,3 +283,69 @@ def substitute_placeholders(template, data):
                 return data.get(key, f'${key}$')
 
     return re.sub(r'\$(\w+(\.\w+)*)\$', replace_match, template)
+
+
+class Section:
+    def __init__(self, section_id, section_name, sheet_id):
+        self.section_id = section_id
+        self.section_name = section_name
+        self.sheet_id = sheet_id
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            section_id=data.get('section_id'),
+            section_name=data.get('section_name'),
+            sheet_id=data.get('sheet_id')
+        )
+
+    def __str__(self):
+        return f'Section ID: {self.section_id}, Section Name: {self.section_name}, Sheet ID: {self.sheet_id}'
+
+
+def fill_content(wb, sections):
+    """
+    Заполняет таблицу содержания.
+
+    :param wb: Рабочая книга Excel
+    :param sections: Список объектов разделов
+    """
+    content_ws = wb['Содержание']
+    start_row = 8
+
+    # Определение стилей
+    font = Font(size=12, bold=False)
+    center_alignment = Alignment(horizontal='center', vertical='center')
+    left_alignment = Alignment(horizontal='left', vertical='center')
+
+    for section in sections:
+        # Вставка значений в ячейки
+        cell_c = content_ws[f'C{start_row}']
+        cell_h = content_ws[f'H{start_row}']
+        cell_ai = content_ws[f'AI{start_row}']
+
+        cell_c.value = section.section_id
+        cell_h.value = section.section_name
+        cell_ai.value = section.sheet_id
+
+        # Применение стилей
+        cell_c.font = font
+        cell_h.font = font
+        cell_ai.font = font
+
+        cell_c.alignment = center_alignment
+        cell_h.alignment = left_alignment
+        cell_ai.alignment = center_alignment
+
+        # Установка границ
+        set_border(content_ws, f'C{start_row}', f'G{start_row + 1}')
+        set_border(content_ws, f'H{start_row}', f'AH{start_row + 1}')
+        set_border(content_ws, f'AI{start_row}', f'AM{start_row + 1}')
+
+        # Объединение ячеек
+        content_ws.merge_cells(f'C{start_row}:G{start_row + 1}')
+        content_ws.merge_cells(f'H{start_row}:AH{start_row + 1}')
+        content_ws.merge_cells(f'AI{start_row}:AM{start_row + 1}')
+
+        # Переход на следующую строку
+        start_row += 2

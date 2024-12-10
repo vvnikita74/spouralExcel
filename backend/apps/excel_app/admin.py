@@ -4,7 +4,8 @@ from django.contrib import admin
 from jsoneditor.forms import JSONEditor
 from .models import (Sheet, ConstructionTypes, Recommendations, Defects,
                      Materials, Fields)
-from .validators import validate_json_structure
+from .validators import validate_json_structure, \
+    validate_subsections_json_structure
 
 from .forms import FieldsAdminForm
 
@@ -49,6 +50,13 @@ def increase_order_value(modeladmin, request, queryset):
     queryset.update(position=models.F('position') + 1)
 
 
+@admin.action(description="Изменить добавление в Содержание")
+def change_content_section(modeladmin, request, queryset):
+    for sheet in queryset:
+        sheet.contentSection = not sheet.contentSection
+        sheet.save()
+
+
 class FieldsAdmin(admin.ModelAdmin):
     form = FieldsAdminForm
     list_display = ('name', 'step', 'position', 'required')
@@ -75,6 +83,23 @@ class SheetAdminForm(forms.ModelForm):
         }),
         validators=[validate_json_structure]
     )
+    subsections = forms.CharField(
+        initial='''[
+        {
+            "sectionId": "id string",
+            "sectionName": "name string",
+        }
+    ]''',
+        widget=JSONEditor(attrs={
+            'options': {
+                'mode': 'code',
+                'ace': {
+                    'useWorker': False
+                }
+            }
+        }),
+        validators=[validate_subsections_json_structure]
+    )
 
     class Meta:
         model = Sheet
@@ -83,8 +108,9 @@ class SheetAdminForm(forms.ModelForm):
 
 class SheetAdmin(admin.ModelAdmin):
     form = SheetAdminForm
-    list_display = ('name', 'index')
+    list_display = ('name', 'index', 'contentSection')
     ordering = ('index',)
+    actions = [change_content_section]
 
 
 admin.site.register(Sheet, SheetAdmin)
