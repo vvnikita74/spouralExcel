@@ -29,12 +29,11 @@ export default function FormView({
 	queryKey: string[]
 	path: string
 }) {
-	const date = new Date().toISOString()
-
 	const authHeader = useAuthHeader()
 	const queryClient = useQueryClient()
-
 	const navigate = useNavigate()
+
+	const { btnRef, toggleLoader } = useLoader()
 
 	const mutation = useMutation<
 		unknown,
@@ -42,29 +41,42 @@ export default function FormView({
 		PostMutationVariables
 	>({
 		mutationKey: ['req-post'],
-		onMutate: () => {
+		onMutate: variables => {
+			const dateCreated = variables.data.get('dateCreated')
+
 			queryClient.setQueryData(queryKey, (prev: Report[]) => {
 				return [
-					...prev,
-					{ file_name: date, date_created: date, isReady: 0 }
-				]
-			})
-
-			navigate('/profile')
-
-			toggleLoader(false)
-		},
-		onSuccess: () => {
-			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				return [
-					...[prev.pop()],
-					{ file_name: date, date_created: date, isReady: 1 }
+					{
+						file_name: dateCreated,
+						date_created: dateCreated,
+						isReady: 0,
+						data: {}
+					},
+					...prev
 				]
 			})
 		}
-	})
+		// TODO: onError
+		// onSuccess: (
+		// 	data: Report,
+		// 	_,
+		// 	context: { dateCreated: string }
+		// ) => {
+		// 	const { dateCreated } = context
 
-	const { btnRef, toggleLoader } = useLoader()
+		// 	queryClient.setQueryData(queryKey, (prev: Report[]) => {
+		// 		const arr = [...prev]
+
+		// 		arr[0] = {
+		// 			...data,
+		// 			file_name: dateCreated,
+		// 			date_created: dateCreated
+		// 		}
+
+		// 		return arr
+		// 	})
+		// }
+	})
 
 	const {
 		register,
@@ -87,6 +99,8 @@ export default function FormView({
 				formData.append(key, data[key] || '')
 			}
 
+			const date = new Date().toISOString()
+
 			formData.append('dateCreated', date)
 			formData.append('filename', date)
 
@@ -95,8 +109,11 @@ export default function FormView({
 				authHeader,
 				path
 			})
+
+			toggleLoader(false)
+			navigate('/profile')
 		},
-		[toggleLoader, authHeader, mutation, path, date]
+		[toggleLoader, authHeader, mutation, path, navigate]
 	)
 
 	const handleSelectChange = useCallback(
