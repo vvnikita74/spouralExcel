@@ -10,6 +10,7 @@ import { API_URL } from 'utils/config'
 import { formatDate } from 'utils/format-date'
 import queryFetch from 'utils/query-fetch'
 import timeAgo from 'utils/time-ago'
+import mergeReportData from 'utils/merge-data'
 
 import Spinner from 'components/icons/Spinner'
 
@@ -25,13 +26,21 @@ export default function ReportsList({
 	const queryClient = useQueryClient()
 	const authHeader = useAuthHeader()
 
-	const [currentData, setCurrentData] = useState(data)
+	const initialData = queryClient.getQueryData(queryKey) as Report[]
+	const mergedData = mergeReportData(initialData, data)
+
+	const [currentData, setCurrentData] = useState(mergedData)
 
 	useEffect(() => {
 		const interval = setInterval(async () => {
-			setCurrentData(
-				await queryFetch(queryClient, queryKey, authHeader, path)
+			const receivedData = await queryFetch(
+				queryClient,
+				queryKey,
+				authHeader,
+				path
 			)
+
+			setCurrentData(prev => mergeReportData(prev, receivedData))
 		}, 5000)
 
 		return () => {
@@ -84,7 +93,7 @@ export default function ReportsList({
 				<div
 					className='relative mt-2 flex flex-col overflow-hidden rounded-xl border
 						border-indigo-500 p-4 first:mt-0'
-					key={id}>
+					key={file_name}>
 					{isReady === 0 && (
 						<div
 							className='absolute left-0 top-0 z-10 flex size-full items-start justify-end

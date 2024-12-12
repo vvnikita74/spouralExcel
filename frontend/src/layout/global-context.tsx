@@ -6,6 +6,9 @@ import {
 	useState
 } from 'react'
 
+import { Network } from '@capacitor/network'
+import { onlineManager } from '@tanstack/react-query'
+
 type GlobalSetters = {
 	setWebConnection: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -21,9 +24,7 @@ export const useGlobalSettersContext = (): GlobalSetters =>
 	useContext(GlobalSettersContext)
 
 export default function GlobalContext({ children }) {
-	const [webConnection, setWebConnection] = useState<boolean>(
-		navigator.onLine
-	)
+	const [webConnection, setWebConnection] = useState<boolean>(true)
 
 	const setters = useMemo(
 		() => ({ setWebConnection }),
@@ -31,18 +32,25 @@ export default function GlobalContext({ children }) {
 	)
 
 	useEffect(() => {
-		const updateNetworkStatus = () => {
-			setWebConnection(navigator.onLine)
+		const checkStatus = async () => {
+			const status = await Network.getStatus()
+			setWebConnection(status.connected)
 		}
 
-		window.addEventListener('online', updateNetworkStatus)
-		window.addEventListener('offline', updateNetworkStatus)
+		checkStatus()
+
+		Network.addListener('networkStatusChange', status => {
+			setWebConnection(status.connected)
+		})
 
 		return () => {
-			window.removeEventListener('online', updateNetworkStatus)
-			window.removeEventListener('offline', updateNetworkStatus)
+			Network.removeAllListeners()
 		}
 	}, [])
+
+	useEffect(() => {
+		onlineManager.setOnline(webConnection)
+	}, [webConnection])
 
 	return (
 		<GlobalSettersContext.Provider value={setters}>
