@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
+// import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,7 +31,7 @@ export default function FormView({
 }) {
 	const authHeader = useAuthHeader()
 	const queryClient = useQueryClient()
-	const navigate = useNavigate()
+	// const navigate = useNavigate()
 
 	const { btnRef, toggleLoader } = useLoader()
 
@@ -55,6 +55,8 @@ export default function FormView({
 					...prev
 				]
 			})
+
+			console.log('here')
 		}
 		// TODO: onError
 	})
@@ -92,9 +94,10 @@ export default function FormView({
 			})
 
 			toggleLoader(false)
-			navigate('/profile')
+			// TODO: timeout or flag from onMutate
+			// navigate('/profile')
 		},
-		[toggleLoader, authHeader, mutation, path, navigate]
+		[toggleLoader, authHeader, mutation, path]
 	)
 
 	const handleSelectChange = useCallback(
