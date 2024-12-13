@@ -57,25 +57,6 @@ export default function FormView({
 			})
 		}
 		// TODO: onError
-		// onSuccess: (
-		// 	data: Report,
-		// 	_,
-		// 	context: { dateCreated: string }
-		// ) => {
-		// 	const { dateCreated } = context
-
-		// 	queryClient.setQueryData(queryKey, (prev: Report[]) => {
-		// 		const arr = [...prev]
-
-		// 		arr[0] = {
-		// 			...data,
-		// 			file_name: dateCreated,
-		// 			date_created: dateCreated
-		// 		}
-
-		// 		return arr
-		// 	})
-		// }
 	})
 
 	const {
