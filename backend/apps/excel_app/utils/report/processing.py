@@ -153,8 +153,7 @@ def generate_report(data, filename):
     os.remove(os_filename)
 
 
-def apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
-                      alignment):
+def apply_cell_styles(ws, start_row, start_col, end_row, end_col):
     """
     Вычисляет границы, устанавливает границы, объединяет ячейки и применяет стили.
 
@@ -163,8 +162,6 @@ def apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
     :param start_col: Начальный столбец
     :param end_row: Конечная строка
     :param end_col: Конечный столбец
-    :param font: Шрифт для применения
-    :param alignment: Выравнивание для применения
     """
     # Установка границ
     set_border(ws,
@@ -175,12 +172,6 @@ def apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
     ws.merge_cells(start_row=start_row, start_column=start_col,
                    end_row=end_row, end_column=end_col)
 
-    # Применение стилей
-    for row in range(start_row, end_row + 1):
-        for col in range(start_col, end_col + 1):
-            cell = ws.cell(row=row, column=col)
-            cell.font = font
-            cell.alignment = alignment
 
 
 def process_documentation(ws, cell_data, input_value):
@@ -201,17 +192,12 @@ def process_documentation(ws, cell_data, input_value):
     start_row = ws[start_cell].row
     vertical_gap = cell_data.verticalGap
 
-    # Определение стилей
-    font = Font(size=12, bold=False)
-    center_alignment = Alignment(horizontal='center', vertical='center')
-
     # Применение стилей и объединение ячеек для первой строки
     for cell_info in cell_data.cells:
         width = cell_info.get('width')
         end_col = start_col + width - 1
         end_row = start_row + vertical_gap - 1
-        apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
-                          center_alignment)
+        apply_cell_styles(ws, start_row, start_col, end_row, end_col)
         value = cell_info.get('title')
         ws.cell(row=start_row, column=start_col, value=value)
         start_col = end_col + 1
@@ -235,8 +221,7 @@ def process_documentation(ws, cell_data, input_value):
                 value = getattr(doc, key, '')
             ws.cell(row=start_row, column=start_col, value=value)
 
-            apply_cell_styles(ws, start_row, start_col, end_row, end_col, font,
-                              center_alignment)
+            apply_cell_styles(ws, start_row, start_col, end_row, end_col)
             # Переход к следующей ячейке справа
             start_col = end_col + 1
 
@@ -369,11 +354,6 @@ def fill_content(wb, sections):
     content_ws = wb['Содержание']
     start_row = 8
 
-    # Определение стилей
-    font = Font(size=12, bold=False)
-    center_alignment = Alignment(horizontal='center', vertical='center')
-    left_alignment = Alignment(horizontal='left', vertical='center')
-
     for section in sections:
         # Вставка значений в ячейки
         cell_c = content_ws[f'C{start_row}']
@@ -383,15 +363,6 @@ def fill_content(wb, sections):
         cell_c.value = section.section_id
         cell_h.value = section.section_name
         cell_ai.value = section.sheet_id
-
-        # Применение стилей
-        cell_c.font = font
-        cell_h.font = font
-        cell_ai.font = font
-
-        cell_c.alignment = center_alignment
-        cell_h.alignment = left_alignment
-        cell_ai.alignment = center_alignment
 
         # Установка границ
         set_border(content_ws, f'C{start_row}', f'G{start_row + 1}')
