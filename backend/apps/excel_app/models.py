@@ -8,7 +8,7 @@ class Fields(models.Model):
     SELECT = 'select'
     MULTISELECT = 'multiselect'
     MULTINUMBER = 'multinumber'
-    DOCUMENTATION = 'documentation'
+    TABLE = 'table'
     DATE = 'date'
     BOOL = 'bool'
     CHOICES = [
@@ -18,7 +18,7 @@ class Fields(models.Model):
         (SELECT, 'Select'),
         (MULTISELECT, 'MultiSelect'),
         (MULTINUMBER, 'MultiNumber'),
-        (DOCUMENTATION, 'Documentation'),
+        (TABLE, 'Table'),
         (BOOL, 'Bool')
     ]
     type = models.CharField(max_length=15, choices=CHOICES)

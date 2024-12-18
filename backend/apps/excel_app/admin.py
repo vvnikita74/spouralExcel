@@ -1,13 +1,10 @@
 from django.db import models
-from django import forms
 from django.contrib import admin
-from jsoneditor.forms import JSONEditor
 from .models import (Sheet, ConstructionTypes, Recommendations, Defects,
                      Materials, Fields)
-from .validators import validate_json_structure, \
-    validate_subsections_json_structure
 
-from .forms import FieldsAdminForm
+
+from .forms import FieldsAdminForm, SheetAdminForm
 
 
 @admin.action(description="Скопировать выбранные объекты")
@@ -63,47 +60,6 @@ class FieldsAdmin(admin.ModelAdmin):
     actions = [toggle_required, decrease_step_value, increase_step_value,
                decrease_order_value, increase_order_value, copy_object]
     ordering = ('step', 'position')
-
-
-class SheetAdminForm(forms.ModelForm):
-    data = forms.CharField(
-        initial='''[
-    {
-        "index": "cellIndex",
-        "template": "template string",
-    }
-]''',
-        widget=JSONEditor(attrs={
-            'options': {
-                'mode': 'code',
-                'ace': {
-                    'useWorker': False
-                }
-            }
-        }),
-        validators=[validate_json_structure]
-    )
-    subsections = forms.CharField(
-        initial='''[
-        {
-            "sectionId": "id string",
-            "sectionName": "name string",
-        }
-    ]''',
-        widget=JSONEditor(attrs={
-            'options': {
-                'mode': 'code',
-                'ace': {
-                    'useWorker': False
-                }
-            }
-        }),
-        validators=[validate_subsections_json_structure]
-    )
-
-    class Meta:
-        model = Sheet
-        fields = '__all__'
 
 
 class SheetAdmin(admin.ModelAdmin):

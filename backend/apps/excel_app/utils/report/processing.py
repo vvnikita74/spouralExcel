@@ -4,9 +4,7 @@ import inspect
 import re
 import pymorphy2
 import openpyxl
-
-from datetime import datetime
-from openpyxl.styles import Border, Side, Font, Alignment
+from openpyxl.styles import Border, Side
 
 from django.conf import settings
 from apps.excel_app.models import Sheet
@@ -25,6 +23,21 @@ gender_tags = {
     'masc': 'masc',
     'femn': 'femn',
     'neut': 'neut'
+}
+
+month_tags = {
+    "01": "Январь",
+    "02": "Февраль",
+    "03": "Март",
+    "04": "Апрель",
+    "05": "Май",
+    "06": "Июнь",
+    "07": "Июль",
+    "08": "Август",
+    "09": "Сентябрь",
+    "10": "Октябрь",
+    "11": "Ноябрь",
+    "12": "Декабрь",
 }
 
 
@@ -171,7 +184,6 @@ def apply_cell_styles(ws, start_row, start_col, end_row, end_col):
     # Объединение ячеек
     ws.merge_cells(start_row=start_row, start_column=start_col,
                    end_row=end_row, end_column=end_col)
-
 
 
 def process_documentation(ws, cell_data, input_value):
@@ -321,7 +333,12 @@ def substitute_placeholders(template, data):
                 # Обработка случая с тремя частями в ключе
                 pass
             case _:
-                return data.get(key, f'${key}$')
+                value = data.get(key, f'${key}$')
+                if value.split('.')[0] in month_tags:
+                    month = month_tags[value.split('.')[0]]
+                    year = value.split('.')[1]
+                    return f'{month} {year} года'
+                return value
 
     return re.sub(r'\$(\w+(\.\w+)*)\$', replace_match, template)
 
