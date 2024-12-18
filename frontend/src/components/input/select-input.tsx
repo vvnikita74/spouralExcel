@@ -7,13 +7,15 @@ const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 	try {
 		const { currentTarget } = event
 
+		document
+			.querySelectorAll('.accordion')
+			.forEach(el => el.classList.remove('opened'))
+
 		const { containerId } = currentTarget.dataset
 		if (containerId)
 			document
 				.getElementById(`accordion-${containerId}`)
-				?.classList?.toggle('accordion-opened')
-
-		currentTarget?.classList?.toggle('accordion-btn-opened')
+				?.classList?.toggle('opened')
 	} catch {
 		/* empty */
 	}
@@ -63,8 +65,9 @@ const SelectInput = memo(
 	}) => {
 		return (
 			<label
-				className='relative block caret-black transition-colors'
-				htmlFor={name}>
+				className='accordion relative block caret-black'
+				htmlFor={name}
+				id={`accordion-${name}`}>
 				{label ? (
 					<span className='base-text mb-1 block px-2.5'>{label}</span>
 				) : (
@@ -72,27 +75,22 @@ const SelectInput = memo(
 				)}
 				<button
 					type='button'
-					id={`accordion-btn-${name}`}
 					data-container-id={name}
 					onClick={toggleView}
-					className={`base-text base-padding flex w-full flex-row items-center
-						justify-between rounded-xl border text-left transition-colors
+					className={`base-text base-padding accordion-btn flex w-full flex-row items-center
+						justify-between rounded-xl border text-left
 						${error ? 'with-error border-red-500' : 'border-indigo-500'}`}>
-					<span
-						id={`text-${name}`}
-						className='truncate opacity-50 transition-opacity'>
+					<span id={`text-${name}`} className='truncate opacity-50'>
 						{placeholder}
 					</span>
 					<ChevronDown
-						className={`pointer-events-none size-6 -rotate-180 transition-[transform,color]
+						className={`pointer-events-none size-6 -rotate-180
 							${error ? 'text-red-500' : 'text-indigo-500'}`}
 					/>
 				</button>
 				<div
-					id={`accordion-${name}`}
-					className={`mt-0 flex h-0 flex-col overflow-hidden rounded-xl border
-						border-transparent transition-[height,border-color,margin]
-						${error ? 'with-error' : ''}`}
+					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl
+						border border-transparent ${error ? 'with-error' : ''}`}
 					style={{ '--height': values.length } as CSSProperties}>
 					{values.map(({ name: valueName, value }) => (
 						<button
@@ -108,7 +106,7 @@ const SelectInput = memo(
 					))}
 				</div>
 				<span
-					className={`block text-right text-sm text-red-500 transition-[opacity,height]
+					className={`block text-right text-sm text-red-500
 						${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
 					id='error-text'>
 					{error || ''}

@@ -100,7 +100,7 @@ export default function LoginForm({ className = '' }) {
 				ref={btnRef}
 				className='base-text btn-loader base-padding relative w-full rounded-xl
 					bg-indigo-500 text-white'>
-				<span className='pointer-events-none text-inherit transition-opacity'>
+				<span className='pointer-events-none text-inherit'>
 					Войти
 				</span>
 				<Spinner

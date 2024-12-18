@@ -8,9 +8,9 @@ import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 import { API_URL } from 'utils/config'
 import { formatDate } from 'utils/format-date'
+import mergeReportData from 'utils/merge-data'
 import queryFetch from 'utils/query-fetch'
 import timeAgo from 'utils/time-ago'
-import mergeReportData from 'utils/merge-data'
 
 import Spinner from 'components/icons/Spinner'
 
@@ -127,7 +127,7 @@ export default function ReportsList({
 							data-id={id}
 							className='btn-loader base-padding base-text relative mx-1 min-w-fit flex-1
 								rounded-xl bg-indigo-500'>
-							<span className='pointer-events-none text-inherit transition-opacity'>
+							<span className='pointer-events-none text-inherit'>
 								Удалить
 							</span>
 							<Spinner
