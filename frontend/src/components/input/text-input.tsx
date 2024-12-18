@@ -16,9 +16,7 @@ const TextInput = memo(
 		error?: string
 		inputProps?: InputHTMLAttributes<HTMLInputElement>
 	}) => (
-		<label
-			className='relative block caret-black transition-colors'
-			htmlFor={name}>
+		<label className='relative block caret-black' htmlFor={name}>
 			{label ? (
 				<span className='base-text mb-1 block px-2.5'>{label}</span>
 			) : (
@@ -28,12 +26,12 @@ const TextInput = memo(
 				name={name}
 				type={type}
 				placeholder={placeholder}
-				className={`base-text base-padding block rounded-xl border transition-colors
+				className={`base-text base-padding block rounded-xl border
 					${error ? 'border-red-500 placeholder:text-red-500 focus:border-red-500' : 'border-indigo-500 focus:border-indigo-800'}`}
 				{...inputProps}
 			/>
 			<span
-				className={`block text-right text-sm text-red-500 transition-[opacity,height]
+				className={`block text-right text-sm text-red-500
 					${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
 				id='error-text'>
 				{error || ''}

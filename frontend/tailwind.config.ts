@@ -25,7 +25,7 @@ export const theme = {
 			...defaultTheme.screens
 		},
 		transitionDuration: {
-			DEFAULT: '300ms'
+			DEFAULT: '0ms'
 		}
 	}
 }

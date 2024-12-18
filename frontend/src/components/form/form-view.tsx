@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { useForm } from 'react-hook-form'
-// import { useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -31,7 +31,7 @@ export default function FormView({
 }) {
 	const authHeader = useAuthHeader()
 	const queryClient = useQueryClient()
-	// const navigate = useNavigate()
+	const navigate = useNavigate()
 
 	const { btnRef, toggleLoader } = useLoader()
 
@@ -93,11 +93,12 @@ export default function FormView({
 				path
 			})
 
-			toggleLoader(false)
-			// TODO: timeout or flag from onMutate
-			// navigate('/profile')
+			setTimeout(() => {
+				toggleLoader(false)
+				navigate('/profile')
+			}, 500)
 		},
-		[toggleLoader, authHeader, mutation, path]
+		[toggleLoader, authHeader, mutation, path, navigate]
 	)
 
 	const handleSelectChange = useCallback(
@@ -147,7 +148,7 @@ export default function FormView({
 				ref={btnRef}
 				className='base-text btn-loader base-padding absolute bottom-4 right-4 w-fit
 					rounded-xl bg-indigo-500 text-white'>
-				<span className='pointer-events-none text-inherit transition-opacity'>
+				<span className='pointer-events-none text-inherit'>
 					Отправить
 				</span>
 				<Spinner
