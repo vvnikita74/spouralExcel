@@ -6,16 +6,19 @@ type handleChangeType = (name: string, value: string) => void
 const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 	try {
 		const { currentTarget } = event
+		const { containerId } = currentTarget.dataset
+
+		const accordion = document.getElementById(
+			`accordion-${containerId}`
+		)
 
 		document
 			.querySelectorAll('.accordion')
-			.forEach(el => el.classList.remove('opened'))
+			.forEach(
+				el => el !== accordion && el.classList.remove('opened')
+			)
 
-		const { containerId } = currentTarget.dataset
-		if (containerId)
-			document
-				.getElementById(`accordion-${containerId}`)
-				?.classList?.toggle('opened')
+		accordion.classList?.toggle('opened')
 	} catch {
 		/* empty */
 	}
@@ -38,6 +41,8 @@ const onChange =
 				btnText.classList.remove('opacity-50')
 				btnText.textContent = value
 			}
+
+			console.log(accordionBtn)
 			if (accordionBtn) accordionBtn.click()
 		} catch {
 			/* empty */
@@ -75,6 +80,7 @@ const SelectInput = memo(
 				)}
 				<button
 					type='button'
+					id={`accordion-btn-${name}`}
 					data-container-id={name}
 					onClick={toggleView}
 					className={`base-text base-padding accordion-btn flex w-full flex-row items-center
