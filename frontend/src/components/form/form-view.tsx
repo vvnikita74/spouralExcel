@@ -1,4 +1,4 @@
-import type Field from 'types/field'
+import { Field } from 'types/field'
 import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
@@ -55,8 +55,6 @@ export default function FormView({
 					...prev
 				]
 			})
-
-			console.log('here')
 		}
 		// TODO: onError
 	})

@@ -18,7 +18,7 @@ const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 				el => el !== accordion && el.classList.remove('opened')
 			)
 
-		accordion.classList?.toggle('opened')
+		accordion?.classList?.toggle('opened')
 	} catch {
 		/* empty */
 	}

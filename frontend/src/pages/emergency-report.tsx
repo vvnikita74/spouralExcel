@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Await, useLoaderData } from 'react-router-dom'
 
-import type Field from 'types/field'
+import { Field } from 'types/field'
 
 import FormManager from 'components/form/form-manager'
 import Spinner from 'components/icons/Spinner'
