@@ -1,15 +1,5 @@
-export default interface Field {
-	type:
-		| 'text'
-		| 'number'
-		| 'select'
-		| 'multiselect'
-		| 'multinumber'
-		| 'documentation'
-		| 'date'
-		| 'bool'
+interface BaseField {
 	key: string
-	mask: string
 	name: string
 	placeholder: string
 	settings: string
@@ -18,3 +8,23 @@ export default interface Field {
 	position: number
 	required: boolean
 }
+
+interface TextField extends BaseField {
+	type:
+		| 'text'
+		| 'number'
+		| 'multiselect'
+		| 'multinumber'
+		| 'documentation'
+		| 'date'
+		| 'bool'
+		| 'select'
+	mask: string
+}
+
+interface DateField extends BaseField {
+	type: 'date'
+	mask: 'monthYear' | 'dayMonth'
+}
+
+export type Field = TextField | DateField
