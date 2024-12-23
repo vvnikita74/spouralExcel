@@ -1,15 +1,4 @@
-interface BaseField {
-	key: string
-	name: string
-	placeholder: string
-	settings: string
-	constructionType: object
-	step: number
-	position: number
-	required: boolean
-}
-
-interface TextField extends BaseField {
+export default interface Field {
 	type:
 		| 'text'
 		| 'number'
@@ -20,11 +9,12 @@ interface TextField extends BaseField {
 		| 'bool'
 		| 'select'
 	mask: string
+	key: string
+	name: string
+	placeholder: string
+	settings: string
+	constructionType: object
+	step: number
+	position: number
+	required: boolean
 }
-
-interface DateField extends BaseField {
-	type: 'date'
-	mask: 'monthYear' | 'dayMonth'
-}
-
-export type Field = TextField | DateField

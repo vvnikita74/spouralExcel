@@ -1,78 +1,100 @@
-// import { ru } from 'date-fns/locale'
-// import { useState } from 'react'
-// import DatePicker, { registerLocale } from 'react-datepicker'
-// import 'react-datepicker/dist/react-datepicker.css'
+import { InputHTMLAttributes, memo } from 'react'
 
-// registerLocale('ru', ru)
+import { ru } from 'date-fns/locale'
+import DatePicker, { registerLocale } from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+import InputWrapper from './input-wrapper'
 
-// const renderHeader =
-// 	mode =>
-// 	({
-// 		date,
-// 		decreaseMonth,
-// 		increaseMonth,
-// 		prevMonthButtonDisabled,
-// 		nextMonthButtonDisabled
-// 	}) => {
-// 		const months = [
-// 			'Январь',
-// 			'Февраль',
-// 			'Март',
-// 			'Апрель',
-// 			'Май',
-// 			'Июнь',
-// 			'Июль',
-// 			'Август',
-// 			'Сентябрь',
-// 			'Октябрь',
-// 			'Ноябрь',
-// 			'Декабрь'
-// 		]
+registerLocale('ru', ru)
 
-// 		return (
-// 			<div className='flex flex-row items-center justify-between'>
-// 				<button
-// 					onClick={decreaseMonth}
-// 					disabled={prevMonthButtonDisabled}>
-// 					{'<'}
-// 				</button>
-// 				{mode === 'monthYear' && (
-// 					<span>{date.getFullYear()}</span>
-// 				)}
-// 				{mode === 'dayMonth' && (
-// 					<span>{months[date.getMonth()]}</span>
-// 				)}
-// 				<button
-// 					onClick={increaseMonth}
-// 					disabled={nextMonthButtonDisabled}>
-// 					{'>'}
-// 				</button>
-// 			</div>
-// 		)
-// 	}
+const months = [
+	'Январь',
+	'Февраль',
+	'Март',
+	'Апрель',
+	'Май',
+	'Июнь',
+	'Июль',
+	'Август',
+	'Сентябрь',
+	'Октябрь',
+	'Ноябрь',
+	'Декабрь'
+]
 
-// const CustomDatePicker = ({ mode }) => {
-// 	const [selectedDate, setSelectedDate] = useState(null)
+const renderHeader =
+	(type: string) =>
+	({
+		date,
+		prevMonthButtonDisabled,
+		nextMonthButtonDisabled,
+		changeYear
+	}) => {
+		const decreaseYear = () => changeYear(date.getFullYear() - 1)
+		const increaseYear = () => changeYear(date.getFullYear() + 1)
 
-// 	const handleDateChange = date => {
-// 		setSelectedDate(date)
-// 	}
+		return (
+			<div className='flex flex-row items-center justify-between'>
+				<button
+					type='button'
+					onClick={decreaseYear}
+					disabled={prevMonthButtonDisabled}>
+					{'<'}
+				</button>
+				{type === 'monthYear' && <span>{date.getFullYear()}</span>}
+				{type === 'dayMonth' && (
+					<span>{months[date.getMonth()]}</span>
+				)}
+				<button
+					type='button'
+					onClick={increaseYear}
+					disabled={nextMonthButtonDisabled}>
+					{'>'}
+				</button>
+			</div>
+		)
+	}
 
-// 	return (
-// 		<div className='m-10'>
-// 			<DatePicker
-// 				placeholderText='дд.мм'
-// 				selected={selectedDate}
-// 				onChange={handleDateChange}
-// 				dateFormat={mode === 'monthYear' ? 'MM/yyyy' : 'dd/MM'}
-// 				renderCustomHeader={renderHeader(mode)}
-// 				className='rounded-xl border border-blue-500 p-2'
-// 				locale='ru'
-// 				showMonthYearPicker={mode === 'monthYear'}
-// 				showFullMonthYearPicker={mode === 'monthYear'}
-// 			/>
-// 		</div>
-// 	)
-// }
+const DateInput = memo(
+	({
+		name = '',
+		label = '',
+		placeholder = '',
+		error = '',
+		// inputProps = {},
+		type = ''
+	}: {
+		name?: string
+		type?: string
+		label?: string
+		placeholder?: string
+		error?: string
+		mode?: string
+		inputProps?: InputHTMLAttributes<HTMLInputElement>
+	}) => {
+		const isMonthYear = type === 'monthYear'
 
-// export default CustomDatePicker
+		return (
+			<InputWrapper
+				name={name}
+				label={label}
+				error={error}
+				labelProps={{ htmlFor: name }}
+				placeholder={placeholder}>
+				<DatePicker
+					name={name}
+					placeholderText={placeholder}
+					dateFormat={isMonthYear ? 'MM/yyyy' : 'dd/MM'}
+					renderCustomHeader={renderHeader(type)}
+					className='base-text base-padding block rounded-xl border border-indigo-500
+						focus:border-indigo-800'
+					locale='ru'
+					showMonthYearPicker={isMonthYear}
+					showFullMonthYearPicker={isMonthYear}
+				/>
+			</InputWrapper>
+		)
+	}
+)
+
+export default DateInput

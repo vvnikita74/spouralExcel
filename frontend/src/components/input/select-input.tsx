@@ -1,5 +1,6 @@
 import ChevronDown from 'public/icons/chevron.svg'
 import { CSSProperties, MouseEvent, memo } from 'react'
+import InputWrapper from './input-wrapper'
 
 type handleChangeType = (name: string, value: string) => void
 
@@ -69,15 +70,16 @@ const SelectInput = memo(
 		handleChange: handleChangeType
 	}) => {
 		return (
-			<label
-				className='accordion relative block caret-black'
-				htmlFor={name}
-				id={`accordion-${name}`}>
-				{label ? (
-					<span className='base-text mb-1 block px-2.5'>{label}</span>
-				) : (
-					<span className='sr-only'>{placeholder || name}</span>
-				)}
+			<InputWrapper
+				labelProps={{
+					htmlFor: name,
+					id: `accordion-${name}`,
+					className: 'accordion'
+				}}
+				label={label}
+				name={name}
+				error={error}
+				placeholder={placeholder}>
 				<button
 					type='button'
 					id={`accordion-btn-${name}`}
@@ -111,13 +113,7 @@ const SelectInput = memo(
 						</button>
 					))}
 				</div>
-				<span
-					className={`block text-right text-sm text-red-500
-						${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
-					id='error-text'>
-					{error || ''}
-				</span>
-			</label>
+			</InputWrapper>
 		)
 	}
 )

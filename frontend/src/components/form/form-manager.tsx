@@ -1,4 +1,4 @@
-import { Field } from 'types/field'
+import type Field from 'types/field'
 
 import { z } from 'zod'
 import FormView from './form-view'

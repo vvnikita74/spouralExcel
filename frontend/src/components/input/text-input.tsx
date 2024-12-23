@@ -1,4 +1,5 @@
 import { InputHTMLAttributes, memo } from 'react'
+import InputWrapper from './input-wrapper'
 
 const TextInput = memo(
 	({
@@ -16,12 +17,12 @@ const TextInput = memo(
 		error?: string
 		inputProps?: InputHTMLAttributes<HTMLInputElement>
 	}) => (
-		<label className='relative block caret-black' htmlFor={name}>
-			{label ? (
-				<span className='base-text mb-1 block px-2.5'>{label}</span>
-			) : (
-				<span className='sr-only'>{placeholder || name}</span>
-			)}
+		<InputWrapper
+			labelProps={{ htmlFor: name }}
+			name={name}
+			placeholder={placeholder}
+			error={error}
+			label={label}>
 			<input
 				name={name}
 				type={type}
@@ -30,13 +31,7 @@ const TextInput = memo(
 					${error ? 'border-red-500 placeholder:text-red-500 focus:border-red-500' : 'border-indigo-500 focus:border-indigo-800'}`}
 				{...inputProps}
 			/>
-			<span
-				className={`block text-right text-sm text-red-500
-					${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
-				id='error-text'>
-				{error || ''}
-			</span>
-		</label>
+		</InputWrapper>
 	)
 )
 

@@ -1,4 +1,4 @@
-import { Field } from 'types/field'
+import type Field from 'types/field'
 import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
@@ -13,6 +13,7 @@ import useLoader from 'utils/use-loader'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import Spinner from 'components/icons/Spinner'
+import DateInput from 'components/input/date-input'
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
 
@@ -135,6 +136,17 @@ export default function FormView({
 									label={name}
 									handleChange={handleSelectChange}
 									values={JSON.parse(settings || '')?.values || []}
+									error={(errors[inputKey]?.message as string) || ''}
+								/>
+							)
+						case 'date':
+							return (
+								<DateInput
+									type={JSON.parse(settings || '')?.type || []}
+									key={inputKey}
+									name={inputKey}
+									placeholder={placeholder || ''}
+									label={name}
 									error={(errors[inputKey]?.message as string) || ''}
 								/>
 							)
