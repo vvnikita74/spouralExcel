@@ -69,6 +69,9 @@ def validate_settings_json_structure(value):
         if 'type' not in input_item:
             raise ValidationError(
                 "Каждый элемент в 'inputs' должен содержать ключ 'type'")
-        if input_item['type'] not in ['text', 'number']:
+        if input_item['type'] not in ['text', 'number', 'date']:
             raise ValidationError(
-                "Поле 'type' должно быть либо 'text', либо 'number'")
+                "Поле 'type' должно быть либо 'text', 'number', либо 'date'")
+
+        if input_item['type'] == 'date':
+            continue  # Пропускаем проверку settings для type='date'
