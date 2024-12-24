@@ -40,38 +40,26 @@ def validate_subsections_json_structure(value):
         raise ValidationError("Данные JSON должны быть списком")
 
 
-def validate_settings_json_structure(value):
-    try:
-        data = json.loads(value)
-    except json.JSONDecodeError:
-        raise ValidationError("Неверный формат JSON")
-
-    if not isinstance(data, dict):
-        raise ValidationError("Данные JSON должны быть словарем")
-
-    if 'inputs' not in data:
-        raise ValidationError("Поле 'inputs' обязательно")
-
-    inputs = data['inputs']
-    if not isinstance(inputs, list):
-        raise ValidationError("Поле 'inputs' должно быть списком")
-
-    for input_item in inputs:
-        if not isinstance(input_item, dict):
+def validate_settings_json_structure(value, field_type):
+    if field_type == 'select':
+        try:
+            data = json.loads(value)
+        except json.JSONDecodeError:
+            raise ValidationError("Неверный формат JSON")
+        if not isinstance(data,
+                          dict) or 'inputs' not in data or not isinstance(
+                data['inputs'], list):
             raise ValidationError(
-                "Каждый элемент в 'inputs' должен быть словарем")
-        if 'name' not in input_item:
+                "Для типа 'select' поле 'settings' должно быть словарем с ключом 'inputs', содержащим список")
+    elif field_type == 'date':
+        try:
+            data = json.loads(value)
+        except json.JSONDecodeError:
+            raise ValidationError("Неверный формат JSON")
+        if not isinstance(data, dict) or 'type' not in data:
             raise ValidationError(
-                "Каждый элемент в 'inputs' должен содержать ключ 'name'")
-        if 'placeholder' not in input_item:
+                "Для типа 'date' поле 'settings' должно быть словарем с ключом 'type'")
+    else:
+        if value is not None and value != 'null':
             raise ValidationError(
-                "Каждый элемент в 'inputs' должен содержать ключ 'placeholder'")
-        if 'type' not in input_item:
-            raise ValidationError(
-                "Каждый элемент в 'inputs' должен содержать ключ 'type'")
-        if input_item['type'] not in ['text', 'number', 'date']:
-            raise ValidationError(
-                "Поле 'type' должно быть либо 'text', 'number', либо 'date'")
-
-        if input_item['type'] == 'date':
-            continue  # Пропускаем проверку settings для type='date'
+                f"Для типа '{field_type}' поле 'settings' должно быть null")
