@@ -7,15 +7,7 @@ from .validators import validate_settings_json_structure, \
 
 class FieldsAdminForm(forms.ModelForm):
     settings = forms.CharField(
-        initial='''{
-    "inputs": [
-        {
-            "name": "input name",
-            "placeholder": "input placeholder",
-            "type": "text"
-        }
-    ]
-}''',
+        required=False,
         widget=JSONEditor(attrs={
             'options': {
                 'mode': 'code',
@@ -23,9 +15,14 @@ class FieldsAdminForm(forms.ModelForm):
                     'useWorker': False
                 }
             }
-        }),
-        validators=[validate_settings_json_structure]
+        })
     )
+
+    def clean_settings(self):
+        settings = self.cleaned_data.get('settings')
+        field_type = self.cleaned_data.get('type')
+        validate_settings_json_structure(settings, field_type)
+        return settings
 
     class Meta:
         model = Fields

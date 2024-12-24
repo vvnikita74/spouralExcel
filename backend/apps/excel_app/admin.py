@@ -3,7 +3,6 @@ from django.contrib import admin
 from .models import (Sheet, ConstructionTypes, Recommendations, Defects,
                      Materials, Fields)
 
-
 from .forms import FieldsAdminForm, SheetAdminForm
 
 
@@ -60,6 +59,9 @@ class FieldsAdmin(admin.ModelAdmin):
     actions = [toggle_required, decrease_step_value, increase_step_value,
                decrease_order_value, increase_order_value, copy_object]
     ordering = ('step', 'position')
+
+    class Media:
+        js = ('excel_app/settings_auto/admin_custom.js',)
 
 
 class SheetAdmin(admin.ModelAdmin):
