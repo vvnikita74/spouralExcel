@@ -1,7 +1,16 @@
 import ChevronDown from 'public/icons/chevron.svg'
 import { CSSProperties, MouseEvent, memo } from 'react'
+import InputWrapper from './input-wrapper'
 
 type handleChangeType = (name: string, value: string) => void
+
+export const onSelectFocus = (focusEl: HTMLElement | null = null) => {
+	document
+		.querySelectorAll('.accordion')
+		.forEach(
+			el => el && el !== focusEl && el.classList.remove('opened')
+		)
+}
 
 const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 	try {
@@ -12,11 +21,7 @@ const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 			`accordion-${containerId}`
 		)
 
-		document
-			.querySelectorAll('.accordion')
-			.forEach(
-				el => el !== accordion && el.classList.remove('opened')
-			)
+		onSelectFocus(accordion)
 
 		accordion?.classList?.toggle('opened')
 	} catch {
@@ -69,30 +74,27 @@ const SelectInput = memo(
 		handleChange: handleChangeType
 	}) => {
 		return (
-			<label
-				className='accordion relative block caret-black'
-				htmlFor={name}
-				id={`accordion-${name}`}>
-				{label ? (
-					<span className='base-text mb-1 block px-2.5'>{label}</span>
-				) : (
-					<span className='sr-only'>{placeholder || name}</span>
-				)}
+			<InputWrapper
+				labelProps={{
+					htmlFor: name,
+					id: `accordion-${name}`,
+					className: 'accordion'
+				}}
+				label={label}
+				name={name}
+				error={error}
+				placeholder={placeholder}>
 				<button
 					type='button'
 					id={`accordion-btn-${name}`}
 					data-container-id={name}
 					onClick={toggleView}
-					className={`base-text base-padding accordion-btn flex w-full flex-row items-center
-						justify-between rounded-xl border text-left
-						${error ? 'with-error border-red-500' : 'border-indigo-500'}`}>
+					className={`accordion-btn input-class flex w-full flex-row items-center
+						justify-between text-left ${error ? 'input-error' : ''}`}>
 					<span id={`text-${name}`} className='truncate opacity-50'>
 						{placeholder}
 					</span>
-					<ChevronDown
-						className={`pointer-events-none size-6 -rotate-180
-							${error ? 'text-red-500' : 'text-indigo-500'}`}
-					/>
+					<ChevronDown className='pointer-events-none size-6 -rotate-180' />
 				</button>
 				<div
 					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl
@@ -111,13 +113,7 @@ const SelectInput = memo(
 						</button>
 					))}
 				</div>
-				<span
-					className={`block text-right text-sm text-red-500
-						${error ? 'h-5 opacity-100' : 'h-0 opacity-0'}`}
-					id='error-text'>
-					{error || ''}
-				</span>
-			</label>
+			</InputWrapper>
 		)
 	}
 )

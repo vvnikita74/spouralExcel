@@ -1,4 +1,4 @@
-import { Field } from 'types/field'
+import type Field from 'types/field'
 import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
@@ -6,13 +6,17 @@ import type { ZodType } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import Spinner from 'components/icons/Spinner'
+import DateInput, {
+	dateToString,
+	stringToDate
+} from 'components/input/date-input'
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
 
@@ -64,6 +68,7 @@ export default function FormView({
 		handleSubmit,
 		setValue,
 		setError,
+		control,
 		formState: { errors }
 	} = useForm({
 		resolver: zodResolver(validationSchema),
@@ -109,7 +114,7 @@ export default function FormView({
 
 	return (
 		<form
-			className='base-text mb-14 flex flex-col'
+			className='base-text mb-[4.6875rem] flex flex-col'
 			onSubmit={handleSubmit(onSubmit)}>
 			{fields.map(
 				({ type, key: inputKey, name, placeholder, settings }) => {
@@ -136,6 +141,43 @@ export default function FormView({
 									handleChange={handleSelectChange}
 									values={JSON.parse(settings || '')?.values || []}
 									error={(errors[inputKey]?.message as string) || ''}
+								/>
+							)
+						case 'date':
+							return (
+								<Controller
+									name={inputKey}
+									control={control}
+									defaultValue={null}
+									key={inputKey}
+									render={({
+										field: { value, onBlur, onChange }
+									}) => {
+										const dateType = JSON.parse(settings || '')?.type
+
+										return (
+											<DateInput
+												type={dateType}
+												name={inputKey}
+												placeholder={placeholder || ''}
+												label={name}
+												inputProps={{
+													value: value
+														? stringToDate(dateType, value)
+														: null,
+													onBlur,
+													onChange: (date: Date | null) => {
+														console.log(dateToString(dateType, date))
+														console.log(date)
+														onChange(dateToString(dateType, date))
+													}
+												}}
+												error={
+													(errors[inputKey]?.message as string) || ''
+												}
+											/>
+										)
+									}}
 								/>
 							)
 					}

@@ -74,6 +74,9 @@ export default function ReportsList({
 					throw new Error('delete request error')
 				}
 			} catch {
+				alert(
+					'Произошла ошибка удаления. Проверьте интернет-подключение'
+				)
 				/* empty */
 			}
 
