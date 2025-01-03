@@ -27,8 +27,7 @@ const TextInput = memo(
 				name={name}
 				type={type}
 				placeholder={placeholder}
-				className={`base-text base-padding block rounded-xl border
-					${error ? 'border-red-500 placeholder:text-red-500 focus:border-red-500' : 'border-indigo-500 focus:border-indigo-800'}`}
+				className={` ${error ? 'input-error' : ''}`}
 				{...inputProps}
 			/>
 		</InputWrapper>

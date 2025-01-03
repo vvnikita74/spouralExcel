@@ -4,7 +4,7 @@
 
 @layer base {
 	input, .input-class {
-		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full focus:outline-none
+		@apply appearance-none outline-none text-inherit caret-inherit placeholder:text-inherit placeholder:opacity-40 w-full;
 	}
 	form {
 		> label:not(:first-child), > button:not(:first-child) {
@@ -22,6 +22,31 @@
 	}
 	.base-padding {
 		@apply px-2.5 py-2;
+	}
+}
+
+@layer components {
+	input, .input-class {
+		@apply base-text base-padding block rounded-xl border border-indigo-500 focus:border-indigo-800;
+		&.input-error {
+			@apply border-red-500 focus:border-red-500;
+		}
+	}
+
+	.input-wrapper {
+		svg {
+			@apply text-indigo-500;
+		}
+		&.input-focus {
+			svg {
+				@apply text-black;
+			}
+		}
+		&.input-wrapper-error {
+			svg {
+				@apply text-red-500;
+			}
+		}
 	}
 }
 
@@ -94,7 +119,7 @@ body {
 		  &.with-error {
 		    @apply border-red-500;
 		    svg {
-		      @apply text-red-500 rotate-0;
+		      @apply rotate-0 text-red-500;
 		    }
 		  }
 		}
@@ -106,7 +131,7 @@ body {
 	transform: none !important;
 	@apply mt-2.5;
 	.react-datepicker {
-		@apply border rounded-xl border-indigo-500 base-padding w-full;
+		@apply border rounded-xl border-black py-2 w-full;
 	}
 	.react-datepicker__header, .react-datepicker__month {
 		@apply bg-transparent p-0 text-base w-full border-none !important;
@@ -115,20 +140,19 @@ body {
 		@apply m-0 !important;
 	}
 	.react-datepicker__header {
-		@apply mb-0.5 font-medium !important;
+		@apply mb-1 pb-2 px-2.5 font-medium border-b border-solid border-b-black !important;
 	}
 	.react-datepicker__month-container {
 		@apply w-full;
 	}
 }
 
-
-.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
-	@apply bg-indigo-500 text-white font-normal !important;
+.react-datepicker__day--today, .react-datepicker__month-text--today, .react-datepicker__quarter-text--today, .react-datepicker__year-text--today {
+	@apply font-normal bg-transparent !important;
 }
 
-.react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected {
-	@apply bg-indigo-500 text-white font-normal !important;
+.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected {
+	@apply bg-transparent text-black font-normal !important;
 }
 
 .react-datepicker__month .react-datepicker__month-text, .react-datepicker__month .react-datepicker__quarter-text {

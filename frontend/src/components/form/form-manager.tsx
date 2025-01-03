@@ -15,7 +15,7 @@ export default function FormManager({
 	const schemaShape = {}
 	const defaultValues = {}
 
-	fields.forEach(({ type, mask, key, required }) => {
+	fields.forEach(({ type, mask, key, required, settings }) => {
 		let validator: z.ZodType
 
 		switch (type) {
@@ -35,20 +35,26 @@ export default function FormManager({
 				defaultValues[key] = ''
 				break
 			case 'date': {
-				let regex: string
+				let regex: RegExp
+				const dateType = JSON.parse(settings)?.type || 'monthYear'
 
-				switch (mask) {
+				switch (dateType) {
 					case 'monthYear':
-						regex = '\b(0[1-9]|1[0-2]).d{4}\b'
+						regex = /^(0[1-9]|1[0-2]).(d{2})$/
+						break
+					case 'monthFullYear':
+						regex = /^(0[1-9]|1[0-2]).(d{4})$/
 						break
 					case 'dayMonth':
-						regex = '\b(0[1-9]|[12]d|3[01]).(0[1-9]|1[0-2])\b'
+						regex = /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])$/
 						break
 					default:
-						regex = ''
+						regex = null
 				}
 
-				validator = z.string()
+				validator = z.string({
+					message: 'Введите корректное значение'
+				})
 
 				if (regex)
 					validator = (validator as z.ZodString).regex(

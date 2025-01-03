@@ -18,7 +18,8 @@ export default function InputWrapper({
 	return (
 		<label
 			{...labelProps}
-			className={`relative block caret-black ${labelProps.className || ''}`}>
+			className={`input-wrapper relative block caret-black ${labelProps.className || ''}
+				${error ? 'input-wrapper-error' : ''}`}>
 			{label ? (
 				<span className='base-text mb-1 block px-2.5'>{label}</span>
 			) : (
