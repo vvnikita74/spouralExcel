@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 
 from django.http import FileResponse, Http404
 from django.conf import settings
@@ -35,11 +36,13 @@ class UserInputListView(APIView):
         serializer = FieldsSerializer(user_inputs, many=True)
         return Response(serializer.data)
 
+
 class UserDataListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        user_data = UserData.objects.filter(user=request.user).order_by('-date_created')
+        user_data = UserData.objects.filter(user=request.user).order_by(
+            '-date_created')
         serializer = UserDataSerializer(user_data, many=True)
         return Response(serializer.data)
 
