@@ -1,9 +1,8 @@
 import type Field from 'types/field'
-import type Report from 'types/report'
-import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
+import type { PostMutationVariables } from 'utils/mutations'
+import type { UseMutationResult } from '@tanstack/react-query'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { Controller, useForm } from 'react-hook-form'
@@ -15,7 +14,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import Spinner from 'components/icons/Spinner'
 import DateInput, {
 	dateToString,
-	stringToDate
+	stringToDate,
+	getDateType
 } from 'components/input/date-input'
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
@@ -24,44 +24,19 @@ export default function FormView({
 	validationSchema,
 	fields,
 	defaultValues,
-	queryKey,
-	path
+	path,
+	mutation
 }: {
 	validationSchema: ZodType
 	fields: Field[]
 	defaultValues: { [key: string]: string }
-	queryKey: string[]
 	path: string
+	mutation: UseMutationResult<unknown, unknown, PostMutationVariables>
 }) {
 	const authHeader = useAuthHeader()
-	const queryClient = useQueryClient()
 	const navigate = useNavigate()
 
 	const { btnRef, toggleLoader } = useLoader()
-
-	const mutation = useMutation<
-		unknown,
-		unknown,
-		PostMutationVariables
-	>({
-		mutationKey: ['req-post'],
-		onMutate: variables => {
-			const dateCreated = variables.data.get('dateCreated')
-
-			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				return [
-					{
-						file_name: dateCreated,
-						date_created: dateCreated,
-						isReady: 0,
-						data: {}
-					},
-					...prev
-				]
-			})
-		}
-		// TODO: onError
-	})
 
 	const {
 		register,
@@ -117,7 +92,14 @@ export default function FormView({
 			className='base-text mb-[4.6875rem] flex flex-col'
 			onSubmit={handleSubmit(onSubmit)}>
 			{fields.map(
-				({ type, key: inputKey, name, placeholder, settings }) => {
+				({
+					type,
+					key: inputKey,
+					name,
+					placeholder,
+					settings,
+					mask
+				}) => {
 					switch (type) {
 						case 'text':
 							return (
@@ -153,7 +135,7 @@ export default function FormView({
 									render={({
 										field: { value, onBlur, onChange }
 									}) => {
-										const dateType = JSON.parse(settings || '')?.type
+										const dateType = getDateType(mask)
 
 										return (
 											<DateInput

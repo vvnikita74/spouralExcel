@@ -27,9 +27,16 @@
 
 @layer components {
 	input, .input-class {
-		@apply base-text base-padding block rounded-xl border border-indigo-500 focus:border-indigo-800;
+		@apply base-text base-padding block rounded-xl border border-indigo-500;
 		&.input-error {
-			@apply border-red-500 focus:border-red-500;
+			@apply border-red-500;
+		}
+	}
+
+	input {
+		@apply focus:border-indigo-800;
+		&.input-error {
+			@apply focus:border-red-500;
 		}
 	}
 

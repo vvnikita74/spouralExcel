@@ -47,7 +47,6 @@ const onChange =
 				btnText.textContent = value
 			}
 
-			console.log(accordionBtn)
 			if (accordionBtn) accordionBtn.click()
 		} catch {
 			/* empty */
