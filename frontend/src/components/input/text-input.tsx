@@ -27,7 +27,7 @@ const TextInput = memo(
 				name={name}
 				type={type}
 				placeholder={placeholder}
-				className={` ${error ? 'input-error' : ''}`}
+				className={`${error ? 'input-error' : ''}`}
 				{...inputProps}
 			/>
 		</InputWrapper>

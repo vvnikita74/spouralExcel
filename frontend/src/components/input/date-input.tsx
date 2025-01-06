@@ -4,13 +4,14 @@ import type {
 	InputHTMLAttributes
 } from 'react'
 
-import { ru } from 'date-fns/locale'
+import 'react-datepicker/dist/react-datepicker.css'
 import Calendar from 'public/icons/calendar.svg'
 import ChevronDown from 'public/icons/chevron.svg'
 
+import { ru } from 'date-fns/locale'
 import { forwardRef, memo } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
+
 import InputWrapper from './input-wrapper'
 
 registerLocale('ru', ru)
@@ -30,10 +31,18 @@ const months = [
 	'Декабрь'
 ]
 
-export function dateToString(
-	type: 'monthYear' | 'dayMonth' | 'monthFullYear' | null,
-	date: Date | null
-) {
+const dateTypes = ['monthYear', 'dayMonth', 'monthFullYear'] as const
+type dateType = (typeof dateTypes)[number]
+
+export function getDateType(
+	type: string
+): (typeof dateTypes)[number] {
+	return dateTypes.includes(type as dateType)
+		? (type as (typeof dateTypes)[number])
+		: dateTypes[0]
+}
+
+export function dateToString(type: dateType, date: Date | null) {
 	try {
 		if (type === 'monthYear') {
 			const month = date.getMonth() + 1
@@ -48,7 +57,7 @@ export function dateToString(
 }
 
 export function stringToDate(
-	type: 'monthYear' | 'dayMonth' | 'monthFullYear' | null,
+	type: dateType,
 	dateString: string | null
 ) {
 	if (type === 'monthYear') {
@@ -95,15 +104,14 @@ const renderHeader =
 const CustomInput = forwardRef<
 	HTMLInputElement,
 	InputHTMLAttributes<HTMLInputElement>
->(({ onFocus, onBlur, name, ...props }, ref) => {
+>(({ onFocus, onBlur, name, className, ...props }, ref) => {
 	const onInputFocus = (
 		event: FocusEvent<HTMLInputElement, Element>
 	) => {
 		const container = document.querySelector(`label[for="${name}"]`)
-		console.log(container, 'focus')
-		if (container) {
-			container.classList.add('input-focus')
-		}
+
+		if (container) container.classList.add('input-focus')
+
 		onFocus(event)
 	}
 
@@ -111,10 +119,9 @@ const CustomInput = forwardRef<
 		event: FocusEvent<HTMLInputElement, Element>
 	) => {
 		const container = document.querySelector(`label[for="${name}"]`)
-		console.log(container, 'blur')
-		if (container) {
-			container.classList.remove('input-focus')
-		}
+
+		if (container) container.classList.remove('input-focus')
+
 		onBlur(event)
 	}
 
@@ -126,6 +133,8 @@ const CustomInput = forwardRef<
 				{...props}
 				onFocus={onInputFocus}
 				onBlur={onInputBlur}
+				readOnly
+				className={`${className} cursor-pointer`}
 			/>
 			<Calendar className='absolute right-2.5 size-6' />
 		</div>
@@ -142,7 +151,7 @@ const DateInput = memo(
 		type = 'monthYear'
 	}: {
 		name?: string
-		type?: 'monthYear' | 'monthFullYear' | 'dayMonth'
+		type?: dateType
 		label?: string
 		placeholder?: string
 		error?: string

@@ -1,6 +1,9 @@
 import type Field from 'types/field'
+import type Report from 'types/report'
+import type { PostMutationVariables } from 'utils/mutations'
 
 import { z } from 'zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import FormView from './form-view'
 
 export default function FormManager({
@@ -15,7 +18,7 @@ export default function FormManager({
 	const schemaShape = {}
 	const defaultValues = {}
 
-	fields.forEach(({ type, mask, key, required, settings }) => {
+	fields.forEach(({ type, mask, key, required }) => {
 		let validator: z.ZodType
 
 		switch (type) {
@@ -36,12 +39,8 @@ export default function FormManager({
 				break
 			case 'date': {
 				let regex: RegExp
-				const dateType = JSON.parse(settings)?.type || 'monthYear'
 
-				switch (dateType) {
-					case 'monthYear':
-						regex = /^(0[1-9]|1[0-2]).(d{2})$/
-						break
+				switch (mask) {
 					case 'monthFullYear':
 						regex = /^(0[1-9]|1[0-2]).(d{4})$/
 						break
@@ -49,7 +48,7 @@ export default function FormManager({
 						regex = /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])$/
 						break
 					default:
-						regex = null
+						regex = /^(0[1-9]|1[0-2]).(d{2})$/
 				}
 
 				validator = z.string({
@@ -67,12 +66,38 @@ export default function FormManager({
 		schemaShape[key] = validator
 	})
 
+	const queryClient = useQueryClient()
+
+	const mutation = useMutation<
+		unknown,
+		unknown,
+		PostMutationVariables
+	>({
+		mutationKey: ['req-post'],
+		onMutate: variables => {
+			const dateCreated = variables.data.get('dateCreated')
+
+			queryClient.setQueryData(queryKey, (prev: Report[]) => {
+				return [
+					{
+						file_name: dateCreated,
+						date_created: dateCreated,
+						isReady: 0,
+						data: {}
+					},
+					...prev
+				]
+			})
+		}
+		// TODO: onError
+	})
+
 	return (
 		<FormView
 			defaultValues={defaultValues}
 			validationSchema={z.object(schemaShape)}
 			fields={fields}
-			queryKey={queryKey}
+			mutation={mutation}
 			path={path}
 		/>
 	)
