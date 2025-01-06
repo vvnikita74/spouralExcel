@@ -118,18 +118,6 @@ body {
 		    @apply border-red-500;
 		  }
 		}
-		.accordion-btn {
-		  @apply border-indigo-800;
-		  svg {
-		    @apply text-indigo-800 rotate-0;
-		  }
-		  &.with-error {
-		    @apply border-red-500;
-		    svg {
-		      @apply rotate-0 text-red-500;
-		    }
-		  }
-		}
 	}
 }
 

@@ -1,77 +1,74 @@
-import ChevronDown from 'public/icons/chevron.svg'
-import { CSSProperties, MouseEvent, memo } from 'react'
-import InputWrapper from './input-wrapper'
+import type { ControllerRenderProps } from 'react-hook-form'
+import type {
+	CSSProperties,
+	MouseEvent,
+	FocusEvent,
+	FocusEventHandler
+} from 'react'
 
-type handleChangeType = (name: string, value: string) => void
+import { memo } from 'react'
+import InputWrapper, { InputWithIcon } from './input-wrapper'
+import List from 'public/icons/list.svg'
 
-export const onSelectFocus = (focusEl: HTMLElement | null = null) => {
-	document
-		.querySelectorAll('.accordion')
-		.forEach(
-			el => el && el !== focusEl && el.classList.remove('opened')
-		)
-}
+const handleOpen = (event?: MouseEvent<HTMLInputElement>) => {
+	const target = event.target as HTMLInputElement
 
-const toggleView = (event: MouseEvent<HTMLButtonElement>) => {
 	try {
-		const { currentTarget } = event
-		const { containerId } = currentTarget.dataset
-
 		const accordion = document.getElementById(
-			`accordion-${containerId}`
+			`accordion-${target.name}`
 		)
-
-		onSelectFocus(accordion)
-
-		accordion?.classList?.toggle('opened')
+		accordion?.classList?.add('opened')
 	} catch {
 		/* empty */
 	}
 }
 
-const onChange =
-	(handleChange: handleChangeType) =>
-	(event: React.MouseEvent<HTMLButtonElement>) => {
-		const { currentTarget } = event
-		const { btnId, value, name } = currentTarget.dataset
+const handleClose =
+	(onBlur: FocusEventHandler) =>
+	(event?: FocusEvent<HTMLInputElement>) => {
+		const target = event.target as HTMLInputElement
 
 		try {
-			const accordionBtn = document.getElementById(
-				`accordion-btn-${btnId}`
+			const accordion = document.getElementById(
+				`accordion-${target.name}`
 			)
 
-			const btnText = accordionBtn?.querySelector(`#text-${btnId}`)
-
-			if (btnText) {
-				btnText.classList.remove('opacity-50')
-				btnText.textContent = value
-			}
-
-			if (accordionBtn) accordionBtn.click()
+			setTimeout(() => {
+				accordion?.classList?.remove('opened')
+			}, 0)
 		} catch {
 			/* empty */
 		}
 
-		// Вызов оригинального onChange
-		handleChange(name, value)
+		onBlur(event)
+	}
+
+const handleSelect =
+	(onChange: (value: string | undefined) => void) =>
+	(event?: MouseEvent<HTMLButtonElement>) => {
+		const target = event.target as HTMLElement
+		const { value } = target.dataset
+
+		onChange(value)
 	}
 
 const SelectInput = memo(
 	({
-		name = '',
-		values = [],
 		label = '',
+		values = [],
 		placeholder = '',
 		error = '',
-		handleChange = () => {}
+		inputProps
 	}: {
-		name?: string
+		label: string
 		values?: { name: string; value: string }[]
-		label?: string
 		placeholder?: string
 		error?: string
-		handleChange: handleChangeType
+		inputProps?: ControllerRenderProps
 	}) => {
+		const { name, onBlur, onChange } = inputProps
+		const onSelect = handleSelect(onChange)
+
 		return (
 			<InputWrapper
 				labelProps={{
@@ -83,18 +80,17 @@ const SelectInput = memo(
 				name={name}
 				error={error}
 				placeholder={placeholder}>
-				<button
-					type='button'
+				<InputWithIcon
+					{...inputProps}
 					id={`accordion-btn-${name}`}
 					data-container-id={name}
-					onClick={toggleView}
-					className={`accordion-btn input-class flex w-full flex-row items-center
-						justify-between text-left ${error ? 'input-error' : ''}`}>
-					<span id={`text-${name}`} className='truncate opacity-50'>
-						{placeholder}
-					</span>
-					<ChevronDown className='pointer-events-none size-6 -rotate-180' />
-				</button>
+					onMouseDown={handleOpen}
+					onBlur={handleClose(onBlur)}
+					readOnly
+					placeholder={placeholder}
+					className={`accordion-btn input-class ${error ? 'input-error' : ''}`}
+					icon={<List className='pointer-events-none size-full' />}
+				/>
 				<div
 					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl
 						border border-transparent ${error ? 'with-error' : ''}`}
@@ -102,11 +98,10 @@ const SelectInput = memo(
 					{values.map(({ name: valueName, value }) => (
 						<button
 							type='button'
-							onClick={onChange(handleChange)}
-							data-btn-id={name}
+							onMouseDown={onSelect}
+							data-container-id={name}
 							className='base-text mt-2 truncate px-2.5 text-left last:mb-2'
 							key={`${name}-${valueName}`}
-							data-name={name}
 							data-value={value}>
 							{valueName}
 						</button>
