@@ -1,18 +1,14 @@
-import type {
-	FocusEvent,
-	FocusEventHandler,
-	InputHTMLAttributes
-} from 'react'
+import type { FocusEventHandler } from 'react'
 
 import 'react-datepicker/dist/react-datepicker.css'
 import Calendar from 'public/icons/calendar.svg'
-import ChevronDown from 'public/icons/chevron.svg'
+import Chevron from 'public/icons/chevron.svg'
 
 import { ru } from 'date-fns/locale'
-import { forwardRef, memo } from 'react'
+import { memo } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
-import InputWrapper from './input-wrapper'
+import InputWrapper, { InputWithIcon } from './input-wrapper'
 
 registerLocale('ru', ru)
 
@@ -85,7 +81,7 @@ const renderHeader =
 					type='button'
 					onClick={decreaseYear}
 					disabled={prevMonthButtonDisabled}>
-					<ChevronDown className='size-6 -rotate-90 !text-black' />
+					<Chevron className='pointer-events-none size-6 -rotate-90 !text-black' />
 				</button>
 				{type === 'monthYear' && <span>{date.getFullYear()}</span>}
 				{type === 'dayMonth' && (
@@ -95,51 +91,11 @@ const renderHeader =
 					type='button'
 					onClick={increaseYear}
 					disabled={nextMonthButtonDisabled}>
-					<ChevronDown className='size-6 rotate-90 !text-black' />
+					<Chevron className='pointer-events-none size-6 rotate-90 !text-black' />
 				</button>
 			</div>
 		)
 	}
-
-const CustomInput = forwardRef<
-	HTMLInputElement,
-	InputHTMLAttributes<HTMLInputElement>
->(({ onFocus, onBlur, name, className, ...props }, ref) => {
-	const onInputFocus = (
-		event: FocusEvent<HTMLInputElement, Element>
-	) => {
-		const container = document.querySelector(`label[for="${name}"]`)
-
-		if (container) container.classList.add('input-focus')
-
-		onFocus(event)
-	}
-
-	const onInputBlur = (
-		event: FocusEvent<HTMLInputElement, Element>
-	) => {
-		const container = document.querySelector(`label[for="${name}"]`)
-
-		if (container) container.classList.remove('input-focus')
-
-		onBlur(event)
-	}
-
-	return (
-		<div className='relative flex flex-row items-center'>
-			<input
-				name={name}
-				ref={ref}
-				{...props}
-				onFocus={onInputFocus}
-				onBlur={onInputBlur}
-				readOnly
-				className={`${className} cursor-pointer`}
-			/>
-			<Calendar className='absolute right-2.5 size-6' />
-		</div>
-	)
-})
 
 const DateInput = memo(
 	({
@@ -192,7 +148,13 @@ const DateInput = memo(
 					renderCustomHeader={renderHeader(type)}
 					className={error ? 'input-error' : ''}
 					locale='ru'
-					customInput={<CustomInput />}
+					customInput={
+						<InputWithIcon
+							icon={
+								<Calendar className='pointer-events-none size-full' />
+							}
+						/>
+					}
 					showMonthYearPicker={isMonthYear}
 					showFullMonthYearPicker={isMonthYear}
 					onChange={onChange}

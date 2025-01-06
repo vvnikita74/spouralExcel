@@ -41,8 +41,6 @@ export default function FormView({
 	const {
 		register,
 		handleSubmit,
-		setValue,
-		setError,
 		control,
 		formState: { errors }
 	} = useForm({
@@ -79,14 +77,6 @@ export default function FormView({
 		[toggleLoader, authHeader, mutation, path, navigate]
 	)
 
-	const handleSelectChange = useCallback(
-		(name: string, value: string) => {
-			setValue(name, value)
-			setError(name, null)
-		},
-		[setValue, setError]
-	)
-
 	return (
 		<form
 			className='base-text mb-[4.6875rem] flex flex-col'
@@ -115,14 +105,24 @@ export default function FormView({
 							)
 						case 'select':
 							return (
-								<SelectInput
-									key={inputKey}
+								<Controller
 									name={inputKey}
-									placeholder={placeholder || ''}
-									label={name}
-									handleChange={handleSelectChange}
-									values={JSON.parse(settings || '')?.values || []}
-									error={(errors[inputKey]?.message as string) || ''}
+									control={control}
+									defaultValue={null}
+									key={inputKey}
+									render={({ field }) => (
+										<SelectInput
+											placeholder={placeholder || ''}
+											label={name}
+											inputProps={field}
+											values={
+												JSON.parse(settings || '')?.values || []
+											}
+											error={
+												(errors[inputKey]?.message as string) || ''
+											}
+										/>
+									)}
 								/>
 							)
 						case 'date':
@@ -133,7 +133,7 @@ export default function FormView({
 									defaultValue={null}
 									key={inputKey}
 									render={({
-										field: { value, onBlur, onChange }
+										field: { value, onBlur, onChange: fieldOnChange }
 									}) => {
 										const dateType = getDateType(mask)
 
@@ -149,9 +149,9 @@ export default function FormView({
 														: null,
 													onBlur,
 													onChange: (date: Date | null) => {
-														console.log(dateToString(dateType, date))
-														console.log(date)
-														onChange(dateToString(dateType, date))
+														fieldOnChange(
+															dateToString(dateType, date)
+														)
 													}
 												}}
 												error={
