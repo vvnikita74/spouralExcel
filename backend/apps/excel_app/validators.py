@@ -47,18 +47,10 @@ def validate_settings_json_structure(value, field_type):
         except json.JSONDecodeError:
             raise ValidationError("Неверный формат JSON")
         if not isinstance(data,
-                          dict) or 'inputs' not in data or not isinstance(
-                data['inputs'], list):
+                          dict) or 'values' not in data or not isinstance(
+                data['values'], list):
             raise ValidationError(
-                "Для типа 'select' поле 'settings' должно быть словарем с ключом 'inputs', содержащим список")
-    elif field_type == 'date':
-        try:
-            data = json.loads(value)
-        except json.JSONDecodeError:
-            raise ValidationError("Неверный формат JSON")
-        if not isinstance(data, dict) or 'type' not in data:
-            raise ValidationError(
-                "Для типа 'date' поле 'settings' должно быть словарем с ключом 'type'")
+                "Для типа 'select' поле 'settings' должно быть словарем с ключом 'values', содержащим список")
     else:
         if value is not None and value != 'null':
             raise ValidationError(
