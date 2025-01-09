@@ -27,9 +27,16 @@
 
 @layer components {
 	input, .input-class {
-		@apply base-text base-padding block rounded-xl border border-indigo-500 focus:border-indigo-800;
+		@apply base-text base-padding block rounded-xl border border-indigo-500;
 		&.input-error {
-			@apply border-red-500 focus:border-red-500;
+			@apply border-red-500;
+		}
+	}
+
+	input {
+		@apply focus:border-indigo-800;
+		&.input-error {
+			@apply focus:border-red-500;
 		}
 	}
 
@@ -111,18 +118,6 @@ body {
 		    @apply border-red-500;
 		  }
 		}
-		.accordion-btn {
-		  @apply border-indigo-800;
-		  svg {
-		    @apply text-indigo-800 rotate-0;
-		  }
-		  &.with-error {
-		    @apply border-red-500;
-		    svg {
-		      @apply rotate-0 text-red-500;
-		    }
-		  }
-		}
 	}
 }
 
@@ -151,8 +146,12 @@ body {
 	@apply font-normal bg-transparent !important;
 }
 
-.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected {
+ .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected {
 	@apply bg-transparent text-black font-normal !important;
+}
+
+.react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
+	@apply bg-[#f0f0f0] text-black opacity-100 !important;
 }
 
 .react-datepicker__month .react-datepicker__month-text, .react-datepicker__month .react-datepicker__quarter-text {

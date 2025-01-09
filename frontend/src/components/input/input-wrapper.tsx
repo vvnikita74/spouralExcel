@@ -1,4 +1,5 @@
-import { LabelHTMLAttributes, ReactNode } from 'react'
+import type { FocusEvent, InputHTMLAttributes } from 'react'
+import { LabelHTMLAttributes, ReactNode, forwardRef } from 'react'
 
 export default function InputWrapper({
 	label = '',
@@ -35,3 +36,43 @@ export default function InputWrapper({
 		</label>
 	)
 }
+
+export const InputWithIcon = forwardRef<
+	HTMLInputElement,
+	InputHTMLAttributes<HTMLInputElement> & { icon?: ReactNode }
+>(({ onFocus, onBlur, name, className, icon, ...props }, ref) => {
+	const onInputFocus = (
+		event?: FocusEvent<HTMLInputElement, Element>
+	) => {
+		const container = document.querySelector(`label[for="${name}"]`)
+
+		if (container) container.classList.add('input-focus')
+
+		if (onFocus) onFocus(event)
+	}
+
+	const onInputBlur = (
+		event?: FocusEvent<HTMLInputElement, Element>
+	) => {
+		const container = document.querySelector(`label[for="${name}"]`)
+
+		if (container) container.classList.remove('input-focus')
+
+		if (onBlur) onBlur(event)
+	}
+
+	return (
+		<div className='relative flex flex-row items-center'>
+			<input
+				name={name}
+				ref={ref}
+				{...props}
+				onFocus={onInputFocus}
+				onBlur={onInputBlur}
+				readOnly
+				className={`${className} cursor-pointer`}
+			/>
+			<div className='absolute right-2.5 size-6'>{icon}</div>
+		</div>
+	)
+})

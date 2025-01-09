@@ -5,6 +5,7 @@ import type Field from 'types/field'
 
 import FormManager from 'components/form/form-manager'
 import Spinner from 'components/icons/Spinner'
+import ErrorHandler from 'layout/error-handler'
 
 export default function EmergencyReportPage() {
 	const data = useLoaderData() as {
@@ -19,7 +20,11 @@ export default function EmergencyReportPage() {
 					<span className='mt-1 text-sm'>Получение данных</span>
 				</div>
 			}>
-			<Await resolve={data.fields} errorElement={<p>error</p>}>
+			<Await
+				resolve={data.fields}
+				errorElement={
+					<ErrorHandler msg='Ошибка получения данных для заполнения' />
+				}>
 				{(fields: Field[]) => (
 					<FormManager
 						fields={fields}

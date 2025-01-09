@@ -1,17 +1,14 @@
-import type {
-	FocusEvent,
-	FocusEventHandler,
-	InputHTMLAttributes
-} from 'react'
+import type { FocusEventHandler } from 'react'
+
+import 'react-datepicker/dist/react-datepicker.css'
+import Calendar from 'public/icons/calendar.svg'
+import Chevron from 'public/icons/chevron.svg'
 
 import { ru } from 'date-fns/locale'
-import Calendar from 'public/icons/calendar.svg'
-import ChevronDown from 'public/icons/chevron.svg'
-
-import { forwardRef, memo } from 'react'
+import { memo } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
-import 'react-datepicker/dist/react-datepicker.css'
-import InputWrapper from './input-wrapper'
+
+import InputWrapper, { InputWithIcon } from './input-wrapper'
 
 registerLocale('ru', ru)
 
@@ -30,10 +27,18 @@ const months = [
 	'Декабрь'
 ]
 
-export function dateToString(
-	type: 'monthYear' | 'dayMonth' | 'monthFullYear' | null,
-	date: Date | null
-) {
+const dateTypes = ['monthYear', 'dayMonth', 'monthFullYear'] as const
+type dateType = (typeof dateTypes)[number]
+
+export function getDateType(
+	type: string
+): (typeof dateTypes)[number] {
+	return dateTypes.includes(type as dateType)
+		? (type as (typeof dateTypes)[number])
+		: dateTypes[0]
+}
+
+export function dateToString(type: dateType, date: Date | null) {
 	try {
 		if (type === 'monthYear') {
 			const month = date.getMonth() + 1
@@ -48,7 +53,7 @@ export function dateToString(
 }
 
 export function stringToDate(
-	type: 'monthYear' | 'dayMonth' | 'monthFullYear' | null,
+	type: dateType,
 	dateString: string | null
 ) {
 	if (type === 'monthYear') {
@@ -76,7 +81,7 @@ const renderHeader =
 					type='button'
 					onClick={decreaseYear}
 					disabled={prevMonthButtonDisabled}>
-					<ChevronDown className='size-6 -rotate-90 !text-black' />
+					<Chevron className='pointer-events-none size-6 -rotate-90 !text-black' />
 				</button>
 				{type === 'monthYear' && <span>{date.getFullYear()}</span>}
 				{type === 'dayMonth' && (
@@ -86,51 +91,11 @@ const renderHeader =
 					type='button'
 					onClick={increaseYear}
 					disabled={nextMonthButtonDisabled}>
-					<ChevronDown className='size-6 rotate-90 !text-black' />
+					<Chevron className='pointer-events-none size-6 rotate-90 !text-black' />
 				</button>
 			</div>
 		)
 	}
-
-const CustomInput = forwardRef<
-	HTMLInputElement,
-	InputHTMLAttributes<HTMLInputElement>
->(({ onFocus, onBlur, name, ...props }, ref) => {
-	const onInputFocus = (
-		event: FocusEvent<HTMLInputElement, Element>
-	) => {
-		const container = document.querySelector(`label[for="${name}"]`)
-		console.log(container, 'focus')
-		if (container) {
-			container.classList.add('input-focus')
-		}
-		onFocus(event)
-	}
-
-	const onInputBlur = (
-		event: FocusEvent<HTMLInputElement, Element>
-	) => {
-		const container = document.querySelector(`label[for="${name}"]`)
-		console.log(container, 'blur')
-		if (container) {
-			container.classList.remove('input-focus')
-		}
-		onBlur(event)
-	}
-
-	return (
-		<div className='relative flex flex-row items-center'>
-			<input
-				name={name}
-				ref={ref}
-				{...props}
-				onFocus={onInputFocus}
-				onBlur={onInputBlur}
-			/>
-			<Calendar className='absolute right-2.5 size-6' />
-		</div>
-	)
-})
 
 const DateInput = memo(
 	({
@@ -142,7 +107,7 @@ const DateInput = memo(
 		type = 'monthYear'
 	}: {
 		name?: string
-		type?: 'monthYear' | 'monthFullYear' | 'dayMonth'
+		type?: dateType
 		label?: string
 		placeholder?: string
 		error?: string
@@ -183,7 +148,13 @@ const DateInput = memo(
 					renderCustomHeader={renderHeader(type)}
 					className={error ? 'input-error' : ''}
 					locale='ru'
-					customInput={<CustomInput />}
+					customInput={
+						<InputWithIcon
+							icon={
+								<Calendar className='pointer-events-none size-full' />
+							}
+						/>
+					}
 					showMonthYearPicker={isMonthYear}
 					showFullMonthYearPicker={isMonthYear}
 					onChange={onChange}
