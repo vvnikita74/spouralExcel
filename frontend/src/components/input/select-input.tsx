@@ -1,14 +1,14 @@
-import type { ControllerRenderProps } from 'react-hook-form'
 import type {
 	CSSProperties,
-	MouseEvent,
 	FocusEvent,
-	FocusEventHandler
+	FocusEventHandler,
+	MouseEvent
 } from 'react'
+import type { ControllerRenderProps } from 'react-hook-form'
 
+import List from 'public/icons/list.svg'
 import { memo } from 'react'
 import InputWrapper, { InputWithIcon } from './input-wrapper'
-import List from 'public/icons/list.svg'
 
 const handleOpen = (event?: MouseEvent<HTMLInputElement>) => {
 	const target = event.target as HTMLInputElement
