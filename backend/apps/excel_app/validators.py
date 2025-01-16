@@ -46,19 +46,19 @@ def validate_settings_json_structure(value, field_type):
             data = json.loads(value)
         except json.JSONDecodeError:
             raise ValidationError("Неверный формат JSON")
-        if not (  # дай бог работает
+        if not (
                 isinstance(data, dict) and
                 ('default' in data) and
                 isinstance(data['default'], str) and
-                data['default'] in ['True', 'False'] and
+                data['default'] in ['true', 'talse'] and
                 all(isinstance(key, str) and
-                    key in ['True', 'False'] and
+                    key in ['true', 'false'] and
                     isinstance(value, str) for
-                    key, value in data.items() if key in ['True', 'False'])):
+                    key, value in data.items() if key in ['true', 'false'])):
             raise ValidationError("Для типа 'bool' поле 'settings' должно "
                                   "быть словарем с ключом "
-                                  "'default':'True' или 'False' и "
-                                  "ключом 'True' или 'False': 'string' ")
+                                  "'default':'true' или 'false' и "
+                                  "ключом 'true' или 'false': 'string' ")
     elif field_type == 'select':
         try:
             data = json.loads(value)
