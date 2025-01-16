@@ -1,10 +1,17 @@
 import type Report from 'types/report'
 
-import { MouseEvent, useCallback, useState } from 'react'
+import {
+	MouseEvent,
+	useCallback,
+	useEffect,
+	useRef,
+	useState
+} from 'react'
 import { Link } from 'react-router-dom'
 
 import { useQueryClient } from '@tanstack/react-query'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
+import queryFetch from 'utils/query-fetch'
 
 import { API_URL } from 'utils/config'
 import { formatDate } from 'utils/format-date'
@@ -13,7 +20,6 @@ import timeAgo from 'utils/time-ago'
 
 import Spinner from 'components/icons/Spinner'
 import ErrorIcon from 'public/icons/error.svg'
-import TrashIcon from 'public/icons/trash.svg'
 
 export default function ReportsList({
 	data = [],
@@ -26,12 +32,21 @@ export default function ReportsList({
 }) {
 	const queryClient = useQueryClient()
 	const authHeader = useAuthHeader()
+	const disableIntervalRef = useRef(false)
 
-	const initialData = queryClient.getQueryData(queryKey) as Report[]
-	// For offline post-query
-	const mergedData = mergeReportData(initialData, data)
-
-	const [currentData, setCurrentData] = useState(mergedData)
+	/*
+	mergeReportData
+	для реализации отображения оффлайн post-запроса
+	В случае отправки запроса в оффлайн и дальнейшей переходе
+	в онлайн запрос еще не отправился, следовательно - требуется
+	merge данных с кеша и полученных данных с запроса
+	*/
+	const [currentData, setCurrentData] = useState(
+		mergeReportData(
+			queryClient.getQueryData(queryKey) as Report[],
+			data
+		)
+	)
 
 	const handleDeleteButton = useCallback(
 		async (event: MouseEvent<HTMLButtonElement>) => {
@@ -40,6 +55,7 @@ export default function ReportsList({
 
 			btn.classList.add('loading')
 			btn.disabled = true
+			disableIntervalRef.current = true
 
 			try {
 				const req = await fetch(`${API_URL}/${path}/${id}`, {
@@ -71,26 +87,33 @@ export default function ReportsList({
 
 			btn.classList.remove('loading')
 			btn.disabled = false
+			disableIntervalRef.current = false
 		},
 		[authHeader, queryClient, queryKey, path]
 	)
 
-	// useEffect(() => {
-	// 	const interval = setInterval(async () => {
-	// 		const receivedData = await queryFetch(
-	// 			queryClient,
-	// 			queryKey,
-	// 			authHeader,
-	// 			path
-	// 		)
+	useEffect(() => {
+		const interval = setInterval(async () => {
+			const { current: isDisabled } = disableIntervalRef
 
-	// 		setCurrentData(prev => mergeReportData(prev, receivedData))
-	// 	}, 5000)
+			if (!isDisabled) {
+				const receivedData = await queryFetch(
+					queryClient,
+					queryKey,
+					authHeader,
+					path
+				)
 
-	// 	return () => {
-	// 		clearInterval(interval)
-	// 	}
-	// }, [authHeader, queryClient, path, queryKey])
+				setCurrentData(prev => mergeReportData(prev, receivedData))
+			} else {
+				disableIntervalRef.current = false
+			}
+		}, 5000)
+
+		return () => {
+			clearInterval(interval)
+		}
+	}, [authHeader, queryClient, path, queryKey])
 
 	if (currentData.length === 0) {
 		return <h1 className='title-text'>Отчеты отсутствуют</h1>
@@ -111,9 +134,6 @@ export default function ReportsList({
 								{isReady === 0 && (
 									<Spinner className='size-6 rounded-full fill-indigo-500 text-black' />
 								)}
-								{deleted && (
-									<TrashIcon className='size-6 text-black' />
-								)}
 							</div>
 						)}
 						{isReady === 2 && (
@@ -122,7 +142,7 @@ export default function ReportsList({
 						<h2 className='title-text whitespace-nowrap'>
 							Отчет от {formatDate(date_created)}
 							<span className='base-text block opacity-60 2xs:ml-2 2xs:inline'>
-								({timeAgo(date_created)})
+								({deleted ? 'удалено' : timeAgo(date_created)})
 							</span>
 						</h2>
 						<div className='-mx-1 mt-2.5 flex flex-row text-center text-white'>

@@ -4,33 +4,17 @@ export default function mergeReportData(
 	initialData: Report[],
 	receivedData: Report[]
 ): Report[] {
-	const uniqueFilesMap = new Map()
+	const result = []
+	const seenFileNames = new Set()
 
 	receivedData.forEach(item => {
-		uniqueFilesMap.set(item.file_name, item)
+		result.push(item)
+		seenFileNames.add(item.file_name)
 	})
 
-	initialData.forEach(item => {
-		if (!uniqueFilesMap.has(item.file_name)) {
-			uniqueFilesMap.set(item.file_name, item)
-		}
-	})
+	result.unshift(
+		...initialData.filter(item => !seenFileNames.has(item.file_name))
+	)
 
-	const uniqueFilesArray = []
-
-	receivedData.forEach(item => {
-		if (
-			!initialData.some(
-				initItem => initItem.file_name === item.file_name
-			)
-		) {
-			uniqueFilesArray.push(item)
-		}
-	})
-
-	initialData.forEach(item => {
-		uniqueFilesArray.push(uniqueFilesMap.get(item.file_name))
-	})
-
-	return uniqueFilesArray
+	return result
 }
