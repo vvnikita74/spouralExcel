@@ -23,6 +23,7 @@ export const useWebConnectionContext = (): boolean =>
 export const useGlobalSettersContext = (): GlobalSetters =>
 	useContext(GlobalSettersContext)
 
+// TODO: Убрать в отдельный компонент без контекста
 export default function GlobalContext({ children }) {
 	const [webConnection, setWebConnection] = useState<boolean>(true)
 
