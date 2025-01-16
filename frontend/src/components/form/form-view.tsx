@@ -184,10 +184,10 @@ export default function FormView({
 		<form
 			className='base-text mb-[4.25rem] flex flex-col'
 			onSubmit={handleSubmit(onSubmit)}>
-			{fields.map(renderField)}
+			{fieldsForCurrentStep.map(renderField)}
 			<div
 				className='absolute bottom-0 left-0 flex w-full flex-row justify-between bg-white
-					p-4'>
+					px-4 py-2'>
 				<button
 					type='button'
 					onClick={onPrev}
