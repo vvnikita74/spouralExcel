@@ -152,6 +152,8 @@ export default function FormView({
 							}}
 						/>
 					)
+				default:
+					return null
 			}
 		},
 		[control, errors, register]
