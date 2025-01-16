@@ -9,7 +9,7 @@ import ProfilePanel from 'layout/profile-panel'
 export default function IndexLayout() {
 	return (
 		<GlobalContext>
-			<main className='relative size-full overflow-hidden p-4'>
+			<main className='relative size-full overflow-hidden px-4 py-2.5'>
 				<div className='z-10 flex w-full flex-row justify-between'>
 					<div className='relative flex flex-row items-center justify-start'>
 						<Link to='/'>
