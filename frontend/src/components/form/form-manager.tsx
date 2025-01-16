@@ -82,8 +82,8 @@ export default function FormManager({
 
 			queryClient.setQueryData(queryKey, (prev: Report[]) => [
 				{
-					file_name: dateCreated,
-					date_created: dateCreated,
+					filename: dateCreated,
+					dateСreated: dateCreated,
 					isReady: 0
 				},
 				...prev
