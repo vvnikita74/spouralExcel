@@ -1,6 +1,7 @@
 import json
 from django.core.exceptions import ValidationError
 
+
 def validate_json_structure(value):
     try:
         data = json.loads(value)
@@ -40,18 +41,35 @@ def validate_subsections_json_structure(value):
 
 
 def validate_settings_json_structure(value, field_type):
-	if field_type == 'bool':
-		try:
-			data = json.loads(value)
-		except json.JSONDecodeError:
-			raise ValidationError("Неверный формат JSON")
-	elif field_type == 'select':
-		try:
-			data = json.loads(value)
-		except json.JSONDecodeError:
-			raise ValidationError("Неверный формат JSON")
-		if not isinstance(data, dict) or 'values' not in data or not isinstance(data['values'], list):
-			raise ValidationError("Для типа 'select' поле 'settings' должно быть словарем с ключом 'values', содержащим список")
-	else:
-		if value is not None and value != 'null':
-			raise ValidationError(f"Для типа '{field_type}' поле 'settings' должно быть null")
+    if field_type == 'bool':
+        try:
+            data = json.loads(value)
+        except json.JSONDecodeError:
+            raise ValidationError("Неверный формат JSON")
+        if not (  # дай бог работает
+                isinstance(data, dict) and
+                ('default' in data) and
+                isinstance(data['default'], str) and
+                data['default'] in ['True', 'False'] and
+                all(isinstance(key, str) and
+                    key in ['True', 'False'] and
+                    isinstance(value, str) for
+                    key, value in data.items() if key in ['True', 'False'])):
+            raise ValidationError("Для типа 'bool' поле 'settings' должно "
+                                  "быть словарем с ключом "
+                                  "'default':'True' или 'False' и "
+                                  "ключом 'True' или 'False': 'string' ")
+    elif field_type == 'select':
+        try:
+            data = json.loads(value)
+        except json.JSONDecodeError:
+            raise ValidationError("Неверный формат JSON")
+        if not isinstance(data,
+                          dict) or 'values' not in data or not isinstance(
+            data['values'], list):
+            raise ValidationError(
+                "Для типа 'select' поле 'settings' должно быть словарем с ключом 'values', содержащим список")
+    else:
+        if value is not None and value != 'null':
+            raise ValidationError(
+                f"Для типа '{field_type}' поле 'settings' должно быть null")
