@@ -45,7 +45,7 @@ def validate_settings_json_structure(value, field_type):
 			data = json.loads(value)
 		except json.JSONDecodeError:
 			raise ValidationError("Неверный формат JSON")
-	if field_type == 'select':
+	elif field_type == 'select':
 		try:
 			data = json.loads(value)
 		except json.JSONDecodeError:
