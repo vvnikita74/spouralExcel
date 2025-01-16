@@ -22,7 +22,7 @@ export default function FormManager({
 		let validator: z.ZodType
 
 		switch (type) {
-			case 'text':
+			case 'text': {
 				validator = z
 					.string()
 					.min(required ? 1 : 0, 'Обязательное поле')
@@ -31,12 +31,14 @@ export default function FormManager({
 						'Введите корректное значение'
 					)
 				break
-			case 'select':
+			}
+			case 'select': {
 				validator = z
 					.string()
 					.min(required ? 1 : 0, 'Обязательное поле')
 				defaultValues[key] = ''
 				break
+			}
 			case 'date': {
 				let regex: RegExp
 
@@ -60,9 +62,10 @@ export default function FormManager({
 						new RegExp(regex),
 						'Введите корректное значение'
 					)
+
+				break
 			}
 		}
-
 		schemaShape[key] = validator
 	})
 
