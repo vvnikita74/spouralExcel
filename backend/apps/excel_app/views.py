@@ -23,6 +23,7 @@ class ProcessInputView(APIView):
         if not data:
             return Response({'error': 'No input data provided'},
                             status=status.HTTP_400_BAD_REQUEST)
+
         if isinstance(filename, list):
             filename = filename[0]
         if isinstance(date_created_str, list):
@@ -40,7 +41,8 @@ class ProcessInputView(APIView):
         return Response(serializer.data,
                         status=status.HTTP_200_OK)
 
-    def process_data(self, data, user_data_id, filename):
+    @staticmethod
+    def process_data(data, user_data_id, filename):
         try:
             generate_report(data, filename)
             UserData.objects.filter(id=user_data_id).update(isReady=1,

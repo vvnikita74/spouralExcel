@@ -98,26 +98,27 @@ class Table:
         :param input_value: JSON строка с данными/список объектов
         """
         data_objects = self._get_data_objects(input_value)
-        start_col, start_row, vertical_gap = Table.create_table(ws, cell_data)
+        if data_objects:
+            start_col, start_row, vertical_gap = Table.create_table(ws,
+                                                                    cell_data)
+            for idx, obj in enumerate(data_objects):
+                for cell_info in cell_data.cells:
+                    key = cell_info.get('key')
+                    width = cell_info.get('width')
+                    end_col = start_col + width - 1
+                    end_row = start_row + vertical_gap - 1
 
-        for idx, obj in enumerate(data_objects):
-            for cell_info in cell_data.cells:
-                key = cell_info.get('key')
-                width = cell_info.get('width')
-                end_col = start_col + width - 1
-                end_row = start_row + vertical_gap - 1
+                    value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
+                        obj, key, '')
+                    ws.cell(row=start_row, column=start_col, value=value)
+                    Table.apply_cell_styles(ws, start_row, start_col, end_row,
+                                            end_col)
+                    start_col = end_col + 1
 
-                value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
-                    obj, key, '')
-                ws.cell(row=start_row, column=start_col, value=value)
-                Table.apply_cell_styles(ws, start_row, start_col, end_row,
-                                        end_col)
-                start_col = end_col + 1
+                start_row += vertical_gap
+                start_col = ws[cell_data.index].column
 
-            start_row += vertical_gap
-            start_col = ws[cell_data.index].column
-
-    def _get_data_objects(self, input_value: Any) -> List[Any]:
+    def _get_data_objects(self, input_value: Any) -> List[Any] | None:
         """
         Возвращает список объектов данных в зависимости от типа таблицы.
 
@@ -125,8 +126,11 @@ class Table:
         :return: Список объектов данных
         """
         if self.table_type == TableType.DOCUMENTATION:
-            return [Documentation.from_dict(doc) for doc in
-                    json.loads(input_value)]
+            if input_value:
+                return [Documentation.from_dict(doc) for doc in
+                        json.loads(input_value)]
+            else:
+                return None
         elif self.table_type == TableType.CONTENT:
             return input_value
         else:
