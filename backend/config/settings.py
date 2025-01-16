@@ -117,4 +117,4 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=365 * 100),  # 100 years
 }
 
-APPEND_SLASH = False
+APPEND_SLASH = True
