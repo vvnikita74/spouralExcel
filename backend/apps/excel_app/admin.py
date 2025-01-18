@@ -55,7 +55,7 @@ def change_content_section(modeladmin, request, queryset):
 
 class FieldsAdmin(admin.ModelAdmin):
     form = FieldsAdminForm
-    list_display = ('name', 'key', 'step', 'position')
+    list_display = ('name', 'type', 'key', 'step', 'position')
     actions = [toggle_required, decrease_step_value, increase_step_value,
                decrease_order_value, increase_order_value, copy_object]
     ordering = ('step', 'position')
