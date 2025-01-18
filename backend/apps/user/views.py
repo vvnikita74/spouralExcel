@@ -113,4 +113,4 @@ class UserDataDetailView(APIView):
             user_data.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except UserData.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_204_NO_CONTENT)
