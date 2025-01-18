@@ -4,11 +4,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 
+api_patterns = [
+    path('', include('apps.user.urls')),
+    path('', include('apps.excel_app.urls')),
+]
+
 urlpatterns = ([
                    path('',
                         RedirectView.as_view(url='/admin/', permanent=True)),
-                   path('api/', include('apps.user.urls')),
-                   path('api/', include('apps.excel_app.urls')),
+                   path('api/', include(api_patterns)),
                    path('admin/', admin.site.urls),
                ]
                + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

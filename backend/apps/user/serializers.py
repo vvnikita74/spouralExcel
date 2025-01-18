@@ -17,13 +17,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
 
-# For relations model
-# class RelatedModelSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = RelatedModel
-#         fields = '__all__'
-
-
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserData
