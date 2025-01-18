@@ -1,6 +1,4 @@
 import threading
-import uuid
-from django.http import QueryDict
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.views import APIView
