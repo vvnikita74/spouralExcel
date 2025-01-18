@@ -174,9 +174,13 @@ def substitute_placeholders(template, data):
                         initial.split(' ')[-1]))
                 elif key in ['upper', 'lower']:
                     initial = data.get(word, '')
-                    # if upper, то слово сделать с большой
-                    # if lower, то слово сделать с маленькой
-                    inflected_word = initial
+                    match key:
+                        case 'upper':
+                            inflected_word = initial.upper()
+                        case 'lower':
+                            inflected_word = initial.lower()
+                        case _:
+                            inflected_word = initial
                 if inflected_word:
                     return inflected_word
             case 3:
@@ -224,10 +228,14 @@ def change_case(phrase, target_case):
     words = phrase.split(' ')
     inflected_words = []
     for word in words:
+        was_capitalized = word.istitle()  # Проверяем, была ли первая буква заглавной
         parsed_word = morph.parse(word)[0]
         inflected_word = parsed_word.inflect({target_case})
         if inflected_word:
-            inflected_words.append(inflected_word.word)
+            inflected_word_str = inflected_word.word
+            if was_capitalized:
+                inflected_word_str = inflected_word_str.capitalize()  # Восстанавливаем регистр
+            inflected_words.append(inflected_word_str)
 
     if len(inflected_words) > 1:
         gender = get_gender(inflected_words[-1])
