@@ -182,7 +182,11 @@ def substitute_placeholders(template, data):
                 if value.split('.')[0] in month_tags:
                     month = month_tags[value.split('.')[0]]
                     year = value.split('.')[1]
-                    return f'{month} {year} года'
+                    match len(year):
+                        case 2:
+                            return f'{month} 20{year} года'
+                        case _:
+                            return f'{month} {year} года'
                 return value
 
     return re.sub(r'\$(\w+(\.\w+)*)\$', replace_match, template)
