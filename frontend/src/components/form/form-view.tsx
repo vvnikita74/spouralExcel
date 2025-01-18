@@ -191,7 +191,7 @@ export default function FormView({
 			{fieldsForCurrentStep.map(renderField)}
 			<div
 				className='absolute bottom-0 left-0 flex w-full flex-row justify-between bg-white
-					px-4 py-2'>
+					px-4 py-3'>
 				<button
 					type='button'
 					onClick={onPrev}
