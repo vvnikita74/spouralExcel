@@ -78,10 +78,11 @@ export default function FormView({
 				formData.append(key, data[key] || '')
 			}
 
-			const date = new Date().toISOString()
+			const date = new Date()
+			const isoDate = date.toISOString()
 
-			formData.append('dateCreated', date)
-			formData.append('filename', date)
+			formData.append('dateCreated', isoDate)
+			formData.append('filename', isoDate)
 
 			mutation.mutate({
 				data: formData,
