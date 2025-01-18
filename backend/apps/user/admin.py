@@ -5,8 +5,8 @@ from .forms import UserDataAdminForm
 
 class UserDataAdmin(admin.ModelAdmin):
     form = UserDataAdminForm
-    list_display = ('get_username', 'date_created', 'isReady')
-    ordering = ('-date_created',)
+    list_display = ('get_username', 'dateCreated', 'isReady')
+    ordering = ('-dateCreated',)
 
     def get_username(self, obj):
         return obj.user.username

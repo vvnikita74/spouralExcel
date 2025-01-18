@@ -17,18 +17,18 @@ class UserData(models.Model):
         (ERROR, 'Error'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    file_name = models.CharField(max_length=255)
+    filename = models.CharField(max_length=255)
     data = models.JSONField()
     isReady = models.IntegerField(choices=STATUS_CHOICES, default=LOADING)
-    date_created = models.DateTimeField(auto_now_add=False)
+    dateCreated = models.DateTimeField(auto_now_add=False)
 
     def __str__(self):
         return f"{self.user.username} - {self.data}"
 
     def delete(self, *args, **kwargs):
         # Ensure the file name includes the correct extension
-        file_name_with_extension = self.file_name if self.file_name.endswith(
-            '.pdf') else self.file_name + '.pdf'
+        file_name_with_extension = self.filename if self.filename.endswith(
+            '.pdf') else self.filename + '.pdf'
 
         # Construct the file path
         file_path = os.path.join(settings.MEDIA_ROOT, 'reports',
