@@ -103,12 +103,14 @@ const DateInput = memo(
 		label = '',
 		placeholder = '',
 		error = '',
+		required = false,
 		inputProps: { onChange, onBlur, value },
 		type = 'monthYear'
 	}: {
 		name?: string
 		type?: dateType
 		label?: string
+		required: boolean
 		placeholder?: string
 		error?: string
 		mode?: string
@@ -139,6 +141,7 @@ const DateInput = memo(
 				name={name}
 				label={label}
 				error={error}
+				required={required}
 				labelProps={{ htmlFor: name }}
 				placeholder={placeholder}>
 				<DatePicker

@@ -58,12 +58,14 @@ const SelectInput = memo(
 		values = [],
 		placeholder = '',
 		error = '',
+		required = false,
 		inputProps
 	}: {
 		label: string
 		values?: { name: string; value: string }[]
 		placeholder?: string
 		error?: string
+		required: boolean
 		inputProps?: ControllerRenderProps
 	}) => {
 		const { name, onBlur, onChange } = inputProps
@@ -79,6 +81,7 @@ const SelectInput = memo(
 				label={label}
 				name={name}
 				error={error}
+				required={required}
 				placeholder={placeholder}>
 				<InputWithIcon
 					{...inputProps}
