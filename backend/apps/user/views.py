@@ -42,9 +42,21 @@ class UserDataListView(APIView):
 
     def get(self, request):
         user_data = UserData.objects.filter(user=request.user).order_by(
-            '-date_created')
+            '-dateCreated')
         serializer = UserDataSerializer(user_data, many=True)
         return Response(serializer.data)
+
+
+class UserDataDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            user_data = UserData.objects.get(pk=pk, user=request.user)
+            serializer = UserDataSerializer(user_data)
+            return Response(serializer.data)
+        except UserData.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
         try:
