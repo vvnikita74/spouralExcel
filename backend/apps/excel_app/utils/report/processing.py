@@ -172,6 +172,11 @@ def substitute_placeholders(template, data):
                     initial = data[key]
                     inflected_word = change_case(word, get_gender(
                         initial.split(' ')[-1]))
+                elif key in ['upper', 'lower']:
+                    initial = data.get(word, '')
+                    # if upper, то слово сделать с большой
+                    # if lower, то слово сделать с маленькой
+                    inflected_word = initial
                 if inflected_word:
                     return inflected_word
             case 3:
