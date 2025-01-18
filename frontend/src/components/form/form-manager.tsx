@@ -80,14 +80,16 @@ export default function FormManager({
 		onMutate: variables => {
 			const dateCreated = variables.data.get('dateCreated')
 
-			queryClient.setQueryData(queryKey, (prev: Report[]) => [
-				{
-					filename: dateCreated,
-					dateСreated: dateCreated,
-					isReady: 0
-				},
-				...prev
-			])
+			queryClient.setQueryData(queryKey, (prev: Report[]) => {
+				return [
+					{
+						filename: dateCreated,
+						dateCreated,
+						isReady: 0
+					},
+					...prev
+				]
+			})
 		}
 		// TODO: onError
 	})

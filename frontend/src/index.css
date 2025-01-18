@@ -114,8 +114,12 @@ body {
 }
 
 .accordion {
+	/* .accordion-view {
+		visibility: hidden;
+	} */
 	&.opened {
 		.accordion-view {
+			/* visibility: visible; */
 		  @apply border-indigo-800 h-[calc(var(--height)*2rem+0.5rem+2px)] sm:h-[calc(var(--height)*2.1875rem+0.5rem+2px)] mt-2.5;
 		  &.with-error {
 		    @apply border-red-500;
