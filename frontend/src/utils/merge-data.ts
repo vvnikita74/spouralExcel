@@ -9,12 +9,12 @@ export default function mergeReportData(
 
 	receivedData.forEach(item => {
 		result.push(item)
-		seenFileNames.add(item.file_name)
+		seenFileNames.add(item.filename)
 	})
 
 	result.unshift(
 		...initialData.filter(
-			item => !seenFileNames.has(item.file_name) && item.isReady === 0
+			item => !seenFileNames.has(item.filename) && item.isReady === 0
 		)
 	)
 

@@ -12,7 +12,7 @@ export const reqPostMutation = {
 		authHeader,
 		path
 	}: PostMutationVariables) => {
-		const req = await fetch(`${API_URL}/report/${path}`, {
+		const req = await fetch(`${API_URL}/report/${path}/`, {
 			method: 'POST',
 			body: data,
 			headers: {

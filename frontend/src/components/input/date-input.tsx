@@ -40,12 +40,17 @@ export function getDateType(
 
 export function dateToString(type: dateType, date: Date | null) {
 	try {
-		if (type === 'monthYear') {
-			const month = date.getMonth() + 1
+		const month = date.getMonth() + 1
 
-			return `${month < 10 ? '0' + month : month}.${date.getFullYear() % 1000}`
-		} else {
-			return date ? date.toString() : ''
+		switch (type) {
+			case 'monthYear': {
+				return `${month < 10 ? '0' + month : month}.${date.getFullYear() % 1000}`
+			}
+			case 'monthFullYear': {
+				return `${month < 10 ? '0' + month : month}.${date.getFullYear()}`
+			}
+			default:
+				return date ? date.toString() : ''
 		}
 	} catch {
 		return ''
@@ -56,11 +61,17 @@ export function stringToDate(
 	type: dateType,
 	dateString: string | null
 ) {
-	if (type === 'monthYear') {
-		const [month, year] = dateString.split('.')
-		return new Date(2000 + Number(year), Number(month) - 1, 1)
-	} else {
-		return new Date()
+	const [month, year] = dateString.split('.')
+
+	switch (type) {
+		case 'monthYear': {
+			return new Date(2000 + Number(year), Number(month) - 1, 1)
+		}
+		case 'monthFullYear': {
+			return new Date(Number(year), Number(month) - 1, 1)
+		}
+		default:
+			return new Date()
 	}
 }
 
@@ -83,7 +94,9 @@ const renderHeader =
 					disabled={prevMonthButtonDisabled}>
 					<Chevron className='pointer-events-none size-6 -rotate-90 !text-black' />
 				</button>
-				{type === 'monthYear' && <span>{date.getFullYear()}</span>}
+				{(type === 'monthYear' || type === 'monthFullYear') && (
+					<span>{date.getFullYear()}</span>
+				)}
 				{type === 'dayMonth' && (
 					<span>{months[date.getMonth()]}</span>
 				)}
