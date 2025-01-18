@@ -7,6 +7,7 @@ export default function InputWrapper({
 	placeholder = '',
 	error = '',
 	labelProps = {},
+	required = false,
 	children = null
 }: {
 	label?: string
@@ -15,6 +16,7 @@ export default function InputWrapper({
 	labelProps?: LabelHTMLAttributes<HTMLLabelElement>
 	children?: ReactNode
 	error?: string
+	required?: boolean
 }) {
 	return (
 		<label
@@ -22,7 +24,9 @@ export default function InputWrapper({
 			className={`input-wrapper relative block caret-black ${labelProps.className || ''}
 				${error ? 'input-wrapper-error' : ''}`}>
 			{label ? (
-				<span className='base-text mb-1 block px-2.5'>{label}</span>
+				<span className='base-text mb-1 block px-2.5'>
+					{label + (required ? ' *' : '')}
+				</span>
 			) : (
 				<span className='sr-only'>{placeholder || name}</span>
 			)}

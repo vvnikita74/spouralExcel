@@ -85,11 +85,13 @@ export default function LoginForm({ className = '' }) {
 				name='username'
 				placeholder='Имя пользователя'
 				type='text'
+				required={false}
 				error={(errors.username?.message as string) || ''}
 				inputProps={register('username')}
 			/>
 			<TextInput
 				name='password'
+				required={false}
 				placeholder='Пароль'
 				type='password'
 				error={(errors.password?.message as string) || ''}

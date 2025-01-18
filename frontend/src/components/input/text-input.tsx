@@ -8,7 +8,8 @@ const TextInput = memo(
 		label = '',
 		placeholder = '',
 		error = '',
-		inputProps = {}
+		inputProps = {},
+		required = false
 	}: {
 		name?: string
 		type?: string
@@ -16,12 +17,14 @@ const TextInput = memo(
 		placeholder?: string
 		error?: string
 		inputProps?: InputHTMLAttributes<HTMLInputElement>
+		required: boolean
 	}) => (
 		<InputWrapper
 			labelProps={{ htmlFor: name }}
 			name={name}
 			placeholder={placeholder}
 			error={error}
+			required={required}
 			label={label}>
 			<input
 				name={name}

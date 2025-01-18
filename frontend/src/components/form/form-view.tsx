@@ -105,6 +105,7 @@ export default function FormView({
 			name,
 			placeholder,
 			settings,
+			required,
 			mask
 		}: Field) => {
 			switch (type) {
@@ -114,6 +115,7 @@ export default function FormView({
 							key={inputKey}
 							name={inputKey}
 							placeholder={placeholder || ''}
+							required={required}
 							label={name}
 							type='text'
 							error={(errors[inputKey]?.message as string) || ''}
@@ -132,6 +134,7 @@ export default function FormView({
 									placeholder={placeholder || ''}
 									label={name}
 									inputProps={field}
+									required={required}
 									values={JSON.parse(settings || '')?.values || []}
 									error={(errors[inputKey]?.message as string) || ''}
 								/>
@@ -156,6 +159,7 @@ export default function FormView({
 										name={inputKey}
 										placeholder={placeholder || ''}
 										label={name}
+										required={required}
 										inputProps={{
 											value: value
 												? stringToDate(dateType, value)
