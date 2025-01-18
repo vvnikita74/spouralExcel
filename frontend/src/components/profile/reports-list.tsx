@@ -58,7 +58,7 @@ export default function ReportsList({
 			disableIntervalRef.current = true
 
 			try {
-				const req = await fetch(`${API_URL}/${path}/${id}`, {
+				const req = await fetch(`${API_URL}/${path}/${id}/`, {
 					method: 'DELETE',
 					headers: {
 						Authorization: authHeader
