@@ -122,11 +122,11 @@ export default function ReportsList({
 	return (
 		<div className='base-text flex flex-col'>
 			{currentData.map(
-				({ id, date_created, file_name, isReady, deleted }) => (
+				({ id, dateCreated, filename, isReady, deleted }) => (
 					<div
 						className={`relative mt-2 flex flex-col overflow-hidden rounded-xl border p-4
 						first:mt-0 ${isReady !== 2 ? 'border-indigo-500' : 'border-red-500'}`}
-						key={file_name}>
+						key={filename}>
 						{(isReady === 0 || deleted) && (
 							<div
 								className='absolute left-0 top-0 z-10 flex size-full items-start justify-end
@@ -140,15 +140,15 @@ export default function ReportsList({
 							<ErrorIcon className='absolute right-4 top-4 size-6 text-red-500' />
 						)}
 						<h2 className='title-text whitespace-nowrap'>
-							Отчет от {formatDate(date_created)}
+							Отчет от {formatDate(dateCreated)}
 							<span className='base-text block opacity-60 2xs:ml-2 2xs:inline'>
-								({deleted ? 'удалено' : timeAgo(date_created)})
+								({deleted ? 'удалено' : timeAgo(dateCreated)})
 							</span>
 						</h2>
 						<div className='-mx-1 mt-2.5 flex flex-row text-center text-white'>
 							{isReady !== 2 && (
 								<a
-									href={`${API_URL}/media/${file_name}.pdf`}
+									href={`${API_URL}/media/${filename}.pdf`}
 									download
 									rel='noopener noreferrer'
 									target='_blank'

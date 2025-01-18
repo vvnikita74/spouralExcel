@@ -64,7 +64,6 @@ export default function FormView({
 
 	const onNext = useCallback(async () => {
 		const fieldNames = fieldsForCurrentStep.map(field => field.key)
-
 		if (await trigger(fieldNames))
 			setCurrentStep(prev => Math.min(prev + 1, maxStep))
 	}, [fieldsForCurrentStep, trigger, maxStep])
@@ -190,8 +189,8 @@ export default function FormView({
 			onSubmit={handleSubmit(onSubmit)}>
 			{fieldsForCurrentStep.map(renderField)}
 			<div
-				className='absolute bottom-0 left-0 flex w-full flex-row justify-between bg-white
-					px-4 py-3'>
+				className='absolute bottom-0 left-0 z-10 flex w-full flex-row justify-between
+					bg-white px-4 py-3'>
 				<button
 					type='button'
 					onClick={onPrev}
@@ -218,7 +217,7 @@ export default function FormView({
 					<button
 						type='submit'
 						ref={btnRef}
-						className='base-text btn-loader base-padding absolute right-0 w-fit rounded-xl
+						className='base-text btn-loader base-padding w-fit self-end rounded-xl
 							bg-indigo-500 text-white'>
 						<span className='pointer-events-none text-inherit'>
 							Отправить

@@ -97,7 +97,11 @@ const SelectInput = memo(
 				<div
 					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl
 						border border-transparent ${error ? 'with-error' : ''}`}
-					style={{ '--height': values.length } as CSSProperties}>
+					style={
+						{
+							'--height': values.length + (!required ? 1 : 0)
+						} as CSSProperties
+					}>
 					{values.map(({ name: valueName, value }) => (
 						<button
 							type='button'
@@ -109,6 +113,16 @@ const SelectInput = memo(
 							{valueName}
 						</button>
 					))}
+					{!required && (
+						<button
+							type='button'
+							onMouseDown={onSelect}
+							data-container-id={name}
+							className='base-text mt-2 truncate px-2.5 text-left last:mb-2'
+							data-value=''>
+							{placeholder}
+						</button>
+					)}
 				</div>
 			</InputWrapper>
 		)
