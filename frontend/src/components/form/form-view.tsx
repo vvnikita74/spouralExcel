@@ -37,6 +37,7 @@ export default function FormView({
 	const navigate = useNavigate()
 
 	const { btnRef, toggleLoader } = useLoader()
+
 	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
@@ -50,23 +51,15 @@ export default function FormView({
 		trigger
 	} = useForm({
 		resolver: zodResolver(validationSchema),
-		defaultValues
+		defaultValues,
+		mode: 'onBlur',
+		reValidateMode: 'onBlur'
 	})
 
 	const maxStep = useMemo(
 		() => Math.max(...fields.map(f => f.step)),
 		[fields]
 	)
-
-	const onPrev = useCallback(() => {
-		setCurrentStep(prev => Math.max(prev - 1, 1))
-	}, [])
-
-	const onNext = useCallback(async () => {
-		const fieldNames = fieldsForCurrentStep.map(field => field.key)
-		if (await trigger(fieldNames))
-			setCurrentStep(prev => Math.min(prev + 1, maxStep))
-	}, [fieldsForCurrentStep, trigger, maxStep])
 
 	const onSubmit = useCallback(
 		async (data: { [key: string]: string }) => {
@@ -97,6 +90,27 @@ export default function FormView({
 		},
 		[toggleLoader, authHeader, mutation, path, navigate]
 	)
+
+	const onPrev = useCallback(() => {
+		setCurrentStep(prev => Math.max(prev - 1, 1))
+	}, [])
+
+	const onNext = useCallback(async () => {
+		if (currentStep < maxStep) {
+			const fieldNames = fieldsForCurrentStep.map(field => field.key)
+			if (await trigger(fieldNames))
+				setCurrentStep(prev => Math.min(prev + 1, maxStep))
+		} else {
+			handleSubmit(onSubmit)()
+		}
+	}, [
+		currentStep,
+		fieldsForCurrentStep,
+		maxStep,
+		trigger,
+		handleSubmit,
+		onSubmit
+	])
 
 	const renderField = useCallback(
 		({
@@ -185,9 +199,7 @@ export default function FormView({
 	)
 
 	return (
-		<form
-			className='base-text mb-[4.25rem] flex flex-col'
-			onSubmit={handleSubmit(onSubmit)}>
+		<form className='base-text mb-[4.25rem] flex flex-col'>
 			{fieldsForCurrentStep.map(renderField)}
 			<div
 				className='absolute bottom-0 left-0 z-10 flex w-full flex-row justify-between
@@ -204,31 +216,20 @@ export default function FormView({
 				<span className='base-padding rounded-xl bg-indigo-500 text-white'>
 					{currentStep} / {maxStep}
 				</span>
-				{currentStep < maxStep ? (
-					<button
-						type='button'
-						onClick={onNext}
-						className='base-text base-padding w-fit self-end rounded-xl bg-indigo-500
-							text-white'>
-						<span className='pointer-events-none text-inherit'>
-							Далее
-						</span>
-					</button>
-				) : (
-					<button
-						type='submit'
-						ref={btnRef}
-						className='base-text btn-loader base-padding w-fit self-end rounded-xl
-							bg-indigo-500 text-white'>
-						<span className='pointer-events-none text-inherit'>
-							Отправить
-						</span>
-						<Spinner
-							className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
-								rounded-full fill-black text-white'
-						/>
-					</button>
-				)}
+				<button
+					type='button'
+					onClick={onNext}
+					ref={btnRef}
+					className='base-text btn-loader base-padding w-fit self-end rounded-xl
+						bg-indigo-500 text-white'>
+					<span className='pointer-events-none text-inherit'>
+						{currentStep < maxStep ? 'Далее' : 'Отправить'}
+					</span>
+					<Spinner
+						className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
+							rounded-full fill-black text-white'
+					/>
+				</button>
 			</div>
 		</form>
 	)
