@@ -29,8 +29,8 @@ class ProcessInputView(APIView):
         date_created = parser.parse(
             date_created_str) if date_created_str else None
         user_data = UserData.objects.create(user=request.user, data=data,
-                                            isReady=0, file_name=filename,
-                                            date_created=date_created)
+                                            isReady=0, filename=filename,
+                                            dateCreated=date_created)
 
         threading.Thread(target=self.process_data,
                          args=(data, user_data.id, filename)).start()
@@ -44,7 +44,7 @@ class ProcessInputView(APIView):
         try:
             generate_report(data, filename)
             UserData.objects.filter(id=user_data_id).update(isReady=1,
-                                                            file_name=filename)
+                                                            filename=filename)
         except Exception as e:
             print(e)
             UserData.objects.filter(id=user_data_id).update(isReady=2)
