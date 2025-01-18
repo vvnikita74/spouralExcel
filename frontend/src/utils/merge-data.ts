@@ -13,7 +13,9 @@ export default function mergeReportData(
 	})
 
 	result.unshift(
-		...initialData.filter(item => !seenFileNames.has(item.file_name))
+		...initialData.filter(
+			item => !seenFileNames.has(item.file_name) && item.isReady === 0
+		)
 	)
 
 	return result
