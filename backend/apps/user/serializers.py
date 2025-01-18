@@ -27,4 +27,4 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserData
-        fields = ['file_name', 'date_сreated', 'isReady']
+        fields = ['filename', 'dateCreated', 'isReady']
