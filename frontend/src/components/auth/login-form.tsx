@@ -38,7 +38,7 @@ export default function LoginForm({ className = '' }) {
 			toggleLoader(true)
 
 			try {
-				const req = await fetch(`${API_URL}/token`, {
+				const req = await fetch(`${API_URL}/token/`, {
 					method: 'POST',
 					headers: {
 						'Content-type': 'application/json'
@@ -100,8 +100,8 @@ export default function LoginForm({ className = '' }) {
 			<button
 				type='submit'
 				ref={btnRef}
-				className='base-text btn-loader base-padding relative w-full rounded-xl
-					bg-indigo-500 text-white'>
+				className='base-text btn-loader base-padding w-full rounded-xl bg-indigo-500
+					text-white'>
 				<span className='pointer-events-none text-inherit'>
 					Войти
 				</span>
