@@ -10,7 +10,9 @@ import List from 'public/icons/list.svg'
 import { memo } from 'react'
 import InputWrapper, { InputWithIcon } from './input-wrapper'
 
-const handleOpen = (event?: MouseEvent<HTMLInputElement>) => {
+const handleOpen = (
+	event?: MouseEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
+) => {
 	const target = event.target as HTMLInputElement
 
 	try {
@@ -52,6 +54,8 @@ const handleSelect =
 		onChange(value)
 	}
 
+// TODO: пока фокус на внутренних кнопках - не закрывать
+
 const SelectInput = memo(
 	({
 		label = '',
@@ -88,6 +92,7 @@ const SelectInput = memo(
 					id={`accordion-btn-${name}`}
 					data-container-id={name}
 					onMouseDown={handleOpen}
+					// onFocus={handleOpen}
 					onBlur={handleClose(onBlur)}
 					readOnly
 					placeholder={placeholder}

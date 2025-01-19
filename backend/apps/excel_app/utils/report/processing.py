@@ -83,7 +83,6 @@ def process_cell_data(ws, cell_data, data, content_cell_data):
                 table.fill_table(ws, cell_data, input_value)
             case 'content':
                 content_cell_data = cell_data
-
     else:
         try:
             if not template:
