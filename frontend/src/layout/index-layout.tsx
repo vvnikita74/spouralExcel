@@ -24,7 +24,10 @@ export default function IndexLayout() {
 					</div>
 					<ProfilePanel />
 				</div>
-				<div className='scrollbar-hide mt-4 h-[calc(100dvh-4.5rem)] overflow-scroll pb-4'>
+				<div
+					className='scrollbar-hide mt-4
+						h-[calc(100dvh-4.5rem-var(--safe-area-inset-top,0px))] overflow-scroll
+						pb-4'>
 					<Outlet />
 				</div>
 			</main>

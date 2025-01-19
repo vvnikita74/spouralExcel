@@ -95,9 +95,12 @@ const SelectInput = memo(
 					// onFocus={handleOpen}
 					onBlur={handleClose(onBlur)}
 					readOnly
+					containerStyle={{ width: '100%' }}
 					placeholder={placeholder}
 					className={`accordion-btn input-class ${error ? 'input-error' : ''}`}
-					icon={<List className='pointer-events-none size-full' />}
+					icon={
+						<List className='pointer-events-none size-full bg-white' />
+					}
 				/>
 				<div
 					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl

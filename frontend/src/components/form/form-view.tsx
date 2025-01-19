@@ -199,7 +199,9 @@ export default function FormView({
 	)
 
 	return (
-		<form className='base-text mb-[4.25rem] flex flex-col'>
+		<form
+			className='base-text mb-[calc(4.25rem+var(--safe-area-inset-top,0px))] flex
+				flex-col'>
 			{fieldsForCurrentStep.map(renderField)}
 			<div
 				className='absolute bottom-0 left-0 z-10 flex w-full flex-row justify-between
