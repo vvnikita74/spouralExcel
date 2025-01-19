@@ -18,10 +18,10 @@
 		@apply select-none
 	}
 	.base-text {
-		@apply text-base leading-normal sm:text-lg sm:leading-normal font-normal;
+		@apply text-sm leading-normal sm:text-lg sm:leading-normal font-normal;
 	}
 	.title-text {
-		@apply text-xl font-medium sm:text-2xl leading-normal sm:leading-normal
+		@apply text-lg font-medium sm:text-2xl leading-normal sm:leading-normal
 	}
 	.base-padding {
 		@apply px-2.5 py-2;
@@ -97,6 +97,7 @@ body {
 }
 
 .btn-loader {
+	position: relative;
 	figure {
 		opacity: 0;
 	}
@@ -120,7 +121,8 @@ body {
 	&.opened {
 		.accordion-view {
 			/* visibility: visible; */
-		  @apply border-indigo-800 h-[calc(var(--height)*2rem+0.5rem+2px)] sm:h-[calc(var(--height)*2.1875rem+0.5rem+2px)] mt-2.5;
+			@apply border-indigo-800 h-auto mt-2.5;
+		  /* @apply border-indigo-800 h-[calc(var(--height)*1.8rem+0.5rem+2px)] sm:h-[calc(var(--height)*2.1875rem+0.5rem+2px)] mt-2.5; */
 		  &.with-error {
 		    @apply border-red-500;
 		  }
