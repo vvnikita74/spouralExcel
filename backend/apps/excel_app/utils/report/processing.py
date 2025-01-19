@@ -81,21 +81,12 @@ def process_cell_data(ws, cell_data, data, content_cell_data):
                 table.fill_table(ws, cell_data, input_value)
             case 'content':
                 content_cell_data = cell_data
-
     else:
-        try:
-
-            if not template:
-                cell.value = cell_data.defaultValue if not input_value else input_value
-            else:
-                template = substitute_placeholders(template, data)
-                cell.value = template
-        except:
-            print('error in process_cell_data')
-            print(f'cell: {cell}')
-            print(f'template: {template}')
-            print(f'cell_type: {cell_type}')
-            print(f'input_value: {cell_data.defaultValue if not input_value else input_value}')
+        if not template:
+            cell.value = cell_data.defaultValue if not input_value else input_value
+        else:
+            template = substitute_placeholders(template, data)
+            cell.value = template
 
     return content_cell_data
 
