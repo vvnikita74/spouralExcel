@@ -27,7 +27,8 @@ export default function IndexLayout() {
 				<div
 					className='scrollbar-hide mt-4
 						h-[calc(100dvh-4.5rem-var(--safe-area-inset-top,0px))] overflow-scroll
-						pb-4'>
+						pb-4'
+					id='outlet'>
 					<Outlet />
 				</div>
 			</main>
