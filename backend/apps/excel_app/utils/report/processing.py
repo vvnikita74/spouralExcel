@@ -14,6 +14,8 @@ from apps.excel_app.utils.report.constant_tags import gender_tags, \
 
 from apps.excel_app.utils.morph_patch import apply_patch
 
+from backend.apps.excel_app.utils.report.constant_tags import register_tags
+
 apply_patch()
 morph = pymorphy2.MorphAnalyzer()
 
@@ -82,11 +84,14 @@ def process_cell_data(ws, cell_data, data, content_cell_data):
             case 'content':
                 content_cell_data = cell_data
     else:
-        if not template:
-            cell.value = cell_data.defaultValue if not input_value else input_value
-        else:
-            template = substitute_placeholders(template, data)
-            cell.value = template
+        try:
+            if not template:
+                cell.value = cell_data.defaultValue if not input_value else input_value
+            else:
+                template = substitute_placeholders(template, data)
+                cell.value = template
+        except AttributeError:
+            cell.value = ""
 
     return content_cell_data
 
@@ -157,13 +162,12 @@ def substitute_placeholders(template, data):
 
     def replace_match(match):
         key = match.group(1)
-        keyArr = key.split('.')
-        length = len(keyArr)
-        initial = ''
+        key_arr = key.split('.')
+        length = len(key_arr)
         inflected_word = ''
         match length:
             case 2:
-                word, key = keyArr
+                word, key = key_arr
                 if key in case_tags:
                     initial = data.get(word, '')
                     inflected_word = change_case(initial, key)
@@ -171,7 +175,7 @@ def substitute_placeholders(template, data):
                     initial = data[key]
                     inflected_word = change_case(word, get_gender(
                         initial.split(' ')[-1]))
-                elif key in ['upper', 'lower']:
+                elif key in register_tags:
                     initial = data.get(word, '')
                     match key:
                         case 'upper':
@@ -183,8 +187,27 @@ def substitute_placeholders(template, data):
                 if inflected_word:
                     return inflected_word
             case 3:
-                # Обработка случая с тремя частями в ключе
-                pass
+                word, key1, key2 = key_arr
+                if key1 in case_tags:
+                    initial = data.get(word, '')
+                    inflected_word = change_case(initial, key1)
+                elif key1 in data:
+                    initial = data[key1]
+                    inflected_word = change_case(word, get_gender(
+                        initial.split(' ')[-1]))
+                if key2 in register_tags:
+                    initial = data.get(word, '')
+                    match key2:
+                        case 'upper':
+                            inflected_word = initial.upper()
+                        case 'lower':
+                            inflected_word = initial.lower()
+                        case _:
+                            inflected_word = initial
+                else: # Случай, когда второй ключ не является тегом регистра
+                    pass
+                if inflected_word:
+                    return inflected_word
             case _:
                 value = data.get(key, f'${key}$')
                 if value.split('.')[0] in month_tags:
