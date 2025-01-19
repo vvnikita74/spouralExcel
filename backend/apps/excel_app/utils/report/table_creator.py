@@ -63,7 +63,10 @@ class Table:
             end_col = start_col + width - 1
             end_row = start_row + vertical_gap - 1
             Table.apply_cell_styles(ws, start_row, start_col, end_row, end_col)
-            value = cell_info.get('title')
+            try:
+                value = cell_info.get('title')
+            except KeyError:
+                value = ''
             ws.cell(row=start_row, column=start_col, value=value)
             start_col = end_col + 1
 
@@ -107,9 +110,11 @@ class Table:
                     width = cell_info.get('width')
                     end_col = start_col + width - 1
                     end_row = start_row + vertical_gap - 1
-
-                    value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
-                        obj, key, '')
+                    try:
+                        value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
+                            obj, key, '')
+                    except AttributeError:
+                        value = ''
                     ws.cell(row=start_row, column=start_col, value=value)
                     Table.apply_cell_styles(ws, start_row, start_col, end_row,
                                             end_col)

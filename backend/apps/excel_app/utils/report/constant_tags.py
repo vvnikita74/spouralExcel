@@ -28,3 +28,7 @@ month_tags = {
     "11": "Ноябрь",
     "12": "Декабрь",
 }
+register_tags = {
+    'upper': 'upper',
+    'lower': 'lower'
+}
