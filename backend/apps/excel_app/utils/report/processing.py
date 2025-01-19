@@ -14,7 +14,7 @@ from apps.excel_app.utils.report.constant_tags import gender_tags, \
 
 from apps.excel_app.utils.morph_patch import apply_patch
 
-from backend.apps.excel_app.utils.report.constant_tags import register_tags
+from apps.excel_app.utils.report.constant_tags import register_tags
 
 apply_patch()
 morph = pymorphy2.MorphAnalyzer()
