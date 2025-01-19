@@ -2,7 +2,7 @@ import json
 from enum import Enum
 from openpyxl.styles import Border, Side
 from typing import List, Any
-from .data_models import Documentation, UniversalObject
+from .data_models import Documentation, UniversalObject, Section
 
 
 class TableType(Enum):
@@ -101,6 +101,7 @@ class Table:
         :param input_value: JSON строка с данными/список объектов
         """
         data_objects = self._get_data_objects(input_value)
+        max_sheet_id = get_max_sheet_id(input_value)
         if data_objects:
             start_col, start_row, vertical_gap = Table.create_table(ws,
                                                                     cell_data)
@@ -122,6 +123,8 @@ class Table:
 
                 start_row += vertical_gap
                 start_col = ws[cell_data.index].column
+            if max_sheet_id and cell_data.listsCell:
+                ws[cell_data.listsCell].value = max_sheet_id
 
     def _get_data_objects(self, input_value: Any) -> List[Any] | None:
         """
@@ -141,3 +144,18 @@ class Table:
         else:
             return [UniversalObject.from_dict(obj) for obj in
                     json.loads(input_value)]
+
+
+def get_max_sheet_id(sections):
+    """
+    Возвращает максимальный sheetId среди списка секций.
+
+    :param sections: Список объектов Section
+    :return: Максимальный sheetId
+    """
+    if not isinstance(sections, list) or not all(
+            isinstance(section, Section) for section in sections):
+        return None
+    if not sections:
+        return None
+    return max(section.sheetId for section in sections)

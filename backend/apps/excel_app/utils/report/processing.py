@@ -2,19 +2,17 @@ import json
 import os
 import re
 from typing import List
-
 import pymorphy2
 import openpyxl
 from django.conf import settings
+
 from apps.excel_app.models import Sheet
 from apps.excel_app.utils.report.table_creator import Table, TableType
 from apps.excel_app.utils.report.data_models import Section
 from apps.excel_app.utils.report.constant_tags import gender_tags, \
-    month_tags, case_tags
+    month_tags, case_tags, register_tags
 
 from apps.excel_app.utils.morph_patch import apply_patch
-
-from apps.excel_app.utils.report.constant_tags import register_tags
 
 apply_patch()
 morph = pymorphy2.MorphAnalyzer()
@@ -60,6 +58,7 @@ def generate_report(data, filename):
         content_ws = wb['Содержание']
         table = Table(TableType.CONTENT)
         table.fill_table(content_ws, content_cell_data, sections)
+
     else:
         print("Warning: content_cell_data is None, skipping fill_content")
 
@@ -204,7 +203,7 @@ def substitute_placeholders(template, data):
                             inflected_word = initial.lower()
                         case _:
                             inflected_word = initial
-                else: # Случай, когда второй ключ не является тегом регистра
+                else:  # Случай, когда второй ключ не является тегом регистра
                     pass
                 if inflected_word:
                     return inflected_word
@@ -264,3 +263,6 @@ def change_case(phrase, target_case):
         parsed_word = morph.parse(inflected_words[0])[0]
         inflected_words[0] = parsed_word.inflect({gender}).word
     return ' '.join(inflected_words)
+
+
+

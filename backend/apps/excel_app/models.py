@@ -45,7 +45,7 @@ class Fields(models.Model):
 
 class Cell:
     def __init__(self, index, template='', type=None, inputKey=None,
-                 defaultValue=None, verticalGap=None, cells=None):
+                 defaultValue=None, verticalGap=None, cells=None, listsCell=None):
         self.index = index
         self.template = template
         self.type = type
@@ -53,6 +53,7 @@ class Cell:
         self.defaultValue = defaultValue
         self.verticalGap = verticalGap
         self.cells = cells if cells is not None else []
+        self.listsCell = listsCell
 
     def to_dict(self):
         return {
@@ -62,7 +63,8 @@ class Cell:
             'inputKey': self.inputKey,
             'defaultValue': self.defaultValue,
             'verticalGap': self.verticalGap,
-            'cells': self.cells
+            'cells': self.cells,
+            'listsCell': self.listsCell
         }
 
     @classmethod
@@ -74,7 +76,8 @@ class Cell:
             inputKey=data.get('inputKey', ''),
             defaultValue=data.get('defaultValue', ''),
             verticalGap=data.get('verticalGap', None),
-            cells=data.get('cells', [])
+            cells=data.get('cells', []),
+            listsCell=data.get('listsCell', None)
         )
 
 
