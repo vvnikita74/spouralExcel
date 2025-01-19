@@ -3,7 +3,13 @@ import type Field from 'types/field'
 import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
 
-import { useCallback, useMemo, useState } from 'react'
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState
+} from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
@@ -37,6 +43,7 @@ export default function FormView({
 	const navigate = useNavigate()
 
 	const { btnRef, toggleLoader } = useLoader()
+	const formContainerRef = useRef<HTMLDivElement>(null)
 
 	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
@@ -91,15 +98,26 @@ export default function FormView({
 		[toggleLoader, authHeader, mutation, path, navigate]
 	)
 
+	const scrollFormTop = useCallback(() => {
+		const { current } = formContainerRef
+		if (current) {
+			console.log(current.scrollTop)
+			current.scrollTo({ top: 0 })
+		}
+	}, [])
+
 	const onPrev = useCallback(() => {
 		setCurrentStep(prev => Math.max(prev - 1, 1))
-	}, [])
+		scrollFormTop()
+	}, [scrollFormTop])
 
 	const onNext = useCallback(async () => {
 		if (currentStep < maxStep) {
 			const fieldNames = fieldsForCurrentStep.map(field => field.key)
-			if (await trigger(fieldNames))
+			if (await trigger(fieldNames)) {
 				setCurrentStep(prev => Math.min(prev + 1, maxStep))
+				scrollFormTop()
+			}
 		} else {
 			handleSubmit(onSubmit)()
 		}
@@ -109,7 +127,8 @@ export default function FormView({
 		maxStep,
 		trigger,
 		handleSubmit,
-		onSubmit
+		onSubmit,
+		scrollFormTop
 	])
 
 	const renderField = useCallback(
@@ -197,6 +216,10 @@ export default function FormView({
 		},
 		[control, errors, register]
 	)
+
+	useEffect(() => {
+		formContainerRef.current = document.querySelector('div#outlet')
+	}, [])
 
 	return (
 		<form

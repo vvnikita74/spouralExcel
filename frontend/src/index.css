@@ -164,7 +164,7 @@ body {
 }
 
 .react-datepicker__month .react-datepicker__month-text, .react-datepicker__month .react-datepicker__quarter-text {
-	@apply m-0.5 py-0.5 w-[calc(33%-0.5rem)] !important;
+	@apply m-0.5 py-0.5 w-[calc(33%-0.5rem)] text-sm leading-normal sm:text-lg sm:leading-normal font-normal !important;
 }
 
 .react-datepicker-wrapper {
