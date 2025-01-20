@@ -1,4 +1,5 @@
 import type Field from 'types/field'
+import type { TableFieldCell } from 'types/field'
 import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
 
@@ -18,7 +19,7 @@ export default function FormManager({
 	const schemaShape = {}
 	const defaultValues = {}
 
-	fields.forEach(({ type, mask, key, required }) => {
+	fields.forEach(({ type, mask, key, required, settings }) => {
 		let validator: z.ZodType
 
 		switch (type) {
@@ -65,8 +66,32 @@ export default function FormManager({
 
 				break
 			}
+			case 'table': {
+				const cells = JSON.parse(settings || '')?.cells as [
+					TableFieldCell
+				]
+				const objectCellSchema: Record<string, z.ZodString> = {}
+
+				if (cells)
+					cells.forEach(({ key: cellKey, mask: cellMask }) => {
+						objectCellSchema[cellKey] = z.string()
+
+						if (cellMask) {
+							objectCellSchema[cellKey].regex(
+								new RegExp(cellMask),
+								'Введите корректное значение'
+							)
+						}
+					})
+
+				validator = z
+					.array(z.object(objectCellSchema))
+					.min(required ? 1 : 0, 'Обязательное поле')
+				defaultValues[key] = []
+			}
 		}
-		schemaShape[key] = validator
+
+		if (validator) schemaShape[key] = validator
 	})
 
 	const queryClient = useQueryClient()
