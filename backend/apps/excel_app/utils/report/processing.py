@@ -18,7 +18,7 @@ apply_patch()
 morph = pymorphy2.MorphAnalyzer()
 
 
-def generate_report(data, filename):
+def generate_report(data, filename,user_files):
     """
     Генерирует отчет на основе данных и сохраняет его в файл.
 
@@ -34,7 +34,6 @@ def generate_report(data, filename):
     sections = []
     sheets = sorted(Sheet.objects.all(), key=lambda sheet: sheet.index)
     content_cell_data = None
-
     for sheet in sheets:
         ws = wb.worksheets[sheet.index]
         count += 1

@@ -41,15 +41,17 @@ class ProcessInputView(APIView):
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
                                             dateCreated=date_created)
-
+        user_files = []
         for key, file_list in files.lists():
             for file in file_list:
                 compressed_file = self.compress_image(file)
-                UserDataFile.objects.create(user_data=user_data,
+                user_data_file =UserDataFile.objects.create(user_data=user_data,
                                             file=compressed_file, key=key)
-
+                user_files.append(
+                    {'key': key, 'path': user_data_file.file.path})
         threading.Thread(target=self.process_data,
-                         args=(data, user_data.id, filename)).start()
+                         args=(data, user_data.id, filename,
+                               user_files)).start()
 
         serializer = UserDataSerializer(user_data)
         return Response(serializer.data,
@@ -64,9 +66,9 @@ class ProcessInputView(APIView):
         return compressed_image
 
     @staticmethod
-    def process_data(data, user_data_id, filename):
+    def process_data(data, user_data_id, filename, user_files=None):
         try:
-            generate_report(data, filename)
+            generate_report(data, filename,user_files)
             UserData.objects.filter(id=user_data_id).update(isReady=1,
                                                             filename=filename)
         except Exception as e:
