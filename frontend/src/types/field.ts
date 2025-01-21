@@ -1,13 +1,5 @@
 export default interface Field {
-	type:
-		| 'text'
-		| 'number'
-		| 'multiselect'
-		| 'multinumber'
-		| 'documentation'
-		| 'date'
-		| 'bool'
-		| 'select'
+	type: 'text' | 'table' | 'date' | 'select'
 	mask: string
 	key: string
 	name: string
@@ -17,4 +9,16 @@ export default interface Field {
 	step: number
 	position: number
 	required: boolean
+}
+
+export interface TableFieldCell {
+	label: string
+	key: string
+	mask: string
+}
+
+// TODO: replace with string array without objects
+export interface SelectValue {
+	name: string
+	value: string
 }

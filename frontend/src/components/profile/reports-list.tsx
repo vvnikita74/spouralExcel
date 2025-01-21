@@ -158,7 +158,7 @@ export default function ReportsList({
 							)}
 							<Link
 								to='emergencyreport?continue=id'
-								className={`base-padding base-text mx-1 min-w-fit flex-1 rounded-xl
+								className={`base-padding base-text mx-1 min-w-fit flex-1 rounded-xl opacity-60
 								${isReady !== 2 ? 'bg-indigo-500' : 'bg-red-500'}`}>
 								{isReady !== 2 ? 'Редактировать' : 'Повторить'}
 							</Link>

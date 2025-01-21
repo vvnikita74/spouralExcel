@@ -8,6 +8,7 @@ import type { ControllerRenderProps } from 'react-hook-form'
 
 import List from 'public/icons/list.svg'
 import { memo } from 'react'
+import { SelectValue } from 'types/field'
 import InputWrapper, { InputWithIcon } from './input-wrapper'
 
 const handleOpen = (
@@ -66,7 +67,7 @@ const SelectInput = memo(
 		inputProps
 	}: {
 		label: string
-		values?: { name: string; value: string }[]
+		values?: SelectValue[]
 		placeholder?: string
 		error?: string
 		required: boolean

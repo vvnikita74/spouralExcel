@@ -100,10 +100,7 @@ export default function FormView({
 
 	const scrollFormTop = useCallback(() => {
 		const { current } = formContainerRef
-		if (current) {
-			console.log(current.scrollTop)
-			current.scrollTo({ top: 0 })
-		}
+		if (current) current.scrollTo({ top: 0 })
 	}, [])
 
 	const onPrev = useCallback(() => {
@@ -210,6 +207,15 @@ export default function FormView({
 							}}
 						/>
 					)
+				// case 'table':
+				// 	return (
+				// 		<TableInput
+				// 			key={inputKey}
+				// 			name={inputKey}
+				// 			control={control}
+				// 			cells={JSON.parse(settings || '')?.cells || []}
+				// 		/>
+				// 	)
 				default:
 					return null
 			}
@@ -232,20 +238,24 @@ export default function FormView({
 				<button
 					type='button'
 					onClick={onPrev}
-					className={`base-text base-padding w-fit rounded-xl bg-indigo-500 text-white
+					className={`base-text base-padding z-10 w-fit rounded-xl bg-indigo-500 text-white
 						${currentStep > 1 ? '' : 'pointer-events-none opacity-60'}`}>
 					<span className='pointer-events-none text-inherit'>
 						Назад
 					</span>
 				</button>
-				<span className='base-padding rounded-xl bg-indigo-500 text-white'>
-					{currentStep} / {maxStep}
-				</span>
+				<div
+					className='absolute bottom-0 top-0 flex w-[calc(100%-2rem)] items-center
+						justify-center'>
+					<span className='base-padding rounded-xl bg-indigo-500 text-white'>
+						{currentStep} / {maxStep}
+					</span>
+				</div>
 				<button
 					type='button'
 					onClick={onNext}
 					ref={btnRef}
-					className='base-text btn-loader base-padding w-fit self-end rounded-xl
+					className='base-text btn-loader base-padding z-10 w-fit self-end rounded-xl
 						bg-indigo-500 text-white'>
 					<span className='pointer-events-none text-inherit'>
 						{currentStep < maxStep ? 'Далее' : 'Отправить'}
