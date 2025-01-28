@@ -44,11 +44,11 @@ class Fields(models.Model):
 
 
 class Cell:
-    def __init__(self, index, template='', type=None, inputKey=None,
+    def __init__(self, index, template='', tableType=None, inputKey=None,
                  defaultValue=None, verticalGap=None, cells=None, listsCell=None):
         self.index = index
         self.template = template
-        self.type = type
+        self.tableType = tableType
         self.inputKey = inputKey
         self.defaultValue = defaultValue
         self.verticalGap = verticalGap
@@ -59,7 +59,7 @@ class Cell:
         return {
             'index': self.index,
             'template': self.template,
-            'type': self.type,
+            'tableType': self.tableType,
             'inputKey': self.inputKey,
             'defaultValue': self.defaultValue,
             'verticalGap': self.verticalGap,
@@ -72,7 +72,7 @@ class Cell:
         return cls(
             index=data.get('index'),
             template=data.get('template'),
-            type=data.get('type', None),
+            tableType=data.get('tableType', None),
             inputKey=data.get('inputKey', ''),
             defaultValue=data.get('defaultValue', ''),
             verticalGap=data.get('verticalGap', None),

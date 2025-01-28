@@ -1,14 +1,17 @@
 import json
+import os
 from enum import Enum
-from openpyxl.styles import Border, Side
+from openpyxl.styles import Border, Side, Alignment, Font
 from typing import List, Any
-from .data_models import Documentation, UniversalObject, Section
+
+from .data_models import Documentation, UniversalObject, Section, Defect
 
 
 class TableType(Enum):
     DOCUMENTATION = 'documentation'
     CONTENT = 'content'
     DEFAULT = 'default'
+    DEFECTS = 'defects'
 
 
 class Table:
@@ -125,6 +128,159 @@ class Table:
                 start_col = ws[cell_data.index].column
             if max_sheet_id and cell_data.listsCell:
                 ws[cell_data.listsCell].value = max_sheet_id
+
+    def fill_defects(self, ws, cell_data, data, sheet):
+        defects = self._create_defects(cell_data, data)
+        start_cell = cell_data.index
+        start_col = ws[start_cell].column
+        start_row = ws[start_cell].row
+        sheet_index = 1
+        last_inserted_sheet = ws
+        original_sheet = ws.parent.copy_worksheet(ws) # Store the reference to the original sheet
+        added_defects = set()  # Track added defects
+        for defect in defects:
+            if defect in added_defects:
+                continue  # Skip defect if it has already been added
+
+            if not self.check_table_height(ws, cell_data, start_row, start_col,
+                                           defect):
+                # Create a copy of the original sheet
+                new_ws = original_sheet
+                new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Name the new sheet with the index
+                # print(f"Sheet {new_ws.title} created")
+
+                # Move the new sheet immediately after the last inserted sheet
+                original_index = ws.parent.index(last_inserted_sheet)
+                ws.parent._sheets.remove(new_ws)
+                ws.parent._sheets.insert(original_index + 1, new_ws)
+
+                ws = new_ws
+                last_inserted_sheet = new_ws  # Update the last inserted sheet
+                start_row = ws[
+                    start_cell].row  # Reset start_row for the new sheet
+                sheet_index += 1
+
+                if sheet.countCell:
+                    ws[sheet.countCell] = sheet.index + sheet_index
+
+
+            header_name = cell_data.cells.get('names').get(defect.type)
+            start_row = self.draw_table_header(ws, cell_data, start_row,
+                                               start_col, header_name)
+            start_row = self.draw_table_elements(ws, cell_data, start_row,
+                                                 start_col, defect)
+            added_defects.add(defect)  # Mark defect as added
+
+
+    @staticmethod
+    def check_table_height(ws, cell_data, start_row, start_col, defect):
+        total_height = 0
+
+        for row in cell_data.cells['values']['rows']:
+            if isinstance(getattr(defect, row['key'], ''), list):
+                value_height = cell_data.cells['header']['minHeight'] + len(
+                    getattr(defect, row['key'], '')) - 1
+            else:
+                value_height = cell_data.cells['values']['valueHeight']
+            total_height += value_height
+
+        end_row = start_row + total_height - 1
+        max_cell = cell_data.cells["maxCell"]
+        max_row = ws[max_cell].row
+        return end_row <= max_row
+
+    @staticmethod
+    def draw_table_header(ws, cell_data, start_row, start_col, header_name):
+        header_length = 35
+        end_col = start_col + header_length
+        end_row = start_row + 1
+
+        # Вставка значения для заголовка
+        cell = ws.cell(row=start_row, column=start_col + 1,
+                       value=header_name)  # Сдвиг на одну ячейку вправо
+
+        # Центрирование значения, установка жирного шрифта и размера шрифта 14
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(bold=True, size=14)
+
+        # Установка границ для заголовка
+        Table.set_border(ws, ws.cell(row=start_row,
+                                     column=start_col + 1).coordinate,
+                         ws.cell(row=end_row, column=end_col).coordinate)
+
+        # Объединение ячеек для заголовка
+        ws.merge_cells(start_row=start_row, start_column=start_col + 1,
+                       end_row=end_row, end_column=end_col)
+
+        return end_row + 1  # Возвращаем следующую строку после заголовка
+
+    @staticmethod
+    def draw_table_elements(ws, cell_data, start_row, start_col, defect):
+        for row in cell_data.cells['values']['rows']:
+            # Вычисление конечной строки для ячейки имени
+            name_end_row = start_row + cell_data.cells['header'][
+                'nameHeight'] - 1
+            name_end_col = start_col + cell_data.cells['header']['width'] - 1
+
+            # Вставка значения для ячейки имени
+            name_cell = ws.cell(row=start_row, column=start_col,
+                                value=row['name'])
+
+            # Вычисление начального столбца для ячейки значения
+            value_start_col = start_col + cell_data.cells['header']['width']
+
+            # Получение значения для дефекта
+            value = getattr(defect, row['key'], '')
+            if isinstance(value, list):
+                value_height = cell_data.cells['header']['minHeight'] + len(
+                    value) - 1
+                value = '\n'.join(
+                    f"- {item}" if i == 0 else f"- {item}" for i, item in
+                    enumerate(filter(None,
+                                     value)))  # Преобразование списка в маркеры
+            else:
+                value_height = cell_data.cells['values']['valueHeight']
+
+            # Вычисление конечной строки для ячейки значения
+            value_end_row = start_row + value_height - 1
+            value_end_col = value_start_col + cell_data.cells['values'][
+                'width'] - 1
+
+            # Установка границ для ячейки имени
+            Table.set_border(ws, name_cell.coordinate,
+                             ws.cell(row=value_end_row,
+                                     column=name_end_col).coordinate)
+
+            # Объединение ячеек для имени
+            ws.merge_cells(start_row=start_row, start_column=start_col,
+                           end_row=value_end_row, end_column=name_end_col)
+
+            # Вставка значения для ячейки значения
+            value_cell = ws.cell(row=start_row, column=value_start_col,
+                                 value=value)
+            value_cell.alignment = Alignment(wrap_text=True)
+
+            # Установка границ для ячейки значения
+            Table.set_border(ws, value_cell.coordinate,
+                             ws.cell(row=value_end_row,
+                                     column=value_end_col).coordinate)
+
+            # Объединение ячеек для значения
+            ws.merge_cells(start_row=start_row, start_column=value_start_col,
+                           end_row=value_end_row, end_column=value_end_col)
+
+            # Переход к следующей строке после текущей строки
+            start_row = max(name_end_row, value_end_row) + 1
+
+        return start_row + 1  # Возвращаем следующую строку после элементов таблицы
+
+    def _create_defects(self, cell_data, data):
+        defects = []
+        for key in cell_data.cells['names'].keys():  # Добавить try except ?
+            defect_data = json.loads(data.get(key, '{}'))
+            defect = Defect.from_dict(type=key, data=defect_data)
+            defects.append(defect)
+        return defects
 
     def _get_data_objects(self, input_value: Any) -> List[Any] | None:
         """

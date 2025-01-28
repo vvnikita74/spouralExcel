@@ -37,10 +37,10 @@ def generate_report(data, filename,user_files):
     for sheet in sheets:
         ws = wb.worksheets[sheet.index]
         count += 1
-
+        # print(f'Processing sheet {sheet.name} with index {sheet.index}')
         for cell_data in sheet.get_data():
             content_cell_data = process_cell_data(ws, cell_data, data,
-                                                  content_cell_data)
+                                                  content_cell_data,sheet)
 
         if sheet.countCell:
             ws[sheet.countCell] = count
@@ -49,7 +49,7 @@ def generate_report(data, filename,user_files):
             sections.extend(process_sections(sheet, count))
 
         sheet.save()
-
+    # print(sheets)
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
@@ -61,24 +61,25 @@ def generate_report(data, filename,user_files):
     else:
         print("Warning: content_cell_data is None, skipping fill_content")
 
+    # print("Sheets in workbook after processing:")
+    # for sheet in wb.sheetnames:
+    #     print(sheet)
     save_report(wb, filename)
 
 
-def process_cell_data(ws, cell_data, data, content_cell_data):
+def process_cell_data(ws, cell_data, data, content_cell_data,sheet):
     cell = ws[cell_data.index]
     template = cell_data.template
-    cell_type = cell_data.type
-    if cell_type == 'table':
-        table_type = cell_data.inputKey
-    else:
-        table_type = None
     input_value = get_nested_value(data, cell_data.inputKey,
                                    cell_data.defaultValue)
-    if table_type:
-        match table_type:
+    if cell_data.tableType:
+        match cell_data.tableType:
             case 'documentation':
-                table = Table(TableType(table_type))
+                table = Table(TableType(cell_data.tableType))
                 table.fill_table(ws, cell_data, input_value)
+            case "defects":
+                table = Table(TableType(cell_data.tableType))
+                table.fill_defects(ws, cell_data,data,sheet)
             case 'content':
                 content_cell_data = cell_data
     else:
@@ -140,9 +141,17 @@ def get_nested_value(data, key, default_value=None):
     :param default_value: Значение по умолчанию
     :return: Значение по ключу
     """
+
     keys = key.split('.')
     value = data
     for k in keys:
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError:
+                return default_value
+        if not isinstance(value, dict):
+            return default_value
         value = value.get(k, None)
         if value is None:
             return default_value

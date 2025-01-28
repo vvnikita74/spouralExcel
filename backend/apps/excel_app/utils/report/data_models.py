@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 
 @dataclass
@@ -85,6 +85,77 @@ class Section:
         """
         return f'Section ID: {self.sectionId}, Section Name: {self.sectionName}, Sheet ID: {self.sheetId}'
 
+
+@dataclass
+class Defect:
+    """
+    Класс для представления дефектов.
+
+    Атрибуты:
+        type (str): Тип дефектов.
+        defects (List[str]): Выявленные дефекты и повреждения.
+        recs (List[str]): Рекомендации по устранению.
+        phys_value (int): Физический износ.
+        cat (str): Категория технического состояния.
+    """
+
+    type: str
+    defects: List[str]
+    recs: List[str]
+    physValue: int
+    cat: str
+
+    @classmethod
+    def from_dict(cls, type: str, data: Dict[str, Any]) -> 'Defect':
+        """
+        Создает объект Defect из словаря.
+
+        Аргументы:
+            type (str): Тип дефектов.
+            data (Dict[str, Any]): Словарь с данными.
+
+        Возвращает:
+            Defect: Объект дефектов.
+        """
+        return cls(
+            type=type,
+            defects=data.get('defects', []),
+            recs=data.get('recs', []),
+            physValue=data.get('physValue', 0),
+            cat=data.get('cat', '')
+        )
+
+    def __str__(self) -> str:
+        """
+        Возвращает строковое представление объекта Defect.
+
+        Возвращает:
+            str: Строковое представление.
+        """
+        return f'Тип: {self.type}, Дефекты: {self.defects}, Рекомендации: {self.recs}, Физический износ: {self.phys_value}, Категория: {self.cat}'
+
+    def __hash__(self):
+        """
+        Returns the hash value of the Defect object.
+
+        Returns:
+            int: Hash value.
+        """
+        return hash((self.type, tuple(self.defects), tuple(self.recs), self.physValue, self.cat))
+
+    def __eq__(self, other):
+        """
+        Checks if two Defect objects are equal.
+
+        Args:
+            other (Defect): Another Defect object.
+
+        Returns:
+            bool: True if equal, False otherwise.
+        """
+        if not isinstance(other, Defect):
+            return False
+        return (self.type, self.defects, self.recs, self.physValue, self.cat) == (other.type, other.defects, other.recs, other.physValue, other.cat)
 
 @dataclass
 class UniversalObject:
