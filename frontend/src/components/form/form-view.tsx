@@ -25,6 +25,7 @@ import DateInput, {
 } from 'components/input/date-input'
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
+import TableInput from 'components/input/table-input'
 
 export default function FormView({
 	validationSchema,
@@ -45,7 +46,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(1)
+	const [currentStep, setCurrentStep] = useState<number>(4)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
@@ -111,10 +112,10 @@ export default function FormView({
 	const onNext = useCallback(async () => {
 		if (currentStep < maxStep) {
 			const fieldNames = fieldsForCurrentStep.map(field => field.key)
-			if (await trigger(fieldNames)) {
-				setCurrentStep(prev => Math.min(prev + 1, maxStep))
-				scrollFormTop()
-			}
+			// if (await trigger(fieldNames)) {
+			setCurrentStep(prev => Math.min(prev + 1, maxStep))
+			scrollFormTop()
+			// }
 		} else {
 			handleSubmit(onSubmit)()
 		}
@@ -207,15 +208,21 @@ export default function FormView({
 							}}
 						/>
 					)
-				// case 'table':
-				// 	return (
-				// 		<TableInput
-				// 			key={inputKey}
-				// 			name={inputKey}
-				// 			control={control}
-				// 			cells={JSON.parse(settings || '')?.cells || []}
-				// 		/>
-				// 	)
+				case 'table':
+					return (
+						<TableInput
+							key={inputKey}
+							name={inputKey}
+							label={name}
+							control={control}
+							errors={
+								(errors[inputKey] as unknown as {
+									[key: string]: { message: string }
+								}[]) || []
+							}
+							cells={JSON.parse(settings || '')?.cells || []}
+						/>
+					)
 				default:
 					return null
 			}

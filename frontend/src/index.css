@@ -18,7 +18,7 @@
 		@apply select-none
 	}
 	.base-text {
-		@apply text-sm leading-normal sm:text-lg sm:leading-normal font-normal;
+		@apply text-base leading-normal sm:text-lg sm:leading-normal font-normal;
 	}
 	.title-text {
 		@apply text-lg font-medium sm:text-2xl leading-normal sm:leading-normal

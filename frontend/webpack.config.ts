@@ -73,11 +73,11 @@ const webpackConfig = (env: {
 			template: './public/index.html'
 		}),
 		new webpack.DefinePlugin({
-			'process.env.PRODUCTION':
-				env.production || !env.development,
+			'process.env.PRODUCTION': env.production || !env.development,
 			'process.env.NAME': JSON.stringify(
 				require('./package.json').name
 			),
+
 			'process.env.VERSION': JSON.stringify(
 				require('./package.json').version
 			)
