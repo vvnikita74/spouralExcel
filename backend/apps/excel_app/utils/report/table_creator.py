@@ -190,7 +190,6 @@ class Table:
                                                  start_col, defect)
             added_defects.add(defect)  # Пометка дефекта как добавленного
 
-
     @staticmethod
     def check_table_height(ws, cell_data, start_row, start_col, defect):
         total_height = 0
@@ -220,7 +219,7 @@ class Table:
 
         # Центрирование значения, установка жирного шрифта и размера шрифта 14
         cell.alignment = Alignment(horizontal='center', vertical='center')
-        cell.font = Font(bold=True, size=14)
+        cell.font = Font(name="Arial", bold=True, size=12)
 
         # Установка границ для заголовка
         Table.set_border(ws, ws.cell(row=start_row,
@@ -244,6 +243,8 @@ class Table:
             # Вставка значения для ячейки имени
             name_cell = ws.cell(row=start_row, column=start_col,
                                 value=row['name'])
+
+            name_cell.alignment = Alignment(vertical="top", horizontal="right")
 
             # Вычисление начального столбца для ячейки значения
             value_start_col = start_col + cell_data.cells['header']['width']
