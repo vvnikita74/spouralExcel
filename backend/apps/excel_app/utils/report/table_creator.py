@@ -130,46 +130,65 @@ class Table:
                 ws[cell_data.listsCell].value = max_sheet_id
 
     def fill_defects(self, ws, cell_data, data, sheet):
+        # Извлечение данных из sheet.data
+        sheet_data = sheet.get_data()
+        code_cell = next(
+            (item for item in sheet_data if item.inputKey == 'code'), None)
+        report_date_cell = next(
+            (item for item in sheet_data if item.inputKey == 'reportDate'),
+            None)
+
+        # Проверка наличия данных
+        if not code_cell or not report_date_cell:
+            raise ValueError("Не найдены необходимые данные в sheet.data")
+
+        code_value = data.get(code_cell.inputKey, '')
+        report_date_value = data.get(report_date_cell.inputKey, '')
+
         defects = self._create_defects(cell_data, data)
         start_cell = cell_data.index
         start_col = ws[start_cell].column
         start_row = ws[start_cell].row
         sheet_index = 1
         last_inserted_sheet = ws
-        original_sheet = ws.parent.copy_worksheet(ws) # Store the reference to the original sheet
-        added_defects = set()  # Track added defects
+        original_sheet = ws.parent.copy_worksheet(
+            ws)  # Сохранение ссылки на оригинальный лист
+        added_defects = set()  # Отслеживание добавленных дефектов
+
         for defect in defects:
             if defect in added_defects:
-                continue  # Skip defect if it has already been added
+                continue  # Пропуск дефекта, если он уже был добавлен
 
             if not self.check_table_height(ws, cell_data, start_row, start_col,
                                            defect):
-                # Create a copy of the original sheet
+                # Создание копии оригинального листа
                 new_ws = original_sheet
-                new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Name the new sheet with the index
-                # print(f"Sheet {new_ws.title} created")
+                new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Название нового листа с индексом
 
-                # Move the new sheet immediately after the last inserted sheet
+                # Перемещение нового листа сразу после последнего вставленного листа
                 original_index = ws.parent.index(last_inserted_sheet)
                 ws.parent._sheets.remove(new_ws)
                 ws.parent._sheets.insert(original_index + 1, new_ws)
 
                 ws = new_ws
-                last_inserted_sheet = new_ws  # Update the last inserted sheet
+                last_inserted_sheet = new_ws  # Обновление последнего вставленного листа
                 start_row = ws[
-                    start_cell].row  # Reset start_row for the new sheet
+                    start_cell].row  # Сброс start_row для нового листа
                 sheet_index += 1
 
                 if sheet.countCell:
                     ws[sheet.countCell] = sheet.index + sheet_index
 
+                # Вставка значений в соответствующие ячейки
+                ws[code_cell.index] = code_value
+                ws[report_date_cell.index] = report_date_value
 
             header_name = cell_data.cells.get('names').get(defect.type)
             start_row = self.draw_table_header(ws, cell_data, start_row,
                                                start_col, header_name)
             start_row = self.draw_table_elements(ws, cell_data, start_row,
                                                  start_col, defect)
-            added_defects.add(defect)  # Mark defect as added
+            added_defects.add(defect)  # Пометка дефекта как добавленного
 
 
     @staticmethod
@@ -276,10 +295,11 @@ class Table:
 
     def _create_defects(self, cell_data, data):
         defects = []
-        for key in cell_data.cells['names'].keys():  # Добавить try except ?
+        for key in cell_data.cells['names'].keys():
             defect_data = json.loads(data.get(key, '{}'))
-            defect = Defect.from_dict(type=key, data=defect_data)
-            defects.append(defect)
+            if defect_data:  # Check if defect_data is not empty
+                defect = Defect.from_dict(type=key, data=defect_data)
+                defects.append(defect)
         return defects
 
     def _get_data_objects(self, input_value: Any) -> List[Any] | None:
