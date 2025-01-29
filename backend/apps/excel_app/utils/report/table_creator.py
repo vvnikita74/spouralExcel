@@ -220,12 +220,6 @@ class Table:
 
         # Центрирование значения, установка жирного шрифта и размера шрифта 14
         cell.alignment = Alignment(horizontal='center', vertical='center')
-        cell.font = Font(bold=True, size=14)
-
-        # Установка границ для заголовка
-        Table.set_border(ws, ws.cell(row=start_row,
-                                     column=start_col + 1).coordinate,
-                         ws.cell(row=end_row, column=end_col).coordinate)
 
         # Объединение ячеек для заголовка
         ws.merge_cells(start_row=start_row, start_column=start_col + 1,
