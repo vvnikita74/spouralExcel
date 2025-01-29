@@ -112,10 +112,10 @@ export default function FormView({
 	const onNext = useCallback(async () => {
 		if (currentStep < maxStep) {
 			const fieldNames = fieldsForCurrentStep.map(field => field.key)
-			// if (await trigger(fieldNames)) {
-			setCurrentStep(prev => Math.min(prev + 1, maxStep))
-			scrollFormTop()
-			// }
+			if (await trigger(fieldNames)) {
+				setCurrentStep(prev => Math.min(prev + 1, maxStep))
+				scrollFormTop()
+			}
 		} else {
 			handleSubmit(onSubmit)()
 		}

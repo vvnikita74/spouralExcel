@@ -2,7 +2,7 @@ import type { Control, FieldValues } from 'react-hook-form'
 import type { TableFieldCell } from 'types/field'
 import type { MouseEvent } from 'react'
 
-import { appendErrors, useFieldArray } from 'react-hook-form'
+import { useFieldArray } from 'react-hook-form'
 import { memo, useCallback } from 'react'
 
 import PlusIcon from 'public/icons/plus.svg'
@@ -46,8 +46,6 @@ const TableInput = memo(
 				),
 			[append, cells]
 		)
-
-		console.log(errors)
 
 		return (
 			<div className='flex flex-col'>
