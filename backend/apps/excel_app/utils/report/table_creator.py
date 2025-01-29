@@ -218,13 +218,9 @@ class Table:
                        value=header_name)  # Сдвиг на одну ячейку вправо
 
         # Центрирование значения, установка жирного шрифта и размера шрифта 14
-        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.alignment = Alignment(horizontal='center', vertical='center',
+                                   wrapText=True)
         cell.font = Font(name="Arial", bold=True, size=12)
-
-        # Установка границ для заголовка
-        Table.set_border(ws, ws.cell(row=start_row,
-                                     column=start_col + 1).coordinate,
-                         ws.cell(row=end_row, column=end_col).coordinate)
 
         # Объединение ячеек для заголовка
         ws.merge_cells(start_row=start_row, start_column=start_col + 1,
@@ -244,7 +240,8 @@ class Table:
             name_cell = ws.cell(row=start_row, column=start_col,
                                 value=row['name'])
 
-            name_cell.alignment = Alignment(vertical="top", horizontal="right")
+            name_cell.alignment = Alignment(vertical="top",
+                                            horizontal="right", wrap_text=True)
 
             # Вычисление начального столбца для ячейки значения
             value_start_col = start_col + cell_data.cells['header']['width']
@@ -278,7 +275,8 @@ class Table:
             # Вставка значения для ячейки значения
             value_cell = ws.cell(row=start_row, column=value_start_col,
                                  value=value)
-            value_cell.alignment = Alignment(wrap_text=True)
+            value_cell.alignment = Alignment(wrap_text=True, horizontal="left",
+                                             vertical="top")
 
             # Установка границ для ячейки значения
             Table.set_border(ws, value_cell.coordinate,
