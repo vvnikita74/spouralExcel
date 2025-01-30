@@ -18,7 +18,7 @@
 		@apply select-none
 	}
 	.base-text {
-		@apply text-sm leading-normal sm:text-lg sm:leading-normal font-normal;
+		@apply text-base leading-normal sm:text-lg sm:leading-normal font-normal;
 	}
 	.title-text {
 		@apply text-lg font-medium sm:text-2xl leading-normal sm:leading-normal
@@ -160,7 +160,7 @@ body {
 }
 
 .react-datepicker__day--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__month-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__quarter-text--keyboard-selected:not([aria-disabled=true]):hover, .react-datepicker__year-text--keyboard-selected:not([aria-disabled=true]):hover {
-	@apply bg-[#f0f0f0] text-black opacity-100 !important;
+	@apply bg-[#f0f0f0] text-black opacity-100 font-normal !important;
 }
 
 .react-datepicker__month .react-datepicker__month-text, .react-datepicker__month .react-datepicker__quarter-text {

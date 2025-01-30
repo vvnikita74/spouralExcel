@@ -74,7 +74,9 @@ export default function FormManager({
 
 				if (cells)
 					cells.forEach(({ key: cellKey, mask: cellMask }) => {
-						objectCellSchema[cellKey] = z.string()
+						objectCellSchema[cellKey] = z
+							.string()
+							.min(1, 'Введите значение')
 
 						if (cellMask) {
 							objectCellSchema[cellKey].regex(

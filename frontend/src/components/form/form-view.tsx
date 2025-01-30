@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import processValue from 'utils/process-value'
 
 import Spinner from 'components/icons/Spinner'
 import DateInput, {
@@ -25,6 +26,7 @@ import DateInput, {
 } from 'components/input/date-input'
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
+import TableInput from 'components/input/table-input'
 
 export default function FormView({
 	validationSchema,
@@ -75,8 +77,10 @@ export default function FormView({
 			const formData = new FormData()
 
 			for (const key in data) {
-				formData.append(key, data[key] || '')
+				formData.append(key, processValue(data[key]) || '')
 			}
+
+			console.log(formData)
 
 			const date = new Date()
 			const isoDate = date.toISOString()
@@ -207,15 +211,21 @@ export default function FormView({
 							}}
 						/>
 					)
-				// case 'table':
-				// 	return (
-				// 		<TableInput
-				// 			key={inputKey}
-				// 			name={inputKey}
-				// 			control={control}
-				// 			cells={JSON.parse(settings || '')?.cells || []}
-				// 		/>
-				// 	)
+				case 'table':
+					return (
+						<TableInput
+							key={inputKey}
+							name={inputKey}
+							label={name}
+							control={control}
+							errors={
+								(errors[inputKey] as unknown as {
+									[key: string]: { message: string }
+								}[]) || []
+							}
+							cells={JSON.parse(settings || '')?.cells || []}
+						/>
+					)
 				default:
 					return null
 			}
