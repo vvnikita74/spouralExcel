@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import processValue from 'utils/process-value'
 
 import Spinner from 'components/icons/Spinner'
 import DateInput, {
@@ -46,7 +47,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(4)
+	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
@@ -76,8 +77,10 @@ export default function FormView({
 			const formData = new FormData()
 
 			for (const key in data) {
-				formData.append(key, data[key] || '')
+				formData.append(key, processValue(data[key]) || '')
 			}
+
+			console.log(formData)
 
 			const date = new Date()
 			const isoDate = date.toISOString()
