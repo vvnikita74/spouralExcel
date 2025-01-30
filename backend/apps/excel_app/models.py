@@ -117,8 +117,8 @@ class Recommendations(models.Model):
 class Defects(models.Model):
     name = models.CharField(max_length=255, unique=True)
     recommendations = models.OneToOneField('Recommendations', to_field='name',
-                                           on_delete=models.CASCADE,
-                                           related_name='+')
+                                           on_delete=models.PROTECT,
+                                           related_name='+',null=True, blank=True, default=None)
 
     def __str__(self):
         return self.name
@@ -131,7 +131,7 @@ class Defects(models.Model):
 class Materials(models.Model):
     name = models.CharField(max_length=255, unique=True)
     defects = models.ManyToManyField('Defects')
-    recommendations = models.ManyToManyField('Recommendations')
+    recommendations = models.ManyToManyField('Recommendations',blank=True)
 
     def __str__(self):
         return self.name

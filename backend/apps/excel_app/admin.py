@@ -71,9 +71,15 @@ class SheetAdmin(admin.ModelAdmin):
     actions = [change_content_section]
 
 
+class DefectsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'recommendations')
+    search_fields = ('name', 'recommendations__name')
+    ordering = ('name',)
+
+
 admin.site.register(Sheet, SheetAdmin)
 admin.site.register(Recommendations)
-admin.site.register(Defects)
+admin.site.register(Defects, DefectsAdmin)
 admin.site.register(Materials)
 admin.site.register(ConstructionTypes)
 admin.site.register(Fields, FieldsAdmin)
