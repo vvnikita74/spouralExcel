@@ -18,7 +18,7 @@ apply_patch()
 morph = pymorphy2.MorphAnalyzer()
 
 
-def generate_report(data, filename,user_files):
+def generate_report(data, filename, user_files):
     """
     Генерирует отчет на основе данных и сохраняет его в файл.
 
@@ -40,7 +40,7 @@ def generate_report(data, filename,user_files):
         # print(f'Processing sheet {sheet.name} with index {sheet.index}')
         for cell_data in sheet.get_data():
             content_cell_data = process_cell_data(ws, cell_data, data,
-                                                  content_cell_data,sheet)
+                                                  content_cell_data, sheet)
 
         if sheet.countCell:
             ws[sheet.countCell] = count
@@ -67,7 +67,7 @@ def generate_report(data, filename,user_files):
     save_report(wb, filename)
 
 
-def process_cell_data(ws, cell_data, data, content_cell_data,sheet):
+def process_cell_data(ws, cell_data, data, content_cell_data, sheet):
     cell = ws[cell_data.index]
     template = cell_data.template
     input_value = get_nested_value(data, cell_data.inputKey,
@@ -79,7 +79,7 @@ def process_cell_data(ws, cell_data, data, content_cell_data,sheet):
                 table.fill_table(ws, cell_data, input_value)
             case "defects":
                 table = Table(TableType(cell_data.tableType))
-                table.fill_defects(ws, cell_data,data,sheet)
+                table.fill_defects(ws, cell_data, data, sheet)
             case 'content':
                 content_cell_data = cell_data
     else:
@@ -108,9 +108,8 @@ def save_report(wb: openpyxl.Workbook, filename: str) -> None:
 
     wb.save(os_filename)
     # print(f'Отчет сохранен в {os_filename}')
-    os.system(
-        f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
-    os.remove(os_filename)
+    # os.system(
+    #     f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
 
 
 def process_sections(sheet: Sheet, count: int) -> List[Section]:
@@ -141,7 +140,6 @@ def get_nested_value(data, key, default_value=None):
     :param default_value: Значение по умолчанию
     :return: Значение по ключу
     """
-
     keys = key.split('.')
     value = data
     for k in keys:
@@ -175,6 +173,7 @@ def substitute_placeholders(template, data):
         match length:
             case 2:
                 word, key = key_arr
+
                 if key in case_tags:
                     initial = data.get(word, '')
                     inflected_word = change_case(initial, key)
@@ -191,8 +190,14 @@ def substitute_placeholders(template, data):
                             inflected_word = initial.lower()
                         case _:
                             inflected_word = initial
+                elif word in data:
+                    try:
+                        word_data = json.loads(data[word])
+                        inflected_word = word_data.get(key)
+                    except Exception as e:
+                        print(f"Error: {e}")
                 if inflected_word:
-                    return inflected_word
+                    return str(inflected_word)
             case 3:
                 word, key1, key2 = key_arr
                 if key1 in case_tags:
@@ -203,18 +208,17 @@ def substitute_placeholders(template, data):
                     inflected_word = change_case(word, get_gender(
                         initial.split(' ')[-1]))
                 if key2 in register_tags:
-                    initial = data.get(word, '')
                     match key2:
                         case 'upper':
-                            inflected_word = initial.upper()
+                            inflected_word = inflected_word.upper()
                         case 'lower':
-                            inflected_word = initial.lower()
+                            inflected_word = inflected_word.lower()
                         case _:
-                            inflected_word = initial
+                            inflected_word = inflected_word
                 else:  # Случай, когда второй ключ не является тегом регистра
                     pass
                 if inflected_word:
-                    return inflected_word
+                    return str(inflected_word)
             case _:
                 value = data.get(key, f'${key}$')
                 if value.split('.')[0] in month_tags:
@@ -225,7 +229,7 @@ def substitute_placeholders(template, data):
                             return f'{month} 20{year} года'
                         case _:
                             return f'{month} {year} года'
-                return value
+                return str(value)
 
     return re.sub(r'\$(\w+(\.\w+)*)\$', replace_match, template)
 
@@ -271,6 +275,3 @@ def change_case(phrase, target_case):
         parsed_word = morph.parse(inflected_words[0])[0]
         inflected_words[0] = parsed_word.inflect({gender}).word
     return ' '.join(inflected_words)
-
-
-
