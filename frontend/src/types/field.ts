@@ -5,7 +5,7 @@ export default interface Field {
 	name: string
 	placeholder: string
 	settings: string
-	constructionType: constructionType
+	construction_type: constructionType
 	step: number
 	position: number
 	required: boolean

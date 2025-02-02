@@ -6,6 +6,8 @@ import type { PostMutationVariables } from 'utils/mutations'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { z, ZodString } from 'zod'
 import FormView from './form-view'
+import addFieldToSchema from 'utils/add-field-to-schema'
+import { getDateMask, getDateType } from 'components/input/date-input'
 
 export default function FormManager({
 	fields,
@@ -20,7 +22,7 @@ export default function FormManager({
 	const defaultValues = {}
 
 	fields.forEach(
-		({ type, mask, key, required, settings, constructionType }) => {
+		({ type, mask, key, required, settings, construction_type }) => {
 			let validator: z.ZodType
 
 			switch (type) {
@@ -42,19 +44,7 @@ export default function FormManager({
 					break
 				}
 				case 'date': {
-					let regex: RegExp
-
-					switch (mask) {
-						case 'monthFullYear':
-							regex = /^(0[1-9]|1[0-2])\.\d{4}$/
-							break
-						case 'dayMonth':
-							regex = /^(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])$/
-							break
-						default:
-							regex = /^(0[1-9]|1[0-2])\.\d{2}$/
-					}
-
+					const regex: RegExp = getDateMask(getDateType(mask))
 					validator = z.string({
 						message: 'Введите корректное значение'
 					})
@@ -73,15 +63,16 @@ export default function FormManager({
 						[]
 
 					const objectCellSchema: Record<string, z.ZodTypeAny> = {}
-
-					if (!constructionType) {
+					if (!construction_type) {
 						cells.forEach(({ key: cellKey, mask: cellMask }) => {
 							objectCellSchema[cellKey] = z
 								.string()
 								.min(1, 'Введите значение')
 
 							if (cellMask) {
-								;(objectCellSchema[cellKey] as ZodString).regex(
+								objectCellSchema[cellKey] = (
+									objectCellSchema[cellKey] as ZodString
+								).regex(
 									new RegExp(cellMask),
 									'Введите корректное значение'
 								)
@@ -92,24 +83,33 @@ export default function FormManager({
 							.array(z.object(objectCellSchema))
 							.min(required ? 1 : 0, 'Обязательное поле')
 						defaultValues[key] = []
+					} else {
+						objectCellSchema['type'] = z
+							.string()
+							.min(1, 'Выберите значение')
+						objectCellSchema['defects'] = z
+							.array(z.string())
+							.min(1, 'Обязательное поле')
+						objectCellSchema['recs'] = z
+							.array(z.string())
+							.min(1, 'Обязательное поле')
+
+						validator = z.object(objectCellSchema)
+
+						defaultValues[key] = {
+							type: '',
+							defects: [],
+							recs: []
+						}
 					}
-					// else {
-					// objectCellSchema['type'] = z
-					// 	.string()
-					// 	.min(1, 'Выберите значение')
-					// objectCellSchema['defects'] = z
-					// 	.array(z.string())
-					// 	.min(1, 'Обязательное поле')
-					// objectCellSchema['recs'] = z
-					// 	.array(z.string())
-					// 	.min(1, 'Обязательное поле')
-					// }
 				}
 			}
 
-			if (validator) schemaShape[key] = validator
+			if (validator) addFieldToSchema(schemaShape, key, validator)
 		}
 	)
+
+	console.log(schemaShape)
 
 	const queryClient = useQueryClient()
 
