@@ -108,8 +108,8 @@ def save_report(wb: openpyxl.Workbook, filename: str) -> None:
 
     wb.save(os_filename)
     # print(f'Отчет сохранен в {os_filename}')
-    # os.system(
-    #     f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
+    os.system(
+        f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
 
 
 def process_sections(sheet: Sheet, count: int) -> List[Section]:
