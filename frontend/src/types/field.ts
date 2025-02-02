@@ -5,10 +5,19 @@ export default interface Field {
 	name: string
 	placeholder: string
 	settings: string
-	constructionType: object
+	construction_type: constructionType
 	step: number
 	position: number
 	required: boolean
+}
+
+interface constructionType {
+	name: string
+	materials: {
+		name: string
+		defects: string[]
+		recs: string[]
+	}[]
 }
 
 export interface TableFieldCell {

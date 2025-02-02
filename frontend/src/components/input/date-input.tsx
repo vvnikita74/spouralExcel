@@ -75,6 +75,16 @@ export function stringToDate(
 	}
 }
 
+export function getDateMask(type: dateType) {
+	switch (type) {
+		case 'monthFullYear':
+			return /^(0[1-9]|1[0-2])\.\d{4}$/
+		case 'dayMonth':
+			break
+		default:
+	}
+}
+
 const renderHeader =
 	(type: string) =>
 	({
