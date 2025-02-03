@@ -27,7 +27,6 @@ import DateInput, {
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
 import TableInput from 'components/input/table-input'
-import DefectsInput from 'components/input/defects-input'
 
 export default function FormView({
 	validationSchema,
@@ -48,7 +47,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(4)
+	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
@@ -227,7 +226,30 @@ export default function FormView({
 								cells={JSON.parse(settings || '')?.cells || []}
 							/>
 						)
-					return <DefectsInput key={inputKey + 'defects'} />
+					return null
+
+				// return (
+				// 	<Controller
+				// 		name={`${inputKey}.type`}
+				// 		control={control}
+				// 		defaultValue={null}
+				// 		key={inputKey}
+				// 		render={({ field }) => (
+				// 			<SelectInput
+				// 				placeholder={placeholder || ''}
+				// 				label={name}
+				// 				inputProps={field}
+				// 				required={required}
+				// 				values={construction_type.materials.map(
+				// 					item => item.name
+				// 				)}
+				// 				error={
+				// 					(errors[inputKey]?.type?.message as string) || ''
+				// 				}
+				// 			/>
+				// 		)}
+				// 	/>
+				// )
 				default:
 					return null
 			}

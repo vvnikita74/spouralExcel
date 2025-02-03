@@ -8,7 +8,6 @@ import type { ControllerRenderProps } from 'react-hook-form'
 
 import List from 'public/icons/list.svg'
 import { memo } from 'react'
-import { SelectValue } from 'types/field'
 import InputWrapper, { InputWithIcon } from './input-wrapper'
 
 const handleOpen = (
@@ -55,8 +54,6 @@ const handleSelect =
 		onChange(value)
 	}
 
-// TODO: пока фокус на внутренних кнопках - не закрывать
-
 const SelectInput = memo(
 	({
 		label = '',
@@ -67,7 +64,7 @@ const SelectInput = memo(
 		inputProps
 	}: {
 		label: string
-		values?: SelectValue[]
+		values?: string[]
 		placeholder?: string
 		error?: string
 		required: boolean
@@ -111,15 +108,15 @@ const SelectInput = memo(
 							'--height': values.length + (!required ? 1 : 0)
 						} as CSSProperties
 					}>
-					{values.map(({ name: valueName, value }) => (
+					{values.map(value => (
 						<button
 							type='button'
 							onMouseDown={onSelect}
 							data-container-id={name}
 							className='base-text mt-2 truncate px-2.5 text-left last:mb-2'
-							key={`${name}-${valueName}`}
+							key={`${name}-${value}`}
 							data-value={value}>
-							{valueName}
+							{value}
 						</button>
 					))}
 					{!required && (
