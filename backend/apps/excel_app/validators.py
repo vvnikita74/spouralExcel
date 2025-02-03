@@ -18,11 +18,12 @@ def validate_json_structure(value):
         if 'index' not in item:
             raise ValidationError(
                 "Каждый элемент должен содержать ключ 'index'")
-        if not ('template' in item or 'inputKey' in item):
+        if not ('template' in item or 'inputKey' in item) and not (item.get(
+                "tableType") == 'defects'):
             raise ValidationError(
                 "Каждый элемент должен содержать либо 'template', либо 'inputKey'")
 
-        if item.get('type') == 'documentation':
+        if item.get('tableType') == 'documentation':
             required_keys = {"nameIndex", "yearIndex", "developerIndex",
                              "verticalGap", "lastColumn"}
             if not required_keys.issubset(item.keys()):
