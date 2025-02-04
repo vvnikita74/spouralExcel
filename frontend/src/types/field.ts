@@ -5,21 +5,25 @@ export default interface Field {
 	name: string
 	placeholder: string
 	settings: string
-	construction_type: {
-		name: string
-		materials: {
-			name: string
-			defects: string[]
-			recs: string[]
-		}[]
-	}
+	construction_type: ConstructionType
 	step: number
 	position: number
 	required: boolean
 }
 
+export interface ConstructionType {
+	name: string
+	materials: Array<ConstructionMaterials>
+}
+
+export interface ConstructionMaterials {
+	name: string
+	defects: string[]
+	recs: string[]
+}
+
 export interface TableFieldCell {
 	label: string
 	key: string
-	mask: string
+	mask?: string
 }

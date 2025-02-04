@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { UseMutationResult } from '@tanstack/react-query'
 import type Field from 'types/field'
 import type { PostMutationVariables } from 'utils/mutations'
@@ -11,7 +13,7 @@ import {
 	useState
 } from 'react'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, FieldError, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
@@ -27,6 +29,7 @@ import DateInput, {
 import SelectInput from 'components/input/select-input'
 import TextInput from 'components/input/text-input'
 import TableInput from 'components/input/table-input'
+import DefectsInputs from 'components/input/defects-inputs'
 
 export default function FormView({
 	validationSchema,
@@ -47,7 +50,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(1)
+	const [currentStep, setCurrentStep] = useState<number>(5)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
@@ -113,10 +116,10 @@ export default function FormView({
 	const onNext = useCallback(async () => {
 		if (currentStep < maxStep) {
 			const fieldNames = fieldsForCurrentStep.map(field => field.key)
-			if (await trigger(fieldNames)) {
-				setCurrentStep(prev => Math.min(prev + 1, maxStep))
-				scrollFormTop()
-			}
+			// if (await trigger(fieldNames)) {
+			setCurrentStep(prev => Math.min(prev + 1, maxStep))
+			// scrollFormTop()
+			// }
 		} else {
 			handleSubmit(onSubmit)()
 		}
@@ -160,7 +163,6 @@ export default function FormView({
 						<Controller
 							name={inputKey}
 							control={control}
-							defaultValue={null}
 							key={inputKey}
 							render={({ field }) => (
 								<SelectInput
@@ -179,7 +181,6 @@ export default function FormView({
 						<Controller
 							name={inputKey}
 							control={control}
-							defaultValue={null}
 							key={inputKey}
 							render={({
 								field: { value, onBlur, onChange: fieldOnChange }
@@ -226,30 +227,27 @@ export default function FormView({
 								cells={JSON.parse(settings || '')?.cells || []}
 							/>
 						)
-					return null
 
-				// return (
-				// 	<Controller
-				// 		name={`${inputKey}.type`}
-				// 		control={control}
-				// 		defaultValue={null}
-				// 		key={inputKey}
-				// 		render={({ field }) => (
-				// 			<SelectInput
-				// 				placeholder={placeholder || ''}
-				// 				label={name}
-				// 				inputProps={field}
-				// 				required={required}
-				// 				values={construction_type.materials.map(
-				// 					item => item.name
-				// 				)}
-				// 				error={
-				// 					(errors[inputKey]?.type?.message as string) || ''
-				// 				}
-				// 			/>
-				// 		)}
-				// 	/>
-				// )
+					return (
+						<DefectsInputs
+							key={inputKey}
+							inputKey={inputKey}
+							control={control}
+							placeholder={placeholder}
+							required={required}
+							construction_type={construction_type}
+							errors={
+								errors[inputKey] as unknown as {
+									[key: string]:
+										| FieldError
+										| {
+												[key: string]: { message: string }
+										  }[]
+								}
+							}
+							name={name}
+						/>
+					)
 				default:
 					return null
 			}

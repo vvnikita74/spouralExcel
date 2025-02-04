@@ -83,26 +83,26 @@ export default function FormManager({
 							.array(z.object(objectCellSchema))
 							.min(required ? 1 : 0, 'Обязательное поле')
 						defaultValues[key] = []
+					} else {
+						objectCellSchema['type'] = z
+							.string()
+							.min(1, 'Выберите значение')
+						objectCellSchema['values'] = z
+							.array(
+								z.object({
+									def: z.string(),
+									rec: z.string()
+								})
+							)
+							.min(1, 'Обязательное поле')
+
+						validator = z.object(objectCellSchema)
+
+						defaultValues[key] = {
+							type: '',
+							values: []
+						}
 					}
-					// else {
-					// 	objectCellSchema['type'] = z
-					// 		.string()
-					// 		.min(1, 'Выберите значение')
-					// 	objectCellSchema['defects'] = z
-					// 		.array(z.string())
-					// 		.min(1, 'Обязательное поле')
-					// 	objectCellSchema['recs'] = z
-					// 		.array(z.string())
-					// 		.min(1, 'Обязательное поле')
-
-					// 	validator = z.object(objectCellSchema)
-
-					// 	defaultValues[key] = {
-					// 		type: '',
-					// 		defects: [],
-					// 		recs: []
-					// 	}
-					// }
 				}
 			}
 
@@ -110,7 +110,7 @@ export default function FormManager({
 		}
 	)
 
-	console.log(schemaShape)
+	// console.log(schemaShape)
 
 	const queryClient = useQueryClient()
 
