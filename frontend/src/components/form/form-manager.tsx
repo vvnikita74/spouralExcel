@@ -4,10 +4,10 @@ import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { getDateMask, getDateType } from 'components/input/date-input'
+import addFieldToSchema from 'utils/add-field-to-schema'
 import { z, ZodString } from 'zod'
 import FormView from './form-view'
-import addFieldToSchema from 'utils/add-field-to-schema'
-import { getDateMask, getDateType } from 'components/input/date-input'
 
 export default function FormManager({
 	fields,
@@ -84,7 +84,7 @@ export default function FormManager({
 							.min(required ? 1 : 0, 'Обязательное поле')
 						defaultValues[key] = []
 					} else {
-						objectCellSchema['type'] = z
+						objectCellSchema['material'] = z
 							.string()
 							.min(1, 'Выберите значение')
 						objectCellSchema['values'] = z

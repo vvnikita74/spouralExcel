@@ -6,6 +6,7 @@ import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
 
 import {
+	Fragment,
 	useCallback,
 	useEffect,
 	useMemo,
@@ -26,10 +27,11 @@ import DateInput, {
 	getDateType,
 	stringToDate
 } from 'components/input/date-input'
-import SelectInput from 'components/input/select-input'
-import TextInput from 'components/input/text-input'
-import TableInput from 'components/input/table-input'
 import DefectsInputs from 'components/input/defects-inputs'
+import SelectInput from 'components/input/select-input'
+import TableInput from 'components/input/table-input'
+import TextInput from 'components/input/text-input'
+import getErrorByKey from 'utils/get-error-by-key'
 
 export default function FormView({
 	validationSchema,
@@ -133,6 +135,8 @@ export default function FormView({
 		scrollFormTop
 	])
 
+	console.log(errors)
+
 	const renderField = useCallback(
 		({
 			type,
@@ -154,7 +158,7 @@ export default function FormView({
 							required={required}
 							label={name}
 							type='text'
-							error={(errors[inputKey]?.message as string) || ''}
+							error={getErrorByKey(inputKey, errors)}
 							inputProps={register(inputKey)}
 						/>
 					)
@@ -171,7 +175,7 @@ export default function FormView({
 									inputProps={field}
 									required={required}
 									values={JSON.parse(settings || '')?.values || []}
-									error={(errors[inputKey]?.message as string) || ''}
+									error={getErrorByKey(inputKey, errors)}
 								/>
 							)}
 						/>
@@ -203,9 +207,7 @@ export default function FormView({
 												fieldOnChange(dateToString(dateType, date))
 											}
 										}}
-										error={
-											(errors[inputKey]?.message as string) || ''
-										}
+										error={getErrorByKey(inputKey, errors)}
 									/>
 								)
 							}}
@@ -229,24 +231,46 @@ export default function FormView({
 						)
 
 					return (
-						<DefectsInputs
-							key={inputKey}
-							inputKey={inputKey}
-							control={control}
-							placeholder={placeholder}
-							required={required}
-							construction_type={construction_type}
-							errors={
-								errors[inputKey] as unknown as {
-									[key: string]:
-										| FieldError
-										| {
-												[key: string]: { message: string }
-										  }[]
+						<Fragment key={inputKey}>
+							<Controller
+								name={`${inputKey}.type`}
+								control={control}
+								key={`${inputKey}.type`}
+								render={({ field }) => (
+									<SelectInput
+										placeholder={placeholder || ''}
+										label={name}
+										inputProps={field}
+										required={required}
+										values={
+											construction_type.materials.map(
+												item => item.name
+											) || []
+										}
+										error={
+											(
+												(
+													errors?.[inputKey] as unknown as {
+														material: FieldError
+													}
+												)?.material as FieldError
+											)?.message || ''
+										}
+									/>
+								)}
+							/>
+							<DefectsInputs
+								errors={
+									errors[inputKey] as unknown as {
+										[key: string]:
+											| FieldError
+											| {
+													[key: string]: { message: string }
+											  }[]
+									}
 								}
-							}
-							name={name}
-						/>
+							/>
+						</Fragment>
 					)
 				default:
 					return null
