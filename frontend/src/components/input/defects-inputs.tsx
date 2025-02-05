@@ -5,12 +5,9 @@ const DefectsInputs = memo(
 		errors
 	}: {
 		errors: {
-			[key: string]:
-				| FieldError
-				| {
-						[key: string]: { message: string }
-				  }[]
-		}
+			def?: { message: string | FieldError }
+			rec?: { message: string | FieldError }
+		}[]
 	}) => {
 		console.log(errors)
 

@@ -261,13 +261,14 @@ export default function FormView({
 							/>
 							<DefectsInputs
 								errors={
-									errors[inputKey] as unknown as {
-										[key: string]:
-											| FieldError
-											| {
-													[key: string]: { message: string }
-											  }[]
-									}
+									((
+										errors?.[inputKey] as unknown as {
+											values: FieldError[]
+										}
+									).values as unknown as {
+										def?: { message: string | FieldError }
+										rec?: { message: string | FieldError }
+									}[]) || []
 								}
 							/>
 						</Fragment>
