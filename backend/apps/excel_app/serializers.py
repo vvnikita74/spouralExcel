@@ -3,13 +3,27 @@ from .models import Fields, Recommendations
 from .models import ConstructionTypes, Materials, Defects
 
 
+class DefectRecommendationSerializer(serializers.Serializer):
+    def_name = serializers.CharField(source='name')
+    rec_name = serializers.CharField(source='recommendations.name')
+
+
 class MaterialSerializer(serializers.ModelSerializer):
-    defects = serializers.StringRelatedField(many=True)
-    recs = serializers.StringRelatedField(many=True, source='recommendations')
+    values = serializers.SerializerMethodField()
 
     class Meta:
         model = Materials
-        fields = ['name', 'defects', 'recs']
+        fields = ['name', 'values']
+
+    def get_values(self, obj):
+        values = []
+        for defect in obj.defects.all():
+            rec_name = defect.recommendations.name if defect.recommendations else ''
+            values.append({
+                'def': defect.name,
+                'rec': rec_name
+            })
+        return values
 
 
 class ConstructionTypeSerializer(serializers.ModelSerializer):

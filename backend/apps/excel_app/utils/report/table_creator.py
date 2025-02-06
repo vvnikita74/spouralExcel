@@ -193,11 +193,11 @@ class Table:
     @staticmethod
     def check_table_height(ws, cell_data, start_row, start_col, defect):
         total_height = 0
-
+        defect_dict = defect.to_dict()
         for row in cell_data.cells['values']['rows']:
-            if isinstance(getattr(defect, row['key'], ''), list):
+            if isinstance(defect_dict.get(row['key'], ''), list):
                 value_height = cell_data.cells['header']['minHeight'] + len(
-                    getattr(defect, row['key'], '')) - 1
+                    defect_dict.get(row['key'], '')) - 1
             else:
                 value_height = cell_data.cells['values']['valueHeight']
             total_height += value_height
@@ -230,6 +230,7 @@ class Table:
 
     @staticmethod
     def draw_table_elements(ws, cell_data, start_row, start_col, defect):
+        defect_dict = defect.to_dict()
         for row in cell_data.cells['values']['rows']:
             # Вычисление конечной строки для ячейки имени
             name_end_row = start_row + cell_data.cells['header'][
@@ -239,15 +240,13 @@ class Table:
             # Вставка значения для ячейки имени
             name_cell = ws.cell(row=start_row, column=start_col,
                                 value=row['name'])
-
             name_cell.alignment = Alignment(vertical="top",
                                             horizontal="right", wrap_text=True)
 
             # Вычисление начального столбца для ячейки значения
             value_start_col = start_col + cell_data.cells['header']['width']
-
             # Получение значения для дефекта
-            value = getattr(defect, row['key'], '')
+            value = defect_dict.get(row['key'], '')
             if isinstance(value, list):
                 value_height = cell_data.cells['header']['minHeight'] + len(
                     value) - 1
