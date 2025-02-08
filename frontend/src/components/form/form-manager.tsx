@@ -95,9 +95,16 @@ export default function FormManager({
 									rec: z.string()
 								})
 							)
-							.min(1, 'Обязательное поле')
 							.superRefine((values, ctx) => {
 								values.forEach((item, index) => {
+									// Если нужно чтобы хотя бы один дефект был заполнен
+									// if (values.length < 1) {
+									// 	ctx.addIssue({
+									// 		code: z.ZodIssueCode.custom,
+									// 		message: 'Обязательное поле',
+									// 		path: []
+									// 	})
+									// }
 									if (
 										item.def.trim() === '' &&
 										item.rec.trim() === ''

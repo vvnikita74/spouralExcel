@@ -51,9 +51,7 @@ const DefectsInputs = memo(
 		values: ConstructionMaterials[]
 		name: string
 		watchFieldName: string
-		watch: UseFormWatch<{
-			[key: string]: string
-		}>
+		watch: UseFormWatch<FieldValues>
 		control: Control<FieldValues>
 	}) => {
 		console.log('Ошибки', errors)
@@ -81,14 +79,19 @@ const DefectsInputs = memo(
 			[append]
 		)
 
-		useEffect(() => {}, [material])
+		useEffect(() => {
+			if (fields.length > 0) remove()
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [material, remove])
 
 		if (defs.length === 0) return null
 
 		if (fields.length === 0)
 			return (
-				<div className='mt-2.5 flex flex-row items-center justify-between'>
-					<span className='base-text'>Дефекты и рекомендации</span>
+				<div className='mt-2.5 flex flex-row items-start justify-between'>
+					<span className='base-text px-2.5'>
+						Дефекты и рекомендации
+					</span>
 					<button
 						type='button'
 						className='base-text base-padding w-fit rounded-xl bg-indigo-500 text-white'
@@ -98,66 +101,73 @@ const DefectsInputs = memo(
 				</div>
 			)
 
-		return fields.map((field, index) => (
-			<Fragment key={field.id}>
-				<div className='mt-2.5 flex flex-col'>
-					<Controller
-						name={`${name}.${index}.def`}
-						control={control}
-						render={({ field: arrField }) => (
-							<SelectInput
-								placeholder='Дефект'
-								required={true}
-								inputProps={arrField}
-								labelProps={{
-									className: 'flex flex-col'
-								}}
-								values={defs}
-								error={
-									(errors?.[index]?.def?.message as string) || ''
-								}
+		return (
+			<>
+				<span className='base-text mt-2.5 px-2.5'>
+					Дефекты и рекомендации
+				</span>
+				{fields.map((field, index) => (
+					<Fragment key={field.id}>
+						<div className='mt-2.5 flex flex-col'>
+							<Controller
+								name={`${name}.${index}.def`}
+								control={control}
+								render={({ field: arrField }) => (
+									<SelectInput
+										placeholder='Дефект'
+										required={true}
+										inputProps={arrField}
+										labelProps={{
+											className: 'flex flex-col'
+										}}
+										values={defs}
+										error={
+											(errors?.[index]?.def?.message as string) || ''
+										}
+									/>
+								)}
 							/>
-						)}
-					/>
-					<Controller
-						name={`${name}.${index}.rec`}
-						control={control}
-						render={({ field: arrField }) => (
-							<SelectInput
-								placeholder='Рекомендация'
-								required={true}
-								inputProps={arrField}
-								labelProps={{
-									className: 'flex flex-col mt-2.5'
-								}}
-								values={recs}
-								error={
-									(errors?.[index]?.rec?.message as string) || ''
-								}
+							<Controller
+								name={`${name}.${index}.rec`}
+								control={control}
+								render={({ field: arrField }) => (
+									<SelectInput
+										placeholder='Рекомендация'
+										required={true}
+										inputProps={arrField}
+										labelProps={{
+											className: 'flex flex-col mt-2.5'
+										}}
+										values={recs}
+										error={
+											(errors?.[index]?.rec?.message as string) || ''
+										}
+									/>
+								)}
 							/>
-						)}
-					/>
-					<div className='relative mt-2.5 min-h-9 w-full'>
-						{index + 1 === fields.length && (
-							<button
-								type='button'
-								className='base-text base-padding w-fit rounded-xl bg-indigo-500 text-white'
-								onClick={handleAddItem}>
-								<PlusIcon className='size-5' />
-							</button>
-						)}
-						<button
-							type='button'
-							data-index={index}
-							className='base-text base-padding absolute right-0 top-0 w-fit rounded-xl
-								bg-indigo-500 text-white'
-							onMouseDown={handleDeleteItem}>
-							<MinusIcon className='size-5' />
-						</button>
-					</div>
-				</div>
-			</Fragment>
-		))
+							<div className='relative mt-2.5 min-h-9 w-full'>
+								{index + 1 === fields.length && (
+									<button
+										type='button'
+										className='base-text base-padding w-fit rounded-xl bg-indigo-500 text-white'
+										onClick={handleAddItem}>
+										<PlusIcon className='size-5' />
+									</button>
+								)}
+								<button
+									type='button'
+									data-index={index}
+									className='base-text base-padding absolute right-0 top-0 w-fit rounded-xl
+										bg-indigo-500 text-white'
+									onMouseDown={handleDeleteItem}>
+									<MinusIcon className='size-5' />
+								</button>
+							</div>
+						</div>
+					</Fragment>
+				))}
+			</>
+		)
 	}
 )
 
