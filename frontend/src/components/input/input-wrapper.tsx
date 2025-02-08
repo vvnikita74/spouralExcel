@@ -85,7 +85,7 @@ export const InputWithIcon = forwardRef<
 		}
 
 		return (
-			<div className='relative flex flex-row items-center'>
+			<div className='relative flex w-full flex-row items-center'>
 				<input
 					name={name}
 					ref={ref}

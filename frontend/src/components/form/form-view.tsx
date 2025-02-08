@@ -62,7 +62,8 @@ export default function FormView({
 		handleSubmit,
 		control,
 		formState: { errors },
-		trigger
+		trigger,
+		watch
 	} = useForm({
 		resolver: zodResolver(validationSchema),
 		defaultValues,
@@ -134,8 +135,6 @@ export default function FormView({
 		onSubmit,
 		scrollFormTop
 	])
-
-	console.log(errors)
 
 	const renderField = useCallback(
 		({
@@ -233,9 +232,9 @@ export default function FormView({
 					return (
 						<Fragment key={inputKey}>
 							<Controller
-								name={`${inputKey}.type`}
+								name={`${inputKey}.material`}
 								control={control}
-								key={`${inputKey}.type`}
+								key={`${inputKey}.material`}
 								render={({ field }) => (
 									<SelectInput
 										placeholder={placeholder || ''}
@@ -265,11 +264,16 @@ export default function FormView({
 										errors?.[inputKey] as unknown as {
 											values: FieldError[]
 										}
-									).values as unknown as {
+									)?.values as unknown as {
 										def?: { message: string | FieldError }
 										rec?: { message: string | FieldError }
 									}[]) || []
 								}
+								values={construction_type.materials}
+								name={`${inputKey}.values`}
+								watchFieldName={`${inputKey}.material`}
+								watch={watch}
+								control={control}
 							/>
 						</Fragment>
 					)

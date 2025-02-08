@@ -2,6 +2,7 @@ import type {
 	CSSProperties,
 	FocusEvent,
 	FocusEventHandler,
+	LabelHTMLAttributes,
 	MouseEvent
 } from 'react'
 import type { ControllerRenderProps } from 'react-hook-form'
@@ -61,14 +62,16 @@ const SelectInput = memo(
 		placeholder = '',
 		error = '',
 		required = false,
-		inputProps
+		inputProps,
+		labelProps = {}
 	}: {
-		label: string
+		label?: string
 		values?: string[]
 		placeholder?: string
 		error?: string
-		required: boolean
+		required?: boolean
 		inputProps?: ControllerRenderProps
+		labelProps?: LabelHTMLAttributes<HTMLLabelElement>
 	}) => {
 		const { name, onBlur, onChange } = inputProps
 		const onSelect = handleSelect(onChange)
@@ -76,9 +79,12 @@ const SelectInput = memo(
 		return (
 			<InputWrapper
 				labelProps={{
+					...labelProps,
 					htmlFor: name,
 					id: `accordion-${name}`,
-					className: 'accordion'
+					className:
+						'accordion' +
+						(labelProps?.className ? ' ' + labelProps.className : '')
 				}}
 				label={label}
 				name={name}
@@ -95,7 +101,7 @@ const SelectInput = memo(
 					readOnly
 					containerStyle={{ width: '100%' }}
 					placeholder={placeholder}
-					className={`accordion-btn input-class ${error ? 'input-error' : ''}`}
+					className={`accordion-btn input-class w-full ${error ? 'input-error' : ''}`}
 					icon={
 						<List className='pointer-events-none size-full bg-white' />
 					}

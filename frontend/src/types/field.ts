@@ -18,8 +18,10 @@ export interface ConstructionType {
 
 export interface ConstructionMaterials {
 	name: string
-	defects: string[]
-	recs: string[]
+	values: {
+		def: string
+		rec: string
+	}[]
 }
 
 export interface TableFieldCell {

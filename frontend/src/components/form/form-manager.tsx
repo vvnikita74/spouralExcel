@@ -87,6 +87,7 @@ export default function FormManager({
 						objectCellSchema['material'] = z
 							.string()
 							.min(1, 'Выберите значение')
+
 						objectCellSchema['values'] = z
 							.array(
 								z.object({
@@ -95,11 +96,26 @@ export default function FormManager({
 								})
 							)
 							.min(1, 'Обязательное поле')
+							.superRefine((values, ctx) => {
+								values.forEach((item, index) => {
+									if (
+										item.def.trim() === '' &&
+										item.rec.trim() === ''
+									) {
+										ctx.addIssue({
+											code: z.ZodIssueCode.custom,
+											message:
+												'Хотя бы одно из полей должно быть заполнено',
+											path: [index]
+										})
+									}
+								})
+							})
 
 						validator = z.object(objectCellSchema)
 
 						defaultValues[key] = {
-							type: '',
+							material: '',
 							values: []
 						}
 					}
