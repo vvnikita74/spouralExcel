@@ -34,6 +34,7 @@ export default function ReportsList({
 	const authHeader = useAuthHeader()
 	const disableIntervalRef = useRef(false)
 
+	console.log(data, queryClient.getQueryData(queryKey))
 	/*
 	mergeReportData
 	для реализации отображения оффлайн post-запроса

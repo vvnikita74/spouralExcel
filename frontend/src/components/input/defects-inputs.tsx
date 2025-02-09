@@ -5,7 +5,7 @@ import type {
 	FieldValues
 } from 'react-hook-form'
 import type { MouseEvent } from 'react'
-import { ConstructionMaterials } from 'types/field'
+import { ConstructionMaterials } from 'types/constructions'
 
 import { Fragment, memo, useCallback, useEffect } from 'react'
 import SelectInput from './select-input'
