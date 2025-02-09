@@ -50,7 +50,9 @@ const TableInput = memo(
 		return (
 			<div className='flex flex-col'>
 				<div className='flex flex-row items-center justify-between'>
-					<span className='title-text block min-h-9'>{label}</span>
+					<span className='title-text block min-h-9 px-2.5'>
+						{label}
+					</span>
 					{fields.length === 0 && (
 						<button
 							type='button'

@@ -22,7 +22,15 @@ export default function FormManager({
 	const defaultValues = {}
 
 	fields.forEach(
-		({ type, mask, key, required, settings, construction_type }) => {
+		({
+			type,
+			mask,
+			key,
+			required,
+			placeholder,
+			settings,
+			construction_type
+		}) => {
 			let validator: z.ZodType
 
 			switch (type) {
@@ -30,24 +38,28 @@ export default function FormManager({
 					validator = z
 						.string()
 						.min(required ? 1 : 0, 'Обязательное поле')
-						.regex(
+
+					if (mask)
+						(validator as z.ZodString).regex(
 							new RegExp(mask || ''),
 							'Введите корректное значение'
 						)
+
 					break
 				}
 				case 'select': {
 					validator = z
 						.string()
 						.min(required ? 1 : 0, 'Обязательное поле')
-					defaultValues[key] = ''
+					defaultValues[key] = required ? '' : placeholder
 					break
 				}
 				case 'date': {
-					const regex: RegExp = getDateMask(getDateType(mask))
 					validator = z.string({
 						message: 'Введите корректное значение'
 					})
+
+					const regex: RegExp = getDateMask(getDateType(mask))
 
 					if (regex)
 						validator = (validator as z.ZodString).regex(
@@ -87,6 +99,7 @@ export default function FormManager({
 						objectCellSchema['material'] = z
 							.string()
 							.min(1, 'Выберите значение')
+
 						objectCellSchema['values'] = z
 							.array(
 								z.object({
@@ -94,12 +107,34 @@ export default function FormManager({
 									rec: z.string()
 								})
 							)
-							.min(1, 'Обязательное поле')
+							.superRefine((values, ctx) => {
+								values.forEach((item, index) => {
+									// Если нужно чтобы хотя бы один дефект был заполнен
+									// if (values.length < 1) {
+									// 	ctx.addIssue({
+									// 		code: z.ZodIssueCode.custom,
+									// 		message: 'Обязательное поле',
+									// 		path: []
+									// 	})
+									// }
+									if (
+										item.def.trim() === '' &&
+										item.rec.trim() === ''
+									) {
+										ctx.addIssue({
+											code: z.ZodIssueCode.custom,
+											message:
+												'Хотя бы одно из полей должно быть заполнено',
+											path: [index]
+										})
+									}
+								})
+							})
 
 						validator = z.object(objectCellSchema)
 
 						defaultValues[key] = {
-							type: '',
+							material: '',
 							values: []
 						}
 					}
@@ -109,8 +144,6 @@ export default function FormManager({
 			if (validator) addFieldToSchema(schemaShape, key, validator)
 		}
 	)
-
-	// console.log(schemaShape)
 
 	const queryClient = useQueryClient()
 

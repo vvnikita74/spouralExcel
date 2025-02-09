@@ -1,14 +1,14 @@
 export default interface Field {
 	type: 'text' | 'table' | 'date' | 'select'
-	mask: string
+	mask?: string
 	key: string
 	name: string
-	placeholder: string
-	settings: string
-	construction_type: ConstructionType
+	placeholder?: string
+	settings?: string
+	construction_type?: ConstructionType
 	step: number
 	position: number
-	required: boolean
+	required?: boolean
 }
 
 export interface ConstructionType {
@@ -18,8 +18,10 @@ export interface ConstructionType {
 
 export interface ConstructionMaterials {
 	name: string
-	defects: string[]
-	recs: string[]
+	values: {
+		def: string
+		rec: string
+	}[]
 }
 
 export interface TableFieldCell {
