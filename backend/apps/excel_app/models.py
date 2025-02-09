@@ -1,5 +1,9 @@
 import json
+import os
+
 from django.db import models
+from django.utils.text import slugify
+from unidecode import unidecode
 
 
 class Fields(models.Model):
@@ -45,7 +49,8 @@ class Fields(models.Model):
 
 class Cell:
     def __init__(self, index, template='', tableType=None, inputKey=None,
-                 defaultValue=None, verticalGap=None, cells=None, listsCell=None):
+                 defaultValue=None, verticalGap=None, cells=None,
+                 listsCell=None):
         self.index = index
         self.template = template
         self.tableType = tableType
@@ -80,6 +85,15 @@ class Cell:
             listsCell=data.get('listsCell', None)
         )
 
+    def __str__(self):
+        return f"Cell(index={self.index}, template={self.template}, tableType={self.tableType}, inputKey={self.inputKey}, defaultValue={self.defaultValue}, verticalGap={self.verticalGap}, cells={self.cells}, listsCell={self.listsCell})"
+
+
+def sheet_upload_to(instance, filename):
+    # Slugify the sheet name to create a valid directory name
+    sheet_name = slugify(unidecode(instance.name))
+    return os.path.join('sheets', sheet_name, filename)
+
 
 class Sheet(models.Model):
     index = models.IntegerField()
@@ -90,6 +104,8 @@ class Sheet(models.Model):
     data = models.JSONField()
     subsections = models.JSONField(blank=True, null=True, default=list)
     contentSection = models.BooleanField(default=False)
+    files = models.FileField(upload_to=sheet_upload_to, blank=True,
+                             null=True)
 
     def set_data(self, cells):
         self.data = json.dumps([cell.to_dict() for cell in cells])
@@ -97,6 +113,12 @@ class Sheet(models.Model):
     def get_data(self):
         cell_dicts = json.loads(self.data)
         return [Cell.from_dict(cell_dict) for cell_dict in cell_dicts]
+
+    def get_files(self):
+        return self.files.all()
+
+    def __str__(self):
+        return f'{self.name}, {self.index}'
 
     class Meta:
         verbose_name = 'Лист'
@@ -118,7 +140,8 @@ class Defects(models.Model):
     name = models.CharField(max_length=255, unique=True)
     recommendations = models.OneToOneField('Recommendations', to_field='name',
                                            on_delete=models.PROTECT,
-                                           related_name='+',null=True, blank=True, default=None)
+                                           related_name='+', null=True,
+                                           blank=True, default=None)
 
     def __str__(self):
         return self.name
@@ -131,7 +154,7 @@ class Defects(models.Model):
 class Materials(models.Model):
     name = models.CharField(max_length=255, unique=True)
     defects = models.ManyToManyField('Defects')
-    recommendations = models.ManyToManyField('Recommendations',blank=True)
+    recommendations = models.ManyToManyField('Recommendations', blank=True)
 
     def __str__(self):
         return self.name

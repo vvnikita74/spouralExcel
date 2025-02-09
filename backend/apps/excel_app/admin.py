@@ -51,8 +51,12 @@ def change_content_section(modeladmin, request, queryset):
     for sheet in queryset:
         sheet.contentSection = not sheet.contentSection
         sheet.save()
-
-
+@admin.action(description="Уменьшить индекс на 1 для выбранных объектов")
+def decrease_index(modeladmin, request, queryset):
+    queryset.update(index=models.F('index') - 1)
+@admin.action(description="Увеличить индекс на 1 для выбранных объектов")
+def increase_index(modeladmin, request, queryset):
+    queryset.update(index=models.F('index') + 1)
 class FieldsAdmin(admin.ModelAdmin):
     form = FieldsAdminForm
     list_display = ('name', 'type', 'key', 'step', 'position')
@@ -68,8 +72,17 @@ class SheetAdmin(admin.ModelAdmin):
     form = SheetAdminForm
     list_display = ('name', 'index', 'contentSection')
     ordering = ('index',)
-    actions = [change_content_section]
+    actions = [change_content_section,decrease_index,increase_index]
+    fields = ('index', 'section', 'name', 'countCell', 'data', 'subsections',
+              'contentSection', 'files')
+    readonly_fields = ('get_files',)
 
+    def get_files(self, obj):
+        if obj.files:
+            return obj.files.url
+        return "No files attached"
+
+    get_files.short_description = 'Attached Files'
 
 class DefectsAdmin(admin.ModelAdmin):
     list_display = ('name', 'recommendations')

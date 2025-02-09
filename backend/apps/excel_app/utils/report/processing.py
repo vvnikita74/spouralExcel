@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import re
@@ -13,6 +14,9 @@ from apps.excel_app.utils.report.constant_tags import gender_tags, \
     month_tags, case_tags, register_tags
 
 from apps.excel_app.utils.morph_patch import apply_patch
+
+from apps.excel_app.utils.report.media_processing import (insert_image,
+                                                          MediaParams)
 
 apply_patch()
 morph = pymorphy2.MorphAnalyzer()
@@ -33,23 +37,34 @@ def generate_report(data, filename, user_files):
     count = 0
     sections = []
     sheets = sorted(Sheet.objects.all(), key=lambda sheet: sheet.index)
+    sheets_copy = copy.deepcopy(sheets)
     content_cell_data = None
-    for sheet in sheets:
+    inserted_sheets_count = 0
+    indices_updated = False
+    for sheet in sheets_copy:
         ws = wb.worksheets[sheet.index]
         count += 1
-        # print(f'Processing sheet {sheet.name} with index {sheet.index}')
-        for cell_data in sheet.get_data():
-            content_cell_data = process_cell_data(ws, cell_data, data,
-                                                  content_cell_data, sheet)
 
         if sheet.countCell:
-            ws[sheet.countCell] = count
+            ws[sheet.countCell] = count + inserted_sheets_count
+
+        for cell_data in sheet.get_data():
+            content_cell_data, inserted_sheets_count = process_cell_data(ws,
+                                                                         cell_data,
+                                                                         data,
+                                                                         content_cell_data,
+                                                                         sheet,
+                                                                         inserted_sheets_count)
 
         if sheet.contentSection:
             sections.extend(process_sections(sheet, count))
 
-        sheet.save()
-    # print(sheets)
+            # Обновление индексов всех последующих листов only once
+        if inserted_sheets_count > 0 and not indices_updated:
+            for s in sheets_copy:
+                if s.index > sheet.index:
+                    s.index += inserted_sheets_count
+            indices_updated = True
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
@@ -67,7 +82,8 @@ def generate_report(data, filename, user_files):
     save_report(wb, filename)
 
 
-def process_cell_data(ws, cell_data, data, content_cell_data, sheet):
+def process_cell_data(ws, cell_data, data, content_cell_data, sheet,
+                      inserted_sheets_count):
     cell = ws[cell_data.index]
     template = cell_data.template
     input_value = get_nested_value(data, cell_data.inputKey,
@@ -79,9 +95,14 @@ def process_cell_data(ws, cell_data, data, content_cell_data, sheet):
                 table.fill_table(ws, cell_data, input_value)
             case "defects":
                 table = Table(TableType(cell_data.tableType))
-                table.fill_defects(ws, cell_data, data, sheet)
+                inserted_sheets_count = table.fill_defects(ws, cell_data,
+                                                           data, sheet,
+                                                           inserted_sheets_count)
             case 'content':
                 content_cell_data = cell_data
+            case 'media':
+                image_params = MediaParams(cell_data, data, sheet)
+                insert_image(ws, image_params)
     else:
         try:
             if not template:
@@ -92,7 +113,7 @@ def process_cell_data(ws, cell_data, data, content_cell_data, sheet):
         except AttributeError:
             cell.value = ""
 
-    return content_cell_data
+    return content_cell_data, inserted_sheets_count
 
 
 def save_report(wb: openpyxl.Workbook, filename: str) -> None:

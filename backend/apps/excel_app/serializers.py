@@ -35,9 +35,14 @@ class ConstructionTypeSerializer(serializers.ModelSerializer):
 
 
 class FieldsSerializer(serializers.ModelSerializer):
-    settings = serializers.JSONField()
+    settings = serializers.DictField()
     construction_type = ConstructionTypeSerializer()
 
     class Meta:
         model = Fields
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        return {key: value for key, value in representation.items() if
+                value not in [None, '', [], {}, 'null']}

@@ -129,7 +129,7 @@ class Table:
             if max_sheet_id and cell_data.listsCell:
                 ws[cell_data.listsCell].value = max_sheet_id
 
-    def fill_defects(self, ws, cell_data, data, sheet):
+    def fill_defects(self, ws, cell_data, data, sheet, inserted_sheets_count):
         # Извлечение данных из sheet.data
         sheet_data = sheet.get_data()
         code_cell = next(
@@ -175,6 +175,7 @@ class Table:
                 start_row = ws[
                     start_cell].row  # Сброс start_row для нового листа
                 sheet_index += 1
+                inserted_sheets_count += 1
 
                 if sheet.countCell:
                     ws[sheet.countCell] = sheet.index + sheet_index
@@ -189,6 +190,7 @@ class Table:
             start_row = self.draw_table_elements(ws, cell_data, start_row,
                                                  start_col, defect)
             added_defects.add(defect)  # Пометка дефекта как добавленного
+        return inserted_sheets_count
 
     @staticmethod
     def check_table_height(ws, cell_data, start_row, start_col, defect):
