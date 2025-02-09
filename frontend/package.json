@@ -1,6 +1,6 @@
 {
-  "name": "react-typescript-starter",
-  "description": "Minimalist React 18 starter template with TypeScript ⚛",
+  "name": "spo-ural-app",
+  "description": "",
   "version": "1.0.0",
   "main": "src/index.tsx",
   "license": "MIT",

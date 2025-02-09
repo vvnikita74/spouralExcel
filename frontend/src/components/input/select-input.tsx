@@ -131,7 +131,7 @@ const SelectInput = memo(
 							onMouseDown={onSelect}
 							data-container-id={name}
 							className='base-text mt-2 truncate px-2.5 text-left last:mb-2'
-							data-value=''>
+							data-value={placeholder}>
 							{placeholder}
 						</button>
 					)}

@@ -50,7 +50,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(5)
+	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
@@ -152,7 +152,7 @@ export default function FormView({
 							key={inputKey}
 							name={inputKey}
 							placeholder={placeholder || ''}
-							required={required}
+							required={required || false}
 							label={name}
 							type='text'
 							error={getErrorByKey(inputKey, errors)}
@@ -170,7 +170,7 @@ export default function FormView({
 									placeholder={placeholder || ''}
 									label={name}
 									inputProps={field}
-									required={required}
+									required={required || false}
 									values={JSON.parse(settings || '')?.values || []}
 									error={getErrorByKey(inputKey, errors)}
 								/>
@@ -194,7 +194,7 @@ export default function FormView({
 										name={inputKey}
 										placeholder={placeholder || ''}
 										label={name}
-										required={required}
+										required={required || false}
 										inputProps={{
 											value: value
 												? stringToDate(dateType, value)
@@ -238,7 +238,7 @@ export default function FormView({
 										placeholder={placeholder || ''}
 										label={name}
 										inputProps={field}
-										required={required}
+										required={required || false}
 										values={
 											construction_type.materials.map(
 												item => item.name
