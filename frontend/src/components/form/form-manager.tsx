@@ -133,8 +133,6 @@ export default function FormManager({
 		}
 	)
 
-	// console.log(schemaShape)
-
 	const queryClient = useQueryClient()
 
 	const mutation = useMutation<

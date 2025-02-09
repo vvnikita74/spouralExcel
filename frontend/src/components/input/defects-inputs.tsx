@@ -54,8 +54,6 @@ const DefectsInputs = memo(
 		watch: UseFormWatch<FieldValues>
 		control: Control<FieldValues>
 	}) => {
-		console.log('Ошибки', errors)
-
 		const material = watch(watchFieldName)
 
 		const { defs, recs } = getDefsAndRecs(values, material)

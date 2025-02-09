@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { UseMutationResult } from '@tanstack/react-query'
 import type Field from 'types/field'
 import type { PostMutationVariables } from 'utils/mutations'
@@ -119,10 +117,10 @@ export default function FormView({
 	const onNext = useCallback(async () => {
 		if (currentStep < maxStep) {
 			const fieldNames = fieldsForCurrentStep.map(field => field.key)
-			// if (await trigger(fieldNames)) {
-			setCurrentStep(prev => Math.min(prev + 1, maxStep))
-			// scrollFormTop()
-			// }
+			if (await trigger(fieldNames)) {
+				setCurrentStep(prev => Math.min(prev + 1, maxStep))
+				scrollFormTop()
+			}
 		} else {
 			handleSubmit(onSubmit)()
 		}
@@ -281,7 +279,7 @@ export default function FormView({
 					return null
 			}
 		},
-		[control, errors, register]
+		[control, errors, register, watch]
 	)
 
 	useEffect(() => {
