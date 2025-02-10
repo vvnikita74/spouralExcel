@@ -1,28 +1,44 @@
-export default interface Field {
-	type: 'text' | 'table' | 'date' | 'select'
-	mask?: string
+import type { ConstructionMaterials } from './constructions'
+
+interface BaseField {
+	type: string
 	key: string
 	name: string
-	placeholder?: string
-	settings?: string
-	construction_type?: ConstructionType
 	step: number
 	position: number
-	required?: boolean
+	required: boolean
+	placeholder?: string
 }
 
-export interface ConstructionType {
-	name: string
-	materials: Array<ConstructionMaterials>
+export interface TextField extends BaseField {
+	type: 'text'
+	mask?: string
 }
 
-export interface ConstructionMaterials {
-	name: string
-	values: {
-		def: string
-		rec: string
-	}[]
+export interface SelectField extends BaseField {
+	type: 'select'
+	settings: {
+		values: string[]
+	}
 }
+
+export interface DateField extends BaseField {
+	type: 'date'
+	mask: string
+}
+
+export interface TableField extends BaseField {
+	type: 'table'
+	construction_type?: {
+		name: string
+		materials: ConstructionMaterials[]
+	}
+	settings: {
+		cells?: TableFieldCell[]
+	}
+}
+
+export type Field = TextField | TableField | DateField | SelectField
 
 export interface TableFieldCell {
 	label: string

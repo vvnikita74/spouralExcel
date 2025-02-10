@@ -1,5 +1,10 @@
 import type { UseMutationResult } from '@tanstack/react-query'
-import type Field from 'types/field'
+import type {
+	Field,
+	SelectField,
+	DateField,
+	TableField
+} from 'types/field'
 import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
 
@@ -139,14 +144,12 @@ export default function FormView({
 			type,
 			key: inputKey,
 			name,
-			placeholder,
-			settings,
 			required,
-			mask,
-			construction_type
+			placeholder,
+			...rest
 		}: Field) => {
 			switch (type) {
-				case 'text':
+				case 'text': {
 					return (
 						<TextInput
 							key={inputKey}
@@ -159,7 +162,11 @@ export default function FormView({
 							inputProps={register(inputKey)}
 						/>
 					)
-				case 'select':
+				}
+				case 'select': {
+					const { settings: { values = [] } = { values: [] } } =
+						rest as SelectField
+
 					return (
 						<Controller
 							name={inputKey}
@@ -171,13 +178,17 @@ export default function FormView({
 									label={name}
 									inputProps={field}
 									required={required || false}
-									values={JSON.parse(settings || '')?.values || []}
+									values={values}
 									error={getErrorByKey(inputKey, errors)}
 								/>
 							)}
 						/>
 					)
-				case 'date':
+				}
+
+				case 'date': {
+					const { mask } = rest as DateField
+
 					return (
 						<Controller
 							name={inputKey}
@@ -210,7 +221,14 @@ export default function FormView({
 							}}
 						/>
 					)
-				case 'table':
+				}
+
+				case 'table': {
+					const {
+						construction_type,
+						settings: { cells = [] } = { cells: [] }
+					} = rest as TableField
+
 					if (!construction_type)
 						return (
 							<TableInput
@@ -223,7 +241,7 @@ export default function FormView({
 										[key: string]: { message: string }
 									}[]) || []
 								}
-								cells={JSON.parse(settings || '')?.cells || []}
+								cells={cells}
 							/>
 						)
 
@@ -275,6 +293,7 @@ export default function FormView({
 							/>
 						</Fragment>
 					)
+				}
 				default:
 					return null
 			}
