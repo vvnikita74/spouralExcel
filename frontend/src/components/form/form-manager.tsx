@@ -31,7 +31,7 @@ export default function FormManager({
 
 		switch (type) {
 			case 'text': {
-				const { required, mask } = rest as TextField
+				const { required, mask, placeholder } = rest as TextField
 
 				validator = z
 					.string()
@@ -43,6 +43,7 @@ export default function FormManager({
 						'Введите корректное значение'
 					)
 
+				defaultValues[key] = required ? '' : placeholder || ''
 				break
 			}
 			case 'select': {

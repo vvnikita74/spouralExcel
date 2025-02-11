@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type Report from 'types/report'
 
 import {
@@ -34,7 +35,15 @@ export default function ReportsList({
 	const authHeader = useAuthHeader()
 	const disableIntervalRef = useRef(false)
 
-	console.log(data, queryClient.getQueryData(queryKey))
+	// console.log('Данные с запроса', data)
+	// console.log('Данные с кеша', queryClient.getQueryData(queryKey))
+	// console.log(
+	// 	'Данные после объединения',
+	// 	mergeReportData(
+	// 		queryClient.getQueryData(queryKey) as Report[],
+	// 		data
+	// 	)
+	// )
 	/*
 	mergeReportData
 	для реализации отображения оффлайн post-запроса
@@ -93,28 +102,28 @@ export default function ReportsList({
 		[authHeader, queryClient, queryKey, path]
 	)
 
-	useEffect(() => {
-		const interval = setInterval(async () => {
-			const { current: isDisabled } = disableIntervalRef
+	// useEffect(() => {
+	// 	const interval = setInterval(async () => {
+	// 		const { current: isDisabled } = disableIntervalRef
 
-			if (!isDisabled) {
-				const receivedData = await queryFetch(
-					queryClient,
-					queryKey,
-					authHeader,
-					path
-				)
+	// 		if (!isDisabled) {
+	// 			const receivedData = await queryFetch(
+	// 				queryClient,
+	// 				queryKey,
+	// 				authHeader,
+	// 				path
+	// 			)
 
-				setCurrentData(prev => mergeReportData(prev, receivedData))
-			} else {
-				disableIntervalRef.current = false
-			}
-		}, 5000)
+	// 			setCurrentData(prev => mergeReportData(prev, receivedData))
+	// 		} else {
+	// 			disableIntervalRef.current = false
+	// 		}
+	// 	}, 5000)
 
-		return () => {
-			clearInterval(interval)
-		}
-	}, [authHeader, queryClient, path, queryKey])
+	// 	return () => {
+	// 		clearInterval(interval)
+	// 	}
+	// }, [authHeader, queryClient, path, queryKey])
 
 	if (currentData.length === 0) {
 		return <h1 className='title-text'>Отчеты отсутствуют</h1>
