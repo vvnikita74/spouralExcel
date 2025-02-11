@@ -144,7 +144,7 @@ body {
 		@apply m-0 !important;
 	}
 	.react-datepicker__header {
-		@apply mb-1 pb-2 px-2.5 font-medium border-b border-solid border-b-black !important;
+		@apply mb-1 pb-2 font-medium border-b border-solid border-b-black !important;
 	}
 	.react-datepicker__month-container {
 		@apply w-full;
@@ -155,7 +155,7 @@ body {
 	@apply font-normal bg-transparent !important;
 }
 
- .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected {
+ .react-datepicker__day--keyboard-selected, .react-datepicker__month-text--keyboard-selected, .react-datepicker__quarter-text--keyboard-selected, .react-datepicker__year-text--keyboard-selected, .react-datepicker__day, .react-datepicker__day--011, .react-datepicker__day--selected, .react-datepicker__day--today {
 	@apply bg-transparent text-black font-normal !important;
 }
 
@@ -166,6 +166,10 @@ body {
 .react-datepicker__month .react-datepicker__month-text, .react-datepicker__month .react-datepicker__quarter-text {
 	@apply m-0.5 py-0.5 w-[calc(33%-0.5rem)] text-sm leading-normal sm:text-lg sm:leading-normal font-normal !important;
 }
+
+.react-datepicker__day-name, .react-datepicker__day {
+	@apply m-0.5 py-0.5 w-[calc((100%-6*0.5rem)/7)] text-sm leading-normal sm:text-lg sm:leading-normal font-normal !important;
+} 
 
 .react-datepicker-wrapper {
 	width: 100%;

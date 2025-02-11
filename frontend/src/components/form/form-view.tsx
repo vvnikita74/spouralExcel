@@ -55,7 +55,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(1)
+	const [currentStep, setCurrentStep] = useState<number>(3)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)
