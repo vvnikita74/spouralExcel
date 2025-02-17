@@ -14,7 +14,6 @@ import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import queryFetch from 'utils/query-fetch'
 
 import { API_URL } from 'utils/config'
-import { formatDate } from 'utils/format-date'
 import mergeReportData from 'utils/merge-data'
 import timeAgo from 'utils/time-ago'
 
@@ -34,15 +33,19 @@ export default function ReportsList({
 	const authHeader = useAuthHeader()
 	const disableIntervalRef = useRef(false)
 
-	// console.log('Данные с запроса', data)
-	// console.log('Данные с кеша', queryClient.getQueryData(queryKey))
-	// console.log(
-	// 	'Данные после объединения',
-	// 	mergeReportData(
-	// 		queryClient.getQueryData(queryKey) as Report[],
-	// 		data
+	// useEffect(() => {
+	// 	console.log('Данные с запроса', data)
+	// 	console.log('Данные с кеша', queryClient.getQueryData(queryKey))
+	// 	console.log(
+	// 		'Данные после объединения',
+	// 		mergeReportData(
+	// 			queryClient.getQueryData(queryKey) as Report[],
+	// 			data,
+	// 			'filename'
+	// 		)
 	// 	)
-	// )
+	// }, [data, queryClient, queryKey])
+
 	/*
 	mergeReportData
 	для реализации отображения оффлайн post-запроса
@@ -53,7 +56,8 @@ export default function ReportsList({
 	const [currentData, setCurrentData] = useState(
 		mergeReportData(
 			queryClient.getQueryData(queryKey) as Report[],
-			data
+			data,
+			'filename'
 		)
 	)
 
@@ -113,7 +117,9 @@ export default function ReportsList({
 					path
 				)
 
-				setCurrentData(prev => mergeReportData(prev, receivedData))
+				setCurrentData(prev =>
+					mergeReportData(prev, receivedData, 'filename')
+				)
 			} else {
 				disableIntervalRef.current = false
 			}
@@ -149,7 +155,7 @@ export default function ReportsList({
 							<ErrorIcon className='absolute right-4 top-4 size-6 text-red-500' />
 						)}
 						<h2 className='title-text whitespace-nowrap'>
-							Отчет от {formatDate(dateCreated)}
+							{filename}
 							<span className='base-text block opacity-60 2xs:ml-2 2xs:inline'>
 								({deleted ? 'удалено' : timeAgo(dateCreated)})
 							</span>

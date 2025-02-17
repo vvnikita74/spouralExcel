@@ -115,12 +115,9 @@ body {
 }
 
 .accordion {
-	/* .accordion-view {
-		visibility: hidden;
-	} */
 	&.opened {
 		.accordion-view {
-			/* visibility: visible; */
+			visibility: visible;
 			@apply border-indigo-800 h-auto mt-2.5;
 		  /* @apply border-indigo-800 h-[calc(var(--height)*1.8rem+0.5rem+2px)] sm:h-[calc(var(--height)*2.1875rem+0.5rem+2px)] mt-2.5; */
 		  &.with-error {
@@ -169,7 +166,7 @@ body {
 
 .react-datepicker__day-name, .react-datepicker__day {
 	@apply m-0.5 py-0.5 w-[calc((100%-6*0.5rem)/7)] text-sm leading-normal sm:text-lg sm:leading-normal font-normal !important;
-} 
+}
 
 .react-datepicker-wrapper {
 	width: 100%;

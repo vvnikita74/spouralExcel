@@ -9,7 +9,9 @@ import type { ControllerRenderProps } from 'react-hook-form'
 
 import List from 'public/icons/list.svg'
 import { memo } from 'react'
-import InputWrapper, { InputWithIcon } from './input-wrapper'
+
+import InputWithIcon from './input-with-icon'
+import InputWrapper from './input-wrapper'
 
 const handleOpen = (
 	event?: MouseEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
@@ -107,8 +109,8 @@ const SelectInput = memo(
 					}
 				/>
 				<div
-					className={`accordion-view mt-0 flex h-0 flex-col overflow-hidden rounded-xl
-						border border-transparent ${error ? 'with-error' : ''}`}
+					className={`accordion-view invisible mt-0 flex h-0 flex-col overflow-hidden
+						rounded-xl border border-transparent ${error ? 'with-error' : ''}`}
 					style={
 						{
 							'--height': values.length + (!required ? 1 : 0)

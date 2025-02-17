@@ -1,8 +1,8 @@
 import type { UseMutationResult } from '@tanstack/react-query'
 import type {
+	DateField,
 	Field,
 	SelectField,
-	DateField,
 	TableField
 } from 'types/field'
 import type { PostMutationVariables } from 'utils/mutations'
@@ -55,7 +55,7 @@ export default function FormView({
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
-	const [currentStep, setCurrentStep] = useState<number>(3)
+	const [currentStep, setCurrentStep] = useState<number>(1)
 	const fieldsForCurrentStep = fields.filter(
 		field => field.step === currentStep
 	)

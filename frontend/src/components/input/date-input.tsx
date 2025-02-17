@@ -1,14 +1,15 @@
 import type { FocusEventHandler } from 'react'
 
-import 'react-datepicker/dist/react-datepicker.css'
 import Calendar from 'public/icons/calendar.svg'
 import Chevron from 'public/icons/chevron.svg'
+import 'react-datepicker/dist/react-datepicker.css'
 
 import { ru } from 'date-fns/locale'
 import { memo } from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
-import InputWrapper, { InputWithIcon } from './input-wrapper'
+import InputWithIcon from './input-with-icon'
+import InputWrapper from './input-wrapper'
 
 registerLocale('ru', ru)
 
