@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-cli serve --mode=development --env development --open --hot",
-    "build": "webpack --mode=production --env production--progress",
+    "build": "webpack --mode=production --env production--progress --no-cache",
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint './src/**/*.{ts,tsx,js,jsx}' --fix"
   },
