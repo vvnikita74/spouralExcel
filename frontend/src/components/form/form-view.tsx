@@ -23,6 +23,7 @@ import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import processValue from 'utils/process-value'
+import { v4 as uuidv4 } from 'uuid'
 
 import Spinner from 'components/icons/Spinner'
 import DateInput, {
@@ -89,13 +90,9 @@ export default function FormView({
 				formData.append(key, processValue(data[key]) || '')
 			}
 
-			const date = new Date()
-			const isoDate = date.toISOString()
-
-			formData.append('dateCreated', isoDate)
-			formData.append('filename', data.address || isoDate)
-
-			console.log(formData)
+			const uniqueId = uuidv4()
+			formData.append('filename', data.address || uniqueId)
+			formData.append('uniqueId', uniqueId)
 
 			mutation.mutate({
 				data: formData,

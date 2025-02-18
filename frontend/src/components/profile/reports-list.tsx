@@ -33,19 +33,6 @@ export default function ReportsList({
 	const authHeader = useAuthHeader()
 	const disableIntervalRef = useRef(false)
 
-	useEffect(() => {
-		console.log('Данные с запроса', data)
-		console.log('Данные с кеша', queryClient.getQueryData(queryKey))
-		console.log(
-			'Данные после объединения',
-			mergeReportData(
-				queryClient.getQueryData(queryKey) as Report[],
-				data,
-				'filename'
-			)
-		)
-	}, [data, queryClient, queryKey])
-
 	/*
 	mergeReportData
 	для реализации отображения оффлайн post-запроса
@@ -57,7 +44,7 @@ export default function ReportsList({
 		mergeReportData(
 			queryClient.getQueryData(queryKey) as Report[],
 			data,
-			'filename'
+			'uniqueId'
 		)
 	)
 
@@ -118,7 +105,7 @@ export default function ReportsList({
 				)
 
 				setCurrentData(prev =>
-					mergeReportData(prev, receivedData, 'filename')
+					mergeReportData(prev, receivedData, 'uniqueId')
 				)
 			} else {
 				disableIntervalRef.current = false
@@ -137,11 +124,19 @@ export default function ReportsList({
 	return (
 		<div className='base-text flex flex-col'>
 			{currentData.map(
-				({ id, dateCreated, filename, isReady, deleted }) => (
+				({
+					id,
+					dateCreated,
+					filename,
+					reportName,
+					isReady,
+					deleted,
+					uniqueId
+				}) => (
 					<div
 						className={`relative mt-2 flex flex-col overflow-hidden rounded-xl border p-4
 						first:mt-0 ${isReady !== 2 ? 'border-indigo-500' : 'border-red-500'}`}
-						key={filename}>
+						key={uniqueId}>
 						{(isReady === 0 || deleted) && (
 							<div
 								className='absolute left-0 top-0 z-10 flex size-full items-start justify-end
@@ -155,9 +150,13 @@ export default function ReportsList({
 							<ErrorIcon className='absolute right-4 top-4 size-6 text-red-500' />
 						)}
 						<h2 className='title-text whitespace-nowrap'>
-							{filename}
+							{reportName}
 							<span className='base-text block opacity-60 2xs:ml-2 2xs:inline'>
-								({deleted ? 'удалено' : timeAgo(dateCreated)})
+								{deleted
+									? '(удалено)'
+									: dateCreated
+										? `(${timeAgo(dateCreated)})`
+										: ''}
 							</span>
 						</h2>
 						<div className='-mx-1 mt-2.5 flex flex-row text-center text-white'>
