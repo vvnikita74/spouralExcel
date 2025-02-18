@@ -33,18 +33,18 @@ export default function ReportsList({
 	const authHeader = useAuthHeader()
 	const disableIntervalRef = useRef(false)
 
-	// useEffect(() => {
-	// 	console.log('Данные с запроса', data)
-	// 	console.log('Данные с кеша', queryClient.getQueryData(queryKey))
-	// 	console.log(
-	// 		'Данные после объединения',
-	// 		mergeReportData(
-	// 			queryClient.getQueryData(queryKey) as Report[],
-	// 			data,
-	// 			'filename'
-	// 		)
-	// 	)
-	// }, [data, queryClient, queryKey])
+	useEffect(() => {
+		console.log('Данные с запроса', data)
+		console.log('Данные с кеша', queryClient.getQueryData(queryKey))
+		console.log(
+			'Данные после объединения',
+			mergeReportData(
+				queryClient.getQueryData(queryKey) as Report[],
+				data,
+				'filename'
+			)
+		)
+	}, [data, queryClient, queryKey])
 
 	/*
 	mergeReportData
