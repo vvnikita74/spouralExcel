@@ -1,5 +1,7 @@
+import os
 from io import BytesIO
 from PIL import Image as PILImage, ImageDraw, ImageFont
+from django.conf import settings
 from openpyxl.drawing.image import Image
 
 
@@ -19,15 +21,17 @@ def insert_image(ws, image_params):
 
     # Коэффициент масштабирования
     scale_factor = image_params.print_scale
+    font_path = os.path.join(settings.STATIC_ROOT, 'fonts', 'Arial.ttf')
     try:
         # Шрифты с учетом коэффициента масштабирования
-        font_1 = ImageFont.truetype(image_params.text_font,
+        font_1 = ImageFont.truetype(font_path,
                                 int(image_params.text_font_size1 *
                                     scale_factor))
-        font_2 = ImageFont.truetype(image_params.text_font,
+        font_2 = ImageFont.truetype(font_path,
                                 int(image_params.text_font_size2 * scale_factor))
     except OSError:
-        print(f"Шрифт {image_params.text_font} не найден")
+        print(f"Шрифт {font_path} не найден")
+        return
     # Текст для печати
     text1 = image_params.textLine1
     text2 = image_params.textLine2
@@ -112,7 +116,6 @@ class MediaParams:
         self.frame_color = eval(cell_data.cells["frameColor"])
         self.textLine1 = cell_data.cells["textLine1"]
         self.textLine2 = cell_data.cells["textLine2"]
-        self.text_font = cell_data.cells["textFont"]
         self.text_font_size1 = int(cell_data.cells["textFontSize1"])
         self.text_font_size2 = int(cell_data.cells["textFontSize2"])
 
@@ -125,5 +128,5 @@ class MediaParams:
                 f"frame_width={self.frame_width}, line_spacing={self.line_spacing}, "
                 f"text_color={self.text_color}, frame_color={self.frame_color}, "
                 f"textLine1={self.textLine1}, textLine2={self.textLine2}, "
-                f"text_font={self.text_font}, text_font_size1={self.text_font_size1}, "
+                f"text_font_size1={self.text_font_size1}, "
                 f"text_font_size2={self.text_font_size2})")
