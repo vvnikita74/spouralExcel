@@ -4,4 +4,3 @@ android/
 ios/
 .cache/
 .idea/
-package-lock.json

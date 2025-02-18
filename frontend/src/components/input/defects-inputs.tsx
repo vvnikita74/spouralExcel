@@ -7,7 +7,12 @@ import type {
 import type { MouseEvent } from 'react'
 import { ConstructionMaterials } from 'types/constructions'
 
-import { Fragment, memo, useCallback, useEffect } from 'react'
+import {
+	Fragment,
+	memo,
+	useCallback
+	// useEffect
+} from 'react'
 import SelectInput from './select-input'
 import { Controller, useFieldArray } from 'react-hook-form'
 
@@ -77,10 +82,8 @@ const DefectsInputs = memo(
 			[append]
 		)
 
-		useEffect(() => {
-			if (fields.length > 0) remove()
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [material, remove])
+		// useEffect(() => {
+		// }, [material, remove])
 
 		if (defs.length === 0) return null
 

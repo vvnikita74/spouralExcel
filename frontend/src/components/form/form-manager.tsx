@@ -158,14 +158,21 @@ export default function FormManager({
 	>({
 		mutationKey: ['req-post'],
 		onMutate: variables => {
-			queryClient.setQueryData(queryKey, (prev: Report[]) => [
-				{
-					filename: variables.data.get('filename'),
-					dateCreated: variables.data.get('dateCreated'),
-					isReady: 0
-				},
-				...prev
-			])
+			queryClient.setQueryData(queryKey, (prev: Report[]) => {
+				const filename = variables.data.get('filename')
+				const uniqueId = variables.data.get('uniqueId')
+
+				return [
+					{
+						filename,
+						reportName: filename,
+						dateCreated: variables.data.get('dateCreated'),
+						uniqueId,
+						isReady: 0
+					},
+					...prev
+				]
+			})
 		}
 		// TODO: onError
 	})
