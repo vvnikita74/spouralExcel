@@ -128,7 +128,7 @@ def save_report(wb: openpyxl.Workbook, filename: str) -> None:
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
     wb.save(os_filename)
-    # print(f'Отчет сохранен в {os_filename}')
+    print(f'Отчет сохранен в {os_filename}')
     os.system(
         f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
 

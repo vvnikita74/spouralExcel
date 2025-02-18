@@ -42,7 +42,8 @@ class ProcessInputView(APIView):
         for key in files.keys():
             data.pop(key, None)
         report_name = filename
-        filename=translit(filename, language_code='ru', reversed=True)
+        filename = translit(filename, language_code='ru',
+                            reversed=True).replace(' ', '-')
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
                                             reportName=report_name,
@@ -51,8 +52,9 @@ class ProcessInputView(APIView):
         for key, file_list in files.lists():
             for file in file_list:
                 compressed_file = self.compress_image(file)
-                user_data_file =UserDataFile.objects.create(user_data=user_data,
-                                            file=compressed_file, key=key)
+                user_data_file = UserDataFile.objects.create(
+                    user_data=user_data,
+                    file=compressed_file, key=key)
                 user_files.append(
                     {'key': key, 'path': user_data_file.file.path})
                 user_data.data[key] = os.path.basename(compressed_file.name)
@@ -78,7 +80,7 @@ class ProcessInputView(APIView):
     @staticmethod
     def process_data(data, user_data_id, filename, user_files=None):
         try:
-            generate_report(data, filename,user_files)
+            generate_report(data, filename, user_files)
             UserData.objects.filter(id=user_data_id).update(isReady=1,
                                                             filename=filename)
         except Exception as e:
