@@ -19,14 +19,15 @@ def insert_image(ws, image_params):
 
     # Коэффициент масштабирования
     scale_factor = image_params.print_scale
-
-    # Шрифты с учетом коэффициента масштабирования
-    font_1 = ImageFont.truetype(image_params.text_font,
+    try:
+        # Шрифты с учетом коэффициента масштабирования
+        font_1 = ImageFont.truetype(image_params.text_font,
                                 int(image_params.text_font_size1 *
                                     scale_factor))
-    font_2 = ImageFont.truetype(image_params.text_font,
+        font_2 = ImageFont.truetype(image_params.text_font,
                                 int(image_params.text_font_size2 * scale_factor))
-
+    except OSError:
+        print(f"Шрифт {image_params.text_font} не найден")
     # Текст для печати
     text1 = image_params.textLine1
     text2 = image_params.textLine2
