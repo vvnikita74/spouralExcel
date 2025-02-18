@@ -45,7 +45,7 @@ class ProcessInputView(APIView):
         filename=translit(filename, language_code='ru', reversed=True)
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
-                                            report_name=report_name,
+                                            reportName=report_name,
                                             dateCreated=date_created)
         user_files = []
         for key, file_list in files.lists():
