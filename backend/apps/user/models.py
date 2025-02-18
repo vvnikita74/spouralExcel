@@ -18,12 +18,13 @@ class UserData(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     filename = models.CharField(max_length=255)
+    reportName = models.CharField(max_length=255, blank=True)
     data = models.JSONField()
     isReady = models.IntegerField(choices=STATUS_CHOICES, default=LOADING)
     dateCreated = models.DateTimeField(auto_now_add=False)
 
     def __str__(self):
-        return f"{self.user.username} - {self.pk}"
+        return f"{self.user.username} - {self.reportName}"
 
     def delete(self, *args, **kwargs):  # TODO Надо ли добавит удаление xlsx?
         # Удаление PDF отчета

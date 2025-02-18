@@ -45,6 +45,7 @@ class ProcessInputView(APIView):
         filename=translit(filename, language_code='ru', reversed=True)
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
+                                            report_name=report_name,
                                             dateCreated=date_created)
         user_files = []
         for key, file_list in files.lists():
@@ -63,7 +64,6 @@ class ProcessInputView(APIView):
 
         serializer = UserDataSerializer(user_data)
         response_data = serializer.data
-        response_data['reportName'] = report_name
         return Response(response_data,
                         status=status.HTTP_200_OK)
 

@@ -10,7 +10,7 @@ class UserDataFileInline(admin.TabularInline):
 
 class UserDataAdmin(admin.ModelAdmin):
     form = UserDataAdminForm
-    list_display = ('get_username', 'dateCreated', 'isReady')
+    list_display = ('get_username','reportName', 'dateCreated', 'isReady')
     ordering = ('-dateCreated',)
     inlines = [UserDataFileInline]
 
