@@ -26,14 +26,15 @@ class UserData(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.reportName}"
 
-    def delete(self, *args, **kwargs):  # TODO Надо ли добавит удаление xlsx?
-        # Удаление PDF отчета
-        file_name_with_extension = self.filename if self.filename.endswith(
-            '.pdf') else self.filename + '.pdf'
-        report_path = os.path.join(settings.MEDIA_ROOT, 'reports',
-                                   file_name_with_extension)
-        if os.path.exists(report_path):
-            os.remove(report_path)
+    def delete(self, *args, **kwargs):
+        # Удаление PDF и xlsx отчетов
+        for extension in ['.pdf', '.xlsx']:
+            file_name_with_extension = self.filename if self.filename.endswith(
+                extension) else self.filename + extension
+            report_path = os.path.join(settings.MEDIA_ROOT, 'reports',
+                                       file_name_with_extension)
+            if os.path.exists(report_path):
+                os.remove(report_path)
 
         # Удаление папки файлов
         report_folder = self.filename.rsplit('.', 1)[0]
