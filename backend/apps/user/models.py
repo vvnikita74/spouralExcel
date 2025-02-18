@@ -1,6 +1,6 @@
 import os
 import shutil
-
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -21,7 +21,8 @@ class UserData(models.Model):
     reportName = models.CharField(max_length=255, blank=True)
     data = models.JSONField()
     isReady = models.IntegerField(choices=STATUS_CHOICES, default=LOADING)
-    dateCreated = models.DateTimeField(auto_now_add=False)
+    dateCreated = models.DateTimeField(auto_now_add=True)
+    uniqueId = models.CharField(max_length=40, unique=True,default=uuid.uuid4)
 
     def __str__(self):
         return f"{self.user.username} - {self.reportName}"

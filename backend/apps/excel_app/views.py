@@ -27,7 +27,7 @@ class ProcessInputView(APIView):
 
         data = request.data.dict()
         filename = data.pop('filename', None)
-        date_created_str = data.pop('dateCreated', None)
+        uniqueId = data.pop('uniqueId', None)
         files = request.FILES
         if not data:
             return Response({'error': 'No input data provided'},
@@ -35,10 +35,6 @@ class ProcessInputView(APIView):
 
         if isinstance(filename, list):
             filename = filename[0]
-        if isinstance(date_created_str, list):
-            date_created_str = date_created_str[0]
-        date_created = parser.parse(
-            date_created_str) if date_created_str else None
         for key in files.keys():
             data.pop(key, None)
         report_name = filename
@@ -46,8 +42,7 @@ class ProcessInputView(APIView):
                             reversed=True).replace(' ', '-')
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
-                                            reportName=report_name,
-                                            dateCreated=date_created)
+                                            reportName=report_name,uniqueId=uniqueId)
         user_files = []
         for key, file_list in files.lists():
             for file in file_list:
