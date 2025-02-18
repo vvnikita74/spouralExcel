@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "webpack-cli serve --mode=development --env development --open --hot",
-    "build": "webpack --mode=production --env production--progress",
+    "build": "webpack --mode=production --env production--progress --no-cache",
     "lint": "eslint './src/**/*.{ts,tsx,js,jsx}'",
     "lint:fix": "eslint './src/**/*.{ts,tsx,js,jsx}' --fix"
   },
@@ -23,6 +23,7 @@
     "@tanstack/react-query-persist-client": "^5.59.20",
     "date-fns": "^4.1.0",
     "react": "^18.3.1",
+    "react-auth-kit": "^3.1.3",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
