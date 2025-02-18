@@ -12,18 +12,15 @@ def insert_image(ws, image_params):
     :param ws: Рабочий лист Excel
     :param image_params: Параметры изображения
     """
-    print("opening image")
     # Загружаем изображение
     img = PILImage.open(image_params.file)
     # Задаем размеры изображения
     img = img.resize((image_params.image_width, image_params.image_height),
                      PILImage.LANCZOS)
     draw = ImageDraw.Draw(img)
-    print("Image opened")
     # Коэффициент масштабирования
     scale_factor = image_params.print_scale
     font_path = os.path.join(settings.STATIC_ROOT, 'fonts', 'Arial.ttf')
-    print(font_path)
     try:
         # Шрифты с учетом коэффициента масштабирования
         font_1 = ImageFont.truetype(font_path,

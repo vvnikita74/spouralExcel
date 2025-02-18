@@ -10,6 +10,8 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from dateutil import parser
+from transliterate import translit
+
 from .utils.report.processing import generate_report
 
 from ..user.models import UserData, UserDataFile
@@ -39,6 +41,8 @@ class ProcessInputView(APIView):
             date_created_str) if date_created_str else None
         for key in files.keys():
             data.pop(key, None)
+        report_name = filename
+        filename=translit(filename, language_code='ru', reversed=True)
         user_data = UserData.objects.create(user=request.user, data=data,
                                             isReady=0, filename=filename,
                                             dateCreated=date_created)
@@ -58,7 +62,9 @@ class ProcessInputView(APIView):
                                user_files)).start()
 
         serializer = UserDataSerializer(user_data)
-        return Response(serializer.data,
+        response_data = serializer.data
+        response_data['reportName'] = report_name
+        return Response(response_data,
                         status=status.HTTP_200_OK)
 
     def compress_image(self, uploaded_file):
