@@ -1,9 +1,9 @@
 import type {
-	Field,
-	TextField,
-	SelectField,
 	DateField,
-	TableField
+	Field,
+	SelectField,
+	TableField,
+	TextField
 } from 'types/field'
 import type Report from 'types/report'
 import type { PostMutationVariables } from 'utils/mutations'
@@ -158,18 +158,14 @@ export default function FormManager({
 	>({
 		mutationKey: ['req-post'],
 		onMutate: variables => {
-			const dateCreated = variables.data.get('dateCreated')
-
-			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				return [
-					{
-						filename: dateCreated,
-						dateCreated,
-						isReady: 0
-					},
-					...prev
-				]
-			})
+			queryClient.setQueryData(queryKey, (prev: Report[]) => [
+				{
+					filename: variables.data.get('filename'),
+					dateCreated: variables.data.get('dateCreated'),
+					isReady: 0
+				},
+				...prev
+			])
 		}
 		// TODO: onError
 	})
