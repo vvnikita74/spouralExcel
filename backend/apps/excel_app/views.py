@@ -40,9 +40,15 @@ class ProcessInputView(APIView):
         report_name = filename
         filename = translit(filename, language_code='ru',
                             reversed=True).replace(' ', '-')
-        user_data = UserData.objects.create(user=request.user, data=data,
-                                            isReady=0, filename=filename,
-                                            reportName=report_name,uniqueId=uniqueId)
+        if uniqueId:
+            user_data = UserData.objects.create(user=request.user, data=data,
+                                                isReady=0, filename=filename,
+                                                reportName=report_name,
+                                                uniqueId=uniqueId)
+        else:
+            user_data = UserData.objects.create(user=request.user, data=data,
+                                                isReady=0, filename=filename,
+                                                reportName=report_name)
         user_files = []
         for key, file_list in files.lists():
             for file in file_list:
