@@ -102,7 +102,7 @@ def process_cell_data(ws, cell_data, data, content_cell_data, sheet,
                 content_cell_data = cell_data
             case 'media':
                 image_params = MediaParams(cell_data, data, sheet)
-                insert_image(ws, image_params)
+                # insert_image(ws, image_params)
     else:
         try:
             if not template:
