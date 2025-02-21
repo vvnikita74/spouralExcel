@@ -1,4 +1,4 @@
-import SpinnerIcon from 'public/icons/spinner.svg'
+import SpinnerIcon from 'assets/icons/spinner.svg?react'
 
 export default function Spinner({ className = '', ...props }) {
 	return (

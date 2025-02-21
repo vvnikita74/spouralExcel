@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import ConnectOffIcon from 'public/icons/connect-off.svg'
+import ConnectOffIcon from 'assets/icons/connect-off.svg?react'
 
 import { useWebConnectionContext } from './global-context'
 

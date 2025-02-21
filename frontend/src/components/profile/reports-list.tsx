@@ -18,7 +18,7 @@ import mergeReportData from 'utils/merge-data'
 import timeAgo from 'utils/time-ago'
 
 import Spinner from 'components/icons/Spinner'
-import ErrorIcon from 'public/icons/error.svg'
+import ErrorIcon from 'assets/icons/error.svg?react'
 
 export default function ReportsList({
 	data = [],

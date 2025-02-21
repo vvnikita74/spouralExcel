@@ -7,7 +7,7 @@ import type {
 } from 'react'
 import type { ControllerRenderProps } from 'react-hook-form'
 
-import List from 'public/icons/list.svg'
+import List from 'assets/icons/list.svg?react'
 import { memo } from 'react'
 
 import InputWithIcon from './input-with-icon'

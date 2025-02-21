@@ -5,8 +5,8 @@ import type { MouseEvent } from 'react'
 import { useFieldArray } from 'react-hook-form'
 import { memo, useCallback } from 'react'
 
-import PlusIcon from 'public/icons/plus.svg'
-import MinusIcon from 'public/icons/minus.svg'
+import PlusIcon from 'assets/icons/plus.svg?react'
+import MinusIcon from 'assets/icons/minus.svg?react'
 
 const TableInput = memo(
 	({

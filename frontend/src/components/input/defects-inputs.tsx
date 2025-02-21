@@ -16,8 +16,8 @@ import {
 import SelectInput from './select-input'
 import { Controller, useFieldArray } from 'react-hook-form'
 
-import PlusIcon from 'public/icons/plus.svg'
-import MinusIcon from 'public/icons/minus.svg'
+import PlusIcon from 'assets/icons/plus.svg?react'
+import MinusIcon from 'assets/icons/minus.svg?react'
 
 function getDefsAndRecs(
 	data: ConstructionMaterials[],

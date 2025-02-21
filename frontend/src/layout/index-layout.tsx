@@ -1,6 +1,6 @@
 import { Link, Outlet } from 'react-router-dom'
 
-import logoIcon from 'public/images/logo-icon.webp'
+import logoIcon from 'assets/images/logo-icon.webp'
 
 import ErrorView from 'layout/error-view'
 import GlobalContext from 'layout/global-context'

@@ -1,7 +1,7 @@
 import type { FocusEventHandler } from 'react'
 
-import Calendar from 'public/icons/calendar.svg'
-import Chevron from 'public/icons/chevron.svg'
+import Calendar from 'assets/icons/calendar.svg?react'
+import Chevron from 'assets/icons/chevron.svg?react'
 import 'react-datepicker/dist/react-datepicker.css'
 
 import { ru } from 'date-fns/locale'
