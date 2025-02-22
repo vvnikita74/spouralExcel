@@ -174,7 +174,8 @@ export default function FormManager({
 				]
 			})
 		}
-		// TODO: onError
+		// TODO: onError, onSuccess
+		// onSuccess must call invalidateQueries
 	})
 
 	return (
