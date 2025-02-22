@@ -17,8 +17,8 @@ import { API_URL } from 'utils/config'
 import mergeReportData from 'utils/merge-data'
 import timeAgo from 'utils/time-ago'
 
-import Spinner from 'components/icons/Spinner'
 import ErrorIcon from 'assets/icons/error.svg?react'
+import Spinner from 'components/icons/Spinner'
 
 export default function ReportsList({
 	data = [],
@@ -87,6 +87,7 @@ export default function ReportsList({
 
 			btn.classList.remove('loading')
 			btn.disabled = false
+
 			disableIntervalRef.current = false
 		},
 		[authHeader, queryClient, queryKey, path]
@@ -107,8 +108,6 @@ export default function ReportsList({
 				setCurrentData(prev =>
 					mergeReportData(prev, receivedData, 'uniqueId')
 				)
-			} else {
-				disableIntervalRef.current = false
 			}
 		}, 5000)
 
