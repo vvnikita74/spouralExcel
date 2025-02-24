@@ -431,7 +431,7 @@ def process_images(ws, cell_data, data, sheet,
             inserted_sheets_count += 1
             if sheet.countCell:
                 # print(sheet.index,new_sheets_counter)
-                ws[sheet.countCell] = sheet.index + new_sheets_counter + 1
+                ws[sheet.countCell] = sheet.index + new_sheets_counter
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value
             ws[report_date_cell.index] = report_date_value
