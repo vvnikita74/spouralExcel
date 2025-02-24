@@ -349,7 +349,7 @@ def create_new_sheet(ws, ws_initial_copy, sheet_name, copy_count):
     # print(f"Создан новый лист {new_sheet_name}")
     # print(f'Текущий лист: {new_ws}')
     # print(f'Список листов: {ws.parent.sheetnames}')
-    return new_ws
+    return new_ws,previous_index
 
 
 def move_image_to_right(current_img_cell, current_img_merge_cell, cell_data):
@@ -366,7 +366,8 @@ def move_image_to_right(current_img_cell, current_img_merge_cell, cell_data):
         col_current_img_cell) + 1
 
     # Сдвиг вправо на ширину изображения + 1
-    new_col = column_index_from_string(col_current_img_cell) + img_width + horizontal_gap
+    new_col = column_index_from_string(
+        col_current_img_cell) + img_width + horizontal_gap
     new_row = row_current_img_cell
 
     # Вычисляем новые координаты
@@ -425,13 +426,15 @@ def process_images(ws, cell_data, data, sheet,
         if not fits:
             # print(f"Изображение не помещается на листе")
             new_sheets_counter += 1
-            ws = create_new_sheet(ws, ws_initial_copy,
+            ws,idx = create_new_sheet(ws, ws_initial_copy,
                                   original_sheet_name,
                                   new_sheets_counter)
-            inserted_sheets_count += 1
-            if sheet.countCell:
-                # print(sheet.index,new_sheets_counter)
-                ws[sheet.countCell] = sheet.index + new_sheets_counter
+
+
+            # if sheet.countCell:
+            #     ws[sheet.countCell] = idx
+            #     print(f"Индекс листа: {idx}")
+
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value
             ws[report_date_cell.index] = report_date_value
@@ -441,8 +444,8 @@ def process_images(ws, cell_data, data, sheet,
         insert_image(ws, user_image, current_img_cell)
         ws.merge_cells(f"{current_img_cell}:{current_img_merge_cell}")
         insert_image_description(ws, user_image, current_img_cell,
-                                 current_img_merge_cell,cell_data)
+                                 current_img_merge_cell, cell_data)
         current_img_cell, current_img_merge_cell = move_image_to_right(
             current_img_cell, current_img_merge_cell, cell_data)
     # print(f"Все изображения успешно обработаны")
-    return inserted_sheets_count
+    return new_sheets_counter + inserted_sheets_count
