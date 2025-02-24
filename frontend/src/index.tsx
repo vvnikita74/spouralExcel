@@ -28,7 +28,7 @@ import {
 } from '@tanstack/react-query-persist-client'
 import { del, get, set } from 'idb-keyval'
 
-import { postMutation } from 'utils/mutations'
+import { deleteMutation, postMutation } from 'utils/mutations'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -63,6 +63,7 @@ const store = createStore({
 })
 
 queryClient.setMutationDefaults(['req-post'], postMutation)
+queryClient.setMutationDefaults(['req-delete'], deleteMutation)
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
