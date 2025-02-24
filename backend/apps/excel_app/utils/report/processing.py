@@ -15,8 +15,10 @@ from apps.excel_app.utils.report.constant_tags import gender_tags, \
 
 from apps.excel_app.utils.morph_patch import apply_patch
 
-from apps.excel_app.utils.report.media_processing import (insert_image,
+from apps.excel_app.utils.report.media_processing import (insert_media,
                                                           MediaParams)
+
+from apps.excel_app.utils.report.media_processing import process_images
 
 apply_patch()
 morph = pymorphy2.MorphAnalyzer()
@@ -54,7 +56,8 @@ def generate_report(data, filename, user_files):
                                                                          data,
                                                                          content_cell_data,
                                                                          sheet,
-                                                                         inserted_sheets_count)
+                                                                         inserted_sheets_count,
+                                                                         user_files)
 
         if sheet.contentSection:
             sections.extend(process_sections(sheet, count))
@@ -83,7 +86,7 @@ def generate_report(data, filename, user_files):
 
 
 def process_cell_data(ws, cell_data, data, content_cell_data, sheet,
-                      inserted_sheets_count):
+                      inserted_sheets_count, user_files):
     cell = ws[cell_data.index]
     template = cell_data.template
     input_value = get_nested_value(data, cell_data.inputKey,
@@ -101,8 +104,11 @@ def process_cell_data(ws, cell_data, data, content_cell_data, sheet,
             case 'content':
                 content_cell_data = cell_data
             case 'media':
-                image_params = MediaParams(cell_data, data, sheet)
-                insert_image(ws, image_params)
+                media_params = MediaParams(cell_data, data, sheet)
+                insert_media(ws, media_params)
+            case "images":
+                process_images(ws, cell_data, data, sheet,
+                               inserted_sheets_count, user_files)
     else:
         try:
             if not template:
@@ -127,8 +133,11 @@ def save_report(wb: openpyxl.Workbook, filename: str) -> None:
     os.makedirs(report_dir, exist_ok=True)
     os_filename = os.path.join(report_dir, filename + '.xlsx')
 
-    wb.save(os_filename)
-    print(f'Отчет сохранен в {os_filename}')
+    try:
+        wb.save(os_filename)
+        # print(f'Отчет сохранен в {os_filename}')
+    except Exception as e:
+        print(f'Ошибка при сохранении отчета: {e}')
     os.system(
         f'libreoffice --headless --convert-to pdf --outdir {report_dir} {os_filename}')
 

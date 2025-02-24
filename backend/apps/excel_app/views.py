@@ -59,7 +59,6 @@ class ProcessInputView(APIView):
                 user_files.append(
                     {'key': key, 'path': user_data_file.file.path})
                 user_data.data[key] = os.path.basename(compressed_file.name)
-
         user_data.save()
         threading.Thread(target=self.process_data,
                          args=(data, user_data.id, filename,
