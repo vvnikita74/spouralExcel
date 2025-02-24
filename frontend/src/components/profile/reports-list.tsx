@@ -68,8 +68,8 @@ export default function ReportsList({
 					type='button'
 					ref={btnRef}
 					onClick={handleRevalidate}
-					className='btn-loader base-padding base-text relative mx-1 min-w-fit flex-1
-						rounded-xl bg-indigo-500 text-white'>
+					className='btn-loader base-padding base-text relative rounded-xl bg-indigo-500
+						text-white'>
 					<span className='pointer-events-none text-inherit'>
 						Обновить
 					</span>
