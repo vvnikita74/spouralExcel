@@ -125,7 +125,8 @@ class Sheet(models.Model):
         verbose_name_plural = 'Листы'
 
 
-class Recommendations(models.Model):
+class Recommendations(models.Model): # TODO изменение в админке срет ошибку
+    # исправить
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
