@@ -26,7 +26,6 @@ import {
 	Persister,
 	PersistQueryClientProvider
 } from '@tanstack/react-query-persist-client'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { del, get, set } from 'idb-keyval'
 
 import { postMutation } from 'utils/mutations'
@@ -76,14 +75,14 @@ const router = createBrowserRouter(
 						path='profile'
 						element={<ProfilePage />}
 						errorElement={
-							<ErrorHandler msg='Ошибка получения данных пользователя' />
+							<ErrorHandler msg='Ошибка получения данных пользователя. Пожалуйста, проверьте интернет-соединение' />
 						}
 					/>
 					<Route
 						path='emergencyreport'
 						element={<EmergencyReportPage />}
 						errorElement={
-							<ErrorHandler msg='Ошибка получения данных для заполнения' />
+							<ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
 						}
 					/>
 				</Route>
@@ -101,7 +100,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		}}>
 		<AuthProvider store={store}>
 			<RouterProvider router={router} />
-			<ReactQueryDevtools />
 		</AuthProvider>
 	</PersistQueryClientProvider>
 )
