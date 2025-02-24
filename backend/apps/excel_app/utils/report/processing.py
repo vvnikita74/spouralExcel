@@ -107,8 +107,10 @@ def process_cell_data(ws, cell_data, data, content_cell_data, sheet,
                 media_params = MediaParams(cell_data, data, sheet)
                 insert_media(ws, media_params)
             case "images":
-                process_images(ws, cell_data, data, sheet,
-                               inserted_sheets_count, user_files)
+                inserted_sheets_count = process_images(ws, cell_data, data,
+                                                       sheet,
+                                                       inserted_sheets_count,
+                                                       user_files)
     else:
         try:
             if not template:

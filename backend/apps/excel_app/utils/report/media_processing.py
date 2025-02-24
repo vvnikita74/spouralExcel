@@ -445,3 +445,4 @@ def process_images(ws, cell_data, data, sheet,
         current_img_cell, current_img_merge_cell = move_image_to_right(
             current_img_cell, current_img_merge_cell, cell_data)
     # print(f"Все изображения успешно обработаны")
+    return inserted_sheets_count
