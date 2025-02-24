@@ -1,8 +1,9 @@
 import type Report from 'types/report'
+import type { Ref } from 'react'
 
 import useAuthSuspenseQuery from 'utils/auth-suspense-query'
 
-import { MouseEvent, useCallback } from 'react'
+import { forwardRef, MouseEvent, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
 import { API_URL } from 'utils/config'
@@ -14,6 +15,30 @@ import { timeAgo } from './utils'
 import { useDeleteMutation } from 'utils/mutations'
 import { useQueryClient } from '@tanstack/react-query'
 import useLoader from 'utils/use-loader'
+
+const UpdatePanel = forwardRef<
+	HTMLButtonElement,
+	{ handleClick: () => void }
+>(function UpdatePanel({ handleClick }, ref: Ref<HTMLButtonElement>) {
+	return (
+		<div className='absolute bottom-0 right-0 z-10 mx-4 my-3 bg-transparent'>
+			<button
+				type='button'
+				ref={ref}
+				onClick={handleClick}
+				className='btn-loader base-padding base-text relative rounded-xl bg-indigo-500
+					text-white'>
+				<span className='pointer-events-none text-inherit'>
+					Обновить
+				</span>
+				<Spinner
+					className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
+						rounded-full fill-black text-white'
+				/>
+			</button>
+		</div>
+	)
+})
 
 export default function ReportsList({
 	queryKey = [''],
@@ -37,16 +62,10 @@ export default function ReportsList({
 			const { currentTarget: btn } = event
 			const id = Number(btn.dataset.id)
 
-			btn.classList.add('loading')
-			btn.disabled = true
-
 			mutation.mutate({
 				id,
 				authHeader
 			})
-
-			btn.classList.remove('loading')
-			btn.disabled = false
 		},
 		[authHeader, mutation]
 	)
@@ -58,27 +77,17 @@ export default function ReportsList({
 	}, [queryClient, queryKey, toggleLoader])
 
 	if (reports.length === 0) {
-		return <h1 className='title-text'>Отчеты отсутствуют</h1>
+		return (
+			<>
+				<UpdatePanel ref={btnRef} handleClick={handleRevalidate} />
+				<h1 className='title-text'>Отчеты отсутствуют</h1>
+			</>
+		)
 	}
 
 	return (
 		<div className='base-text flex flex-col'>
-			<div className='absolute bottom-0 right-0 z-10 mx-4 my-3 bg-transparent'>
-				<button
-					type='button'
-					ref={btnRef}
-					onClick={handleRevalidate}
-					className='btn-loader base-padding base-text relative rounded-xl bg-indigo-500
-						text-white'>
-					<span className='pointer-events-none text-inherit'>
-						Обновить
-					</span>
-					<Spinner
-						className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
-							rounded-full fill-black text-white'
-					/>
-				</button>
-			</div>
+			<UpdatePanel ref={btnRef} handleClick={handleRevalidate} />
 			{reports.map(
 				({
 					id,
@@ -136,15 +145,11 @@ export default function ReportsList({
 								type='button'
 								onClick={handleDeleteButton}
 								data-id={id}
-								className={`btn-loader base-padding base-text relative mx-1 min-w-fit flex-1
-								rounded-xl ${isReady !== 2 ? 'bg-indigo-500' : 'bg-red-500'}`}>
+								className={`base-padding base-text relative mx-1 min-w-fit flex-1 rounded-xl
+								${isReady !== 2 ? 'bg-indigo-500' : 'bg-red-500'}`}>
 								<span className='pointer-events-none text-inherit'>
 									Удалить
 								</span>
-								<Spinner
-									className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
-										rounded-full fill-black text-white'
-								/>
 							</button>
 						</div>
 					</div>
