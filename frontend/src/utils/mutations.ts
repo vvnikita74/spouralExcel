@@ -35,7 +35,7 @@ export const postMutation = {
 
 export const deleteMutation = {
 	mutationFn: async ({ authHeader, id }: DeleteMutationVariables) => {
-		const req = await fetch(`${API_URL}/user-data/${id}/`, {
+		const req = await fetch(`${API_URL}/user/data/${id}/`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: authHeader
