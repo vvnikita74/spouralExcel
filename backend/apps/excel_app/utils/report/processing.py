@@ -44,8 +44,8 @@ def generate_report(data, filename, user_files):
     inserted_sheets_count = 0
     indices_updated = False
     for sheet in sheets_copy:
-        print(f"Processing sheet {sheet.name} with index "
-              f"{count} + {inserted_sheets_count}")
+        # print(f"Processing sheet {sheet.name} with index "
+        #       f"{count} + {inserted_sheets_count}")
 
         ws = wb.worksheets[sheet.index]
         count += 1
@@ -80,9 +80,9 @@ def generate_report(data, filename, user_files):
     else:
         print("Warning: content_cell_data is None, skipping fill_content")
 
-    print("Sheets in workbook after processing:")
-    for sheet in wb.sheetnames:
-        print(sheet)
+    # print("Sheets in workbook after processing:")
+    # for sheet in wb.sheetnames:
+    #     print(sheet)
     save_report(wb, filename)
 
 
