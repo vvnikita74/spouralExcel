@@ -1,7 +1,13 @@
-import LoginForm from 'components/auth/login-form'
 import logoText from 'assets/images/logo-text.webp'
+import LoginForm from 'components/auth/login-form'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
+import { Navigate } from 'react-router'
 
 export default function LoginPage() {
+	const authHeader = useAuthHeader()
+
+	if (authHeader) return <Navigate to='/' replace />
+
 	return (
 		<section
 			className='relative flex size-full flex-col items-center justify-center

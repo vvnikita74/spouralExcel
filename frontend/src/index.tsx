@@ -6,7 +6,6 @@ import {
 	createBrowserRouter,
 	createRoutesFromElements,
 	defer,
-	redirect,
 	Route,
 	RouterProvider
 } from 'react-router-dom'
@@ -21,9 +20,13 @@ import HomePage from 'pages/home'
 import LoginPage from 'pages/login'
 import ProfilePage from 'pages/profile'
 
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 import { QueryClient } from '@tanstack/react-query'
-import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
+import {
+	PersistedClient,
+	Persister,
+	PersistQueryClientProvider
+} from '@tanstack/react-query-persist-client'
+import { del, get, set } from 'idb-keyval'
 
 import { reqPostMutation } from 'utils/mutations'
 import queryFetch from 'utils/query-fetch'
@@ -31,7 +34,7 @@ import queryFetch from 'utils/query-fetch'
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
-			gcTime: 1000 * 60 * 60 * 24,
+			gcTime: 86400000,
 			staleTime: 2500,
 			retry: 1,
 			refetchOnWindowFocus: false,
@@ -43,9 +46,17 @@ const queryClient = new QueryClient({
 	}
 })
 
-const persister = createSyncStoragePersister({
-	storage: window.localStorage
-})
+const persister = {
+	persistClient: async (client: PersistedClient) => {
+		await set('reactQuery', client)
+	},
+	restoreClient: async () => {
+		return await get<PersistedClient>('reactQuery')
+	},
+	removeClient: async () => {
+		await del('reactQuery')
+	}
+} satisfies Persister
 
 const store = createStore({
 	authName: '_auth',
@@ -76,15 +87,7 @@ queryClient.setMutationDefaults(['req-post'], reqPostMutation)
 const router = createBrowserRouter(
 	createRoutesFromElements(
 		<>
-			<Route
-				path='login'
-				element={<LoginPage />}
-				loader={async () => {
-					const { userState } = getAuthStore()
-					if (userState) return redirect('/')
-					return null
-				}}
-			/>
+			<Route path='login' element={<LoginPage />} />
 			<Route element={<AuthOutlet fallbackPath='/login' />}>
 				<Route path='/' element={<IndexLayout />}>
 					<Route index element={<HomePage />} />
