@@ -5,24 +5,42 @@ import type {
 	TableField,
 	TextField
 } from 'types/field'
-import type Report from 'types/report'
-import type { PostMutationVariables } from 'utils/mutations'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { getDateMask, getDateType } from 'components/input/date-input'
-import addFieldToSchema from 'utils/add-field-to-schema'
+import { useSuspenseQuery } from '@tanstack/react-query'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { z, ZodString } from 'zod'
+
+import { API_URL } from 'utils/config'
+import addFieldToSchema from 'utils/add-field-to-schema'
+
+import { getDateMask, getDateType } from 'components/input/date-input'
 import FormView from './form-view'
+import { usePostMutation } from 'utils/mutations'
 
 export default function FormManager({
-	fields,
 	queryKey,
 	path
 }: {
-	fields: Field[]
 	queryKey: string[]
 	path: string
 }) {
+	const authHeader = useAuthHeader()
+
+	const { data: fields }: { data: Field[] } = useSuspenseQuery({
+		queryKey: queryKey,
+		queryFn: async () => {
+			const req = await fetch(`${API_URL}/data`, {
+				headers: {
+					Authorization: authHeader
+				}
+			})
+
+			return req.json()
+		}
+	})
+
+	const mutation = usePostMutation()
+
 	const schemaShape = {}
 	const defaultValues = {}
 
@@ -149,42 +167,20 @@ export default function FormManager({
 		if (validator) addFieldToSchema(schemaShape, key, validator)
 	})
 
-	const queryClient = useQueryClient()
-
-	const mutation = useMutation<
-		unknown,
-		unknown,
-		PostMutationVariables
-	>({
-		mutationKey: ['req-post'],
-		onMutate: variables => {
-			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				const filename = variables.data.get('filename')
-				const uniqueId = variables.data.get('uniqueId')
-
-				return [
-					{
-						filename,
-						reportName: filename,
-						dateCreated: variables.data.get('dateCreated'),
-						uniqueId,
-						isReady: 0
-					},
-					...prev
-				]
-			})
-		}
-		// TODO: onError, onSuccess
-		// onSuccess must call invalidateQueries
-	})
+	const submitFn = (data: FormData) => {
+		mutation.mutate({
+			data,
+			authHeader,
+			path
+		})
+	}
 
 	return (
 		<FormView
 			defaultValues={defaultValues}
 			validationSchema={z.object(schemaShape)}
 			fields={fields}
-			mutation={mutation}
-			path={path}
+			submitFn={submitFn}
 		/>
 	)
 }

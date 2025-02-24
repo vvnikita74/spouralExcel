@@ -15,6 +15,7 @@ import AuthProvider from 'react-auth-kit'
 import createStore from 'react-auth-kit/createStore'
 
 import IndexLayout from 'layout/index-layout'
+import ErrorHandler from 'layout/error-handler'
 import EmergencyReportPage from 'pages/emergency-report'
 import HomePage from 'pages/home'
 import LoginPage from 'pages/login'
@@ -26,17 +27,18 @@ import {
 	Persister,
 	PersistQueryClientProvider
 } from '@tanstack/react-query-persist-client'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { del, get, set } from 'idb-keyval'
 
-import { reqPostMutation } from 'utils/mutations'
+import { postMutation } from 'utils/mutations'
 import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			gcTime: 86400000,
-			staleTime: 2500,
-			retry: 1,
+			staleTime: 86400000,
+			retry: 0,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
 		},
@@ -82,7 +84,7 @@ const getLoader = (path = '', queryKey = [''], objKey = '') => {
 	})
 }
 
-queryClient.setMutationDefaults(['req-post'], reqPostMutation)
+queryClient.setMutationDefaults(['req-post'], postMutation)
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -101,8 +103,8 @@ const router = createBrowserRouter(
 					<Route
 						path='emergencyreport'
 						element={<EmergencyReportPage />}
-						loader={() =>
-							getLoader('data', ['emergency-report-fields'], 'fields')
+						errorElement={
+							<ErrorHandler msg='Ошибка получения данных для заполнения' />
 						}
 					/>
 				</Route>
@@ -120,6 +122,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 		}}>
 		<AuthProvider store={store}>
 			<RouterProvider router={router} />
+			<ReactQueryDevtools />
 		</AuthProvider>
 	</PersistQueryClientProvider>
 )
