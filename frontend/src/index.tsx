@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom/client'
 import {
 	createBrowserRouter,
 	createRoutesFromElements,
-	defer,
 	Route,
 	RouterProvider
 } from 'react-router-dom'
@@ -31,13 +30,12 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { del, get, set } from 'idb-keyval'
 
 import { postMutation } from 'utils/mutations'
-import queryFetch from 'utils/query-fetch'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			gcTime: 86400000,
-			staleTime: 86400000,
+			staleTime: 2500,
 			retry: 0,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
@@ -65,25 +63,6 @@ const store = createStore({
 	authType: 'localstorage'
 })
 
-const getAuthStore = () => {
-	const { userState, auth } = store.tokenObject.value || {
-		userState: null,
-		auth: null
-	}
-
-	const authHeader = `${auth?.type} ${auth?.token}`
-
-	return { userState, authHeader }
-}
-
-const getLoader = (path = '', queryKey = [''], objKey = '') => {
-	const { authHeader } = getAuthStore()
-
-	return defer({
-		[objKey]: queryFetch(queryClient, queryKey, authHeader, path)
-	})
-}
-
 queryClient.setMutationDefaults(['req-post'], postMutation)
 
 const router = createBrowserRouter(
@@ -96,8 +75,8 @@ const router = createBrowserRouter(
 					<Route
 						path='profile'
 						element={<ProfilePage />}
-						loader={() =>
-							getLoader('user/data', ['user-data'], 'userData')
+						errorElement={
+							<ErrorHandler msg='Ошибка получения данных пользователя' />
 						}
 					/>
 					<Route

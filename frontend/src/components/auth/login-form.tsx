@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import Spinner from 'components/icons/Spinner'
+import { Spinner } from 'components/icons/Spinner'
 import TextInput from 'components/input/text-input'
 
 import { API_URL } from 'utils/config'

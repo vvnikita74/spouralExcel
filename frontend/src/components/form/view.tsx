@@ -18,10 +18,10 @@ import { Controller, FieldError, useForm } from 'react-hook-form'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import processValue from 'utils/process-value'
+import { getErrorByKey, processValue } from './utils'
 import { v4 as uuidv4 } from 'uuid'
 
-import Spinner from 'components/icons/Spinner'
+import { Spinner } from 'components/icons/Spinner'
 import DateInput, {
 	dateToString,
 	getDateType,
@@ -31,7 +31,6 @@ import DefectsInputs from 'components/input/defects-inputs'
 import SelectInput from 'components/input/select-input'
 import TableInput from 'components/input/table-input'
 import TextInput from 'components/input/text-input'
-import getErrorByKey from 'utils/get-error-by-key'
 
 export default function FormView({
 	validationSchema,
