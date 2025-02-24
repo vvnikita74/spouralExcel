@@ -138,9 +138,9 @@ class Recommendations(models.Model):
 
 class Defects(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    recommendations = models.OneToOneField('Recommendations', to_field='name',
+    recommendations = models.ForeignKey('Recommendations', to_field='name',
                                            on_delete=models.PROTECT,
-                                           related_name='+', null=True,
+                                           related_name='defects', null=True,
                                            blank=True, default=None)
 
     def __str__(self):

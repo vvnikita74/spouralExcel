@@ -210,7 +210,7 @@ def move_image_to_new_line(current_img_cell, current_img_merge_cell,
     img_height = row_current_img_merge_cell - row_current_img_cell + 1
     # print(f'Image width: {img_width}, Image height: {img_height}')
     # Сдвиг вниз на высоту изображения + 2 + 2 + 1
-    new_row = row_current_img_cell + img_height + 1 + text_height + vertical_gap
+    new_row = row_current_img_cell + img_height + text_height + vertical_gap
 
     # Сдвиг влево до столбца указанного в cell_data.index
     new_col = column_index_from_string(
@@ -282,7 +282,7 @@ def insert_image_description(ws, user_image, current_img_cell,
         desc_start_col = column_index_from_string(start_col)
 
         # Вычисляем ячейку для описания
-        desc_start_row = end_row + text_height
+        desc_start_row = end_row + 1
         desc_end_row = desc_start_row + 1
         desc_end_col = desc_start_col + img_width - 1
 
@@ -439,6 +439,7 @@ def process_images(ws, cell_data, data, sheet,
             current_img_merge_cell = cell_data.cells['mergeCell']
         # print(f"Изображение помещается на листе")
         insert_image(ws, user_image, current_img_cell)
+        ws.merge_cells(f"{current_img_cell}:{current_img_merge_cell}")
         insert_image_description(ws, user_image, current_img_cell,
                                  current_img_merge_cell,cell_data)
         current_img_cell, current_img_merge_cell = move_image_to_right(
