@@ -1,3 +1,5 @@
+import type Report from 'types/report'
+
 const forms: { [key: string]: string[] } = {
 	секунда: ['секунда', 'секунды', 'секунд'],
 	минута: ['минута', 'минуты', 'минут'],
@@ -31,7 +33,7 @@ const getPluralForm = (count: number, unit: string): string => {
 	return forms[unit][2]
 }
 
-export default function timeAgo(isoDate: string): string {
+export function timeAgo(isoDate: string): string {
 	const now = new Date()
 	const past = new Date(isoDate)
 	const diffInSeconds = Math.floor(
@@ -47,4 +49,26 @@ export default function timeAgo(isoDate: string): string {
 	}
 
 	return 'только что'
+}
+
+export function mergeReportData(
+	initialData: Report[],
+	receivedData: Report[],
+	mergeKey: string
+): Report[] {
+	const result = []
+	const seenFileNames = new Set()
+
+	receivedData.forEach(item => {
+		result.push(item)
+		seenFileNames.add(item[mergeKey])
+	})
+
+	result.unshift(
+		...initialData.filter(
+			item => !seenFileNames.has(item[mergeKey]) && item.isReady === 0
+		)
+	)
+
+	return result
 }

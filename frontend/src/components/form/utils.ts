@@ -1,3 +1,4 @@
+import type { FieldErrors } from 'react-hook-form'
 import type {
 	DateField,
 	Field,
@@ -5,24 +6,88 @@ import type {
 	TableField,
 	TextField
 } from 'types/field'
-import type Report from 'types/report'
-import type { PostMutationVariables } from 'utils/mutations'
+import type {
+	ZodString,
+	ZodObject,
+	ZodTypeAny,
+	ZodRawShape
+} from 'zod'
 
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { z } from 'zod'
+
 import { getDateMask, getDateType } from 'components/input/date-input'
-import addFieldToSchema from 'utils/add-field-to-schema'
-import { z, ZodString } from 'zod'
-import FormView from './form-view'
 
-export default function FormManager({
-	fields,
-	queryKey,
-	path
-}: {
-	fields: Field[]
-	queryKey: string[]
-	path: string
-}) {
+export function getErrorByKey(
+	inputKey: string,
+	errors: FieldErrors<{ [key: string]: string }>
+): string {
+	if (!inputKey.includes('.')) {
+		return errors[inputKey]?.message
+	}
+
+	const keys = inputKey.split('.')
+
+	let current: unknown = errors
+
+	for (const key of keys) {
+		if (
+			current &&
+			typeof current === 'object' &&
+			!Array.isArray(current) &&
+			key in (current as Record<string, unknown>)
+		) {
+			current = (current as Record<string, unknown>)[key]
+		} else {
+			return undefined
+		}
+	}
+
+	return typeof current === 'object' &&
+		current !== null &&
+		'message' in current
+		? (current as { message: string }).message
+		: ''
+}
+
+export function processValue(value: unknown): string | Blob {
+	if (
+		typeof value === 'object' &&
+		!Array.isArray(value) &&
+		value !== null
+	) {
+		return JSON.stringify(value)
+	} else if (Array.isArray(value)) {
+		return JSON.stringify(value)
+	}
+	return value as string
+}
+
+export function addFieldToSchema(
+	schemaShape: Record<string, ZodTypeAny>,
+	key: string,
+	validator: ZodTypeAny
+) {
+	const keysArr = key.split('.')
+
+	if (keysArr.length > 1) {
+		const parentKey = keysArr[0]
+		const childKey = keysArr[1]
+
+		if (schemaShape[parentKey] instanceof z.ZodObject) {
+			const parentSchema = schemaShape[
+				parentKey
+			] as ZodObject<ZodRawShape>
+
+			schemaShape[parentKey] = parentSchema.extend({
+				[childKey]: validator
+			})
+		}
+	} else {
+		schemaShape[key] = validator
+	}
+}
+
+export function generateSchema(fields: Field[]) {
 	const schemaShape = {}
 	const defaultValues = {}
 
@@ -149,42 +214,5 @@ export default function FormManager({
 		if (validator) addFieldToSchema(schemaShape, key, validator)
 	})
 
-	const queryClient = useQueryClient()
-
-	const mutation = useMutation<
-		unknown,
-		unknown,
-		PostMutationVariables
-	>({
-		mutationKey: ['req-post'],
-		onMutate: variables => {
-			queryClient.setQueryData(queryKey, (prev: Report[]) => {
-				const filename = variables.data.get('filename')
-				const uniqueId = variables.data.get('uniqueId')
-
-				return [
-					{
-						filename,
-						reportName: filename,
-						dateCreated: variables.data.get('dateCreated'),
-						uniqueId,
-						isReady: 0
-					},
-					...prev
-				]
-			})
-		}
-		// TODO: onError, onSuccess
-		// onSuccess must call invalidateQueries
-	})
-
-	return (
-		<FormView
-			defaultValues={defaultValues}
-			validationSchema={z.object(schemaShape)}
-			fields={fields}
-			mutation={mutation}
-			path={path}
-		/>
-	)
+	return { schemaShape: z.object(schemaShape), defaultValues }
 }

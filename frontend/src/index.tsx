@@ -5,7 +5,6 @@ import ReactDOM from 'react-dom/client'
 import {
 	createBrowserRouter,
 	createRoutesFromElements,
-	defer,
 	Route,
 	RouterProvider
 } from 'react-router-dom'
@@ -15,6 +14,7 @@ import AuthProvider from 'react-auth-kit'
 import createStore from 'react-auth-kit/createStore'
 
 import IndexLayout from 'layout/index-layout'
+import ErrorHandler from 'layout/error-handler'
 import EmergencyReportPage from 'pages/emergency-report'
 import HomePage from 'pages/home'
 import LoginPage from 'pages/login'
@@ -28,15 +28,14 @@ import {
 } from '@tanstack/react-query-persist-client'
 import { del, get, set } from 'idb-keyval'
 
-import { reqPostMutation } from 'utils/mutations'
-import queryFetch from 'utils/query-fetch'
+import { postMutation } from 'utils/mutations'
 
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			gcTime: 86400000,
 			staleTime: 2500,
-			retry: 1,
+			retry: 0,
 			refetchOnWindowFocus: false,
 			networkMode: 'offlineFirst'
 		},
@@ -63,26 +62,7 @@ const store = createStore({
 	authType: 'localstorage'
 })
 
-const getAuthStore = () => {
-	const { userState, auth } = store.tokenObject.value || {
-		userState: null,
-		auth: null
-	}
-
-	const authHeader = `${auth?.type} ${auth?.token}`
-
-	return { userState, authHeader }
-}
-
-const getLoader = (path = '', queryKey = [''], objKey = '') => {
-	const { authHeader } = getAuthStore()
-
-	return defer({
-		[objKey]: queryFetch(queryClient, queryKey, authHeader, path)
-	})
-}
-
-queryClient.setMutationDefaults(['req-post'], reqPostMutation)
+queryClient.setMutationDefaults(['req-post'], postMutation)
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -94,15 +74,15 @@ const router = createBrowserRouter(
 					<Route
 						path='profile'
 						element={<ProfilePage />}
-						loader={() =>
-							getLoader('user/data', ['user-data'], 'userData')
+						errorElement={
+							<ErrorHandler msg='Ошибка получения данных пользователя. Пожалуйста, проверьте интернет-соединение' />
 						}
 					/>
 					<Route
 						path='emergencyreport'
 						element={<EmergencyReportPage />}
-						loader={() =>
-							getLoader('data', ['emergency-report-fields'], 'fields')
+						errorElement={
+							<ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
 						}
 					/>
 				</Route>

@@ -1,11 +1,9 @@
-import type { UseMutationResult } from '@tanstack/react-query'
 import type {
 	DateField,
 	Field,
 	SelectField,
 	TableField
 } from 'types/field'
-import type { PostMutationVariables } from 'utils/mutations'
 import type { ZodType } from 'zod'
 
 import {
@@ -16,16 +14,14 @@ import {
 	useRef,
 	useState
 } from 'react'
-import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 import { Controller, FieldError, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import processValue from 'utils/process-value'
+import { getErrorByKey, processValue } from './utils'
 import { v4 as uuidv4 } from 'uuid'
 
-import Spinner from 'components/icons/Spinner'
+import { Spinner } from 'components/icons/Spinner'
 import DateInput, {
 	dateToString,
 	getDateType,
@@ -35,24 +31,18 @@ import DefectsInputs from 'components/input/defects-inputs'
 import SelectInput from 'components/input/select-input'
 import TableInput from 'components/input/table-input'
 import TextInput from 'components/input/text-input'
-import getErrorByKey from 'utils/get-error-by-key'
 
 export default function FormView({
 	validationSchema,
 	fields,
 	defaultValues,
-	path,
-	mutation
+	submitFn
 }: {
 	validationSchema: ZodType
 	fields: Field[]
 	defaultValues: { [key: string]: string }
-	path: string
-	mutation: UseMutationResult<unknown, unknown, PostMutationVariables>
+	submitFn: (data: FormData) => void
 }) {
-	const authHeader = useAuthHeader()
-	const navigate = useNavigate()
-
 	const { btnRef, toggleLoader } = useLoader()
 	const formContainerRef = useRef<HTMLDivElement>(null)
 
@@ -94,18 +84,11 @@ export default function FormView({
 			formData.append('filename', data.address || uniqueId)
 			formData.append('uniqueId', uniqueId)
 
-			mutation.mutate({
-				data: formData,
-				authHeader,
-				path
-			})
+			submitFn(formData)
 
-			setTimeout(() => {
-				toggleLoader(false)
-				navigate('/profile')
-			}, 500)
+			toggleLoader(false)
 		},
-		[toggleLoader, authHeader, mutation, path, navigate]
+		[toggleLoader, submitFn]
 	)
 
 	const scrollFormTop = useCallback(() => {

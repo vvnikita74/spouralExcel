@@ -1,52 +1,36 @@
 import type Report from 'types/report'
 
-import {
-	MouseEvent,
-	useCallback,
-	useEffect,
-	useRef,
-	useState
-} from 'react'
+import useAuthSuspenseQuery from 'utils/auth-suspense-query'
+
+import { MouseEvent, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useQueryClient } from '@tanstack/react-query'
-import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
-import queryFetch from 'utils/query-fetch'
-
 import { API_URL } from 'utils/config'
-import mergeReportData from 'utils/merge-data'
-import timeAgo from 'utils/time-ago'
 
 import ErrorIcon from 'assets/icons/error.svg?react'
-import Spinner from 'components/icons/Spinner'
+import { Spinner } from 'components/icons/Spinner'
+
+import { timeAgo } from './utils'
+import { useDeleteMutation } from 'utils/mutations'
+import { useQueryClient } from '@tanstack/react-query'
+import useLoader from 'utils/use-loader'
 
 export default function ReportsList({
-	data = [],
 	queryKey = [''],
 	path = ''
 }: {
-	data: Report[]
-	queryKey: [string]
+	queryKey: string[]
 	path: string
 }) {
-	const queryClient = useQueryClient()
-	const authHeader = useAuthHeader()
-	const disableIntervalRef = useRef(false)
+	const { data: reports, authHeader } = useAuthSuspenseQuery(
+		queryKey,
+		path
+	) as { data: Report[]; authHeader: string }
 
-	/*
-	mergeReportData
-	для реализации отображения оффлайн post-запроса
-	В случае отправки запроса в оффлайн и дальнейшей переходе
-	в онлайн запрос еще не отправился, следовательно - требуется
-	merge данных с кеша и полученных данных с запроса
-	*/
-	const [currentData, setCurrentData] = useState(
-		mergeReportData(
-			queryClient.getQueryData(queryKey) as Report[],
-			data,
-			'uniqueId'
-		)
-	)
+	const { btnRef, toggleLoader } = useLoader()
+
+	const queryClient = useQueryClient()
+	const mutation = useDeleteMutation()
 
 	const handleDeleteButton = useCallback(
 		async (event: MouseEvent<HTMLButtonElement>) => {
@@ -55,74 +39,47 @@ export default function ReportsList({
 
 			btn.classList.add('loading')
 			btn.disabled = true
-			disableIntervalRef.current = true
 
-			try {
-				const req = await fetch(`${API_URL}/${path}/${id}/`, {
-					method: 'DELETE',
-					headers: {
-						Authorization: authHeader
-					}
-				})
-
-				if (req.status === 204) {
-					queryClient.setQueryData(queryKey, (prev: Report[]) =>
-						prev.filter(item => item.id !== id)
-					)
-
-					setCurrentData(prev =>
-						prev.map(item =>
-							item.id === id ? { ...item, deleted: true } : item
-						)
-					)
-				} else {
-					throw new Error('delete request error')
-				}
-			} catch {
-				alert(
-					'Произошла ошибка удаления. Проверьте интернет-подключение'
-				)
-				/* empty */
-			}
+			mutation.mutate({
+				id,
+				authHeader
+			})
 
 			btn.classList.remove('loading')
 			btn.disabled = false
-
-			disableIntervalRef.current = false
 		},
-		[authHeader, queryClient, queryKey, path]
+		[authHeader, mutation]
 	)
 
-	useEffect(() => {
-		const interval = setInterval(async () => {
-			const { current: isDisabled } = disableIntervalRef
+	const handleRevalidate = useCallback(async () => {
+		toggleLoader(true)
+		await queryClient.invalidateQueries({ queryKey })
+		toggleLoader(false)
+	}, [queryClient, queryKey, toggleLoader])
 
-			if (!isDisabled) {
-				const receivedData = await queryFetch(
-					queryClient,
-					queryKey,
-					authHeader,
-					path
-				)
-
-				setCurrentData(prev =>
-					mergeReportData(prev, receivedData, 'uniqueId')
-				)
-			}
-		}, 5000)
-
-		return () => {
-			clearInterval(interval)
-		}
-	}, [authHeader, queryClient, path, queryKey])
-
-	if (currentData.length === 0) {
+	if (reports.length === 0) {
 		return <h1 className='title-text'>Отчеты отсутствуют</h1>
 	}
 
 	return (
 		<div className='base-text flex flex-col'>
-			{currentData.map(
+			<div className='absolute bottom-0 right-0 z-10 mx-4 my-3 bg-transparent'>
+				<button
+					type='button'
+					ref={btnRef}
+					onClick={handleRevalidate}
+					className='btn-loader base-padding base-text relative mx-1 min-w-fit flex-1
+						rounded-xl bg-indigo-500 text-white'>
+					<span className='pointer-events-none text-inherit'>
+						Обновить
+					</span>
+					<Spinner
+						className='absolute left-[calc(50%-0.75rem)] top-[calc(50%-0.75rem)] size-6
+							rounded-full fill-black text-white'
+					/>
+				</button>
+			</div>
+			{reports.map(
 				({
 					id,
 					dateCreated,
