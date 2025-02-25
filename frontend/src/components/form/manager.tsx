@@ -6,35 +6,35 @@ import FormView from './view'
 import useAuthSuspenseQuery from 'utils/auth-suspense-query'
 
 export default function FormManager({
-	queryKey,
-	path
+  queryKey,
+  path
 }: {
-	queryKey: string[]
-	path: string
+  queryKey: string[]
+  path: string
 }) {
-	const { data: fields, authHeader } = useAuthSuspenseQuery(
-		queryKey,
-		'data'
-	) as { data: Field[]; authHeader: string }
+  const { data: fields, authHeader } = useAuthSuspenseQuery(
+    queryKey,
+    'data'
+  ) as { data: Field[]; authHeader: string }
 
-	const mutation = usePostMutation()
+  const mutation = usePostMutation()
 
-	const { schemaShape, defaultValues } = generateSchema(fields)
+  const { schemaShape, defaultValues } = generateSchema(fields)
 
-	const submitFn = (data: FormData) => {
-		mutation.mutate({
-			data,
-			authHeader,
-			path
-		})
-	}
+  const submitFn = (data: FormData) => {
+    mutation.mutate({
+      data,
+      authHeader,
+      path
+    })
+  }
 
-	return (
-		<FormView
-			defaultValues={defaultValues}
-			validationSchema={schemaShape}
-			fields={fields}
-			submitFn={submitFn}
-		/>
-	)
+  return (
+    <FormView
+      defaultValues={defaultValues}
+      validationSchema={schemaShape}
+      fields={fields}
+      submitFn={submitFn}
+    />
+  )
 }
