@@ -121,3 +121,5 @@ backend/media/user_images/
 backend/media/sheets/
 # mac os temp files
 .DS_Store
+#tests
+backend/apps/excel_app/utils/report/test_fits.py
