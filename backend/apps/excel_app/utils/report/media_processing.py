@@ -329,7 +329,7 @@ def insert_image(ws, user_image, current_img_cell):
             f"Ошибка при вставке изображения {user_image.image} в ячейку {current_img_cell}: {e}")
 
 
-def create_new_sheet(ws, ws_initial_copy, sheet_name, copy_count):
+def create_new_sheet(ws, ws_initial_copy, sheet_name, copy_count, index):
     """
     Создает копию изначального листа и изменяет его на текущий рабочий лист.
 
@@ -344,13 +344,12 @@ def create_new_sheet(ws, ws_initial_copy, sheet_name, copy_count):
     new_ws.title = new_sheet_name
 
     ws.parent._sheets.remove(new_ws)
-    previous_index = ws.parent._sheets.index(ws)
-    ws.parent._sheets.insert(previous_index + 1, new_ws)
+    ws.parent._sheets.insert(index + 1, new_ws)
 
     # print(f"Создан новый лист {new_sheet_name}")
-    # print(f'Текущий лист: {new_ws}')
+    # print(f'Текущий лист: {new_ws}, Индекс листа: {index + 1}')
     # print(f'Список листов: {ws.parent.sheetnames}')
-    return new_ws, previous_index + 2
+    return new_ws, index + 1
 
 
 def move_image_to_right(current_img_cell, current_img_merge_cell, cell_data):
@@ -407,7 +406,9 @@ def process_images(ws, cell_data, data, sheet,
     report_date_value = data.get(report_date_cell.inputKey, '')
 
     user_images = []
-    ws_initial_copy = ws.parent.copy_worksheet(ws)
+    # ws_initial_copy = ws.parent.copy_worksheet(ws)
+    index = ws.parent.worksheets.index(ws)
+    ws_initial_copy = ws.parent.copy_worksheet(ws.parent.worksheets[-1])
     original_sheet_name = ws.title
     new_sheets_counter = 0
     for user_file in user_files:
@@ -430,11 +431,11 @@ def process_images(ws, cell_data, data, sheet,
             new_sheets_counter += 1
             ws, idx = create_new_sheet(ws, ws_initial_copy,
                                        original_sheet_name,
-                                       new_sheets_counter)
+                                       new_sheets_counter, index)
 
-            if sheet.countCell:
-                ws[sheet.countCell] = idx
-                # print(f"Индекс листа: {idx}")
+            # if sheet.countCell:
+            #     ws[sheet.countCell] = idx
+            #     print(f"Индекс листа: {idx}")
 
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value
@@ -451,4 +452,6 @@ def process_images(ws, cell_data, data, sheet,
         current_img_cell, current_img_merge_cell = move_image_to_right(
             current_img_cell, current_img_merge_cell, cell_data)
     # print(f"Все изображения успешно обработаны")
+    print(f"Количество вставленных листов: {new_sheets_counter}")
+    print(inserted_sheets_count)
     return new_sheets_counter + inserted_sheets_count
