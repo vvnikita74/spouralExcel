@@ -395,7 +395,7 @@ def process_images(ws, cell_data, data, sheet,
     """
     img_width = int(cell_data.cells['width'])
     img_height = int(cell_data.cells['height'])
-    image_counter = 0
+    image_counter = 1
     # Извлечение данных из sheet.data
     sheet_data = sheet.get_data()
     code_cell = next(
@@ -434,7 +434,7 @@ def process_images(ws, cell_data, data, sheet,
 
             if sheet.countCell:
                 ws[sheet.countCell] = idx
-                print(f"Индекс листа: {idx}")
+                # print(f"Индекс листа: {idx}")
 
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value

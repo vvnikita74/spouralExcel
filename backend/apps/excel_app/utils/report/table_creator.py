@@ -158,7 +158,6 @@ class Table:
         for defect in defects:
             if defect in added_defects:
                 continue  # Пропуск дефекта, если он уже был добавлен
-
             if not self.check_table_height(ws, cell_data, start_row, start_col,
                                            defect):
                 # Создание копии оригинального листа
@@ -296,10 +295,32 @@ class Table:
     def _create_defects(self, cell_data, data):
         defects = []
         for key in cell_data.cells['names'].keys():
-            defect_data = json.loads(data.get(key, '{}'))
-            if defect_data:  # Check if defect_data is not empty
-                defect = Defect.from_dict(type=key, data=defect_data)
-                defects.append(defect)
+            key_parts = key.split('.')
+            if len(key_parts) > 1:
+                defects_to_merge= []
+                for part in key_parts:
+                    defect_data = json.loads(data.get(part, '{}'))
+                    if defect_data:  # Check if defect_data is not empty
+                        defect = Defect.from_dict(type=part, data=defect_data)
+                        defects_to_merge.append(defect)
+                merged_defect = Defect(
+                    type=key,  # Используем полный key как type
+                    values=sum([defect.values for defect in defects_to_merge],
+                               []),  # Объединяем все списки values
+                    physValue=sum(
+                        defect.physValue for defect in defects_to_merge),
+                    # Суммируем physValue
+                    condition=''.join(
+                        defect.condition for defect in defects_to_merge)
+                    # Конкатенируем condition
+                )
+                defects.append(merged_defect)
+            else:
+                defect_data = json.loads(data.get(key, '{}'))
+                if defect_data:  # Check if defect_data is not empty
+                    defect = Defect.from_dict(type=key, data=defect_data)
+                    defects.append(defect)
+        # print(defects)
         return defects
 
     def _get_data_objects(self, input_value: Any) -> List[Any] | None:
