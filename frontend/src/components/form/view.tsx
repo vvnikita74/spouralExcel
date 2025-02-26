@@ -27,8 +27,12 @@ import DateInput, {
   getDateType,
   stringToDate
 } from 'components/input/date-input'
-import DefectsInputs from 'components/input/defects-inputs'
-import SelectInput from 'components/input/select-input'
+import DefectsInputs, {
+  DefectsError
+} from 'components/input/defects-inputs'
+import SelectInput, {
+  getSelectType
+} from 'components/input/select-input'
 import TableInput from 'components/input/table-input'
 import TextInput from 'components/input/text-input'
 
@@ -146,8 +150,12 @@ export default function FormView({
           )
         }
         case 'select': {
-          const { settings: { values = [] } = { values: [] } } =
-            rest as SelectField
+          const {
+            settings: { values = [], type: selectType } = {
+              values: [],
+              type: ''
+            }
+          } = rest as SelectField
 
           return (
             <Controller
@@ -161,6 +169,7 @@ export default function FormView({
                   inputProps={field}
                   required={required || false}
                   values={values}
+                  type={getSelectType(selectType)}
                   error={getErrorByKey(inputKey, errors)}
                 />
               )}
@@ -233,28 +242,41 @@ export default function FormView({
                 name={`${inputKey}.material`}
                 control={control}
                 key={`${inputKey}.material`}
-                render={({ field }) => (
-                  <SelectInput
-                    placeholder={placeholder || ''}
-                    label={name}
-                    inputProps={field}
-                    required={required || false}
-                    values={
-                      construction_type.materials.map(
-                        item => item.name
-                      ) || []
-                    }
-                    error={
-                      (
+                render={({ field: { onChange, ...restProps } }) => {
+                  const selectOnChange = (
+                    value: string | undefined
+                  ) => {
+                    // console.log('custom')
+                    // TODO: reset value in ${inputKey}.values
+                    onChange(value)
+                  }
+
+                  return (
+                    <SelectInput
+                      placeholder={placeholder || ''}
+                      label={name}
+                      inputProps={{
+                        ...restProps,
+                        onChange: selectOnChange
+                      }}
+                      required={required || false}
+                      values={
+                        construction_type.materials.map(
+                          item => item.name
+                        ) || []
+                      }
+                      error={
                         (
-                          errors?.[inputKey] as unknown as {
-                            material: FieldError
-                          }
-                        )?.material as FieldError
-                      )?.message || ''
-                    }
-                  />
-                )}
+                          (
+                            errors?.[inputKey] as unknown as {
+                              material: FieldError
+                            }
+                          )?.material as FieldError
+                        )?.message || ''
+                      }
+                    />
+                  )
+                }}
               />
               <DefectsInputs
                 errors={
@@ -262,10 +284,7 @@ export default function FormView({
                     errors?.[inputKey] as unknown as {
                       values: FieldError[]
                     }
-                  )?.values as unknown as {
-                    def?: { message: string | FieldError }
-                    rec?: { message: string | FieldError }
-                  }[]) || []
+                  )?.values as unknown as DefectsError[]) || []
                 }
                 values={construction_type.materials}
                 name={`${inputKey}.values`}

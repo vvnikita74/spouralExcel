@@ -177,29 +177,7 @@ export function generateSchema(fields: Field[]) {
                 rec: z.string()
               })
             )
-            .superRefine((values, ctx) => {
-              values.forEach((item, index) => {
-                // Если нужно чтобы хотя бы один дефект был заполнен
-                // if (values.length < 1) {
-                // 	ctx.addIssue({
-                // 		code: z.ZodIssueCode.custom,
-                // 		message: 'Обязательное поле',
-                // 		path: []
-                // 	})
-                // }
-                if (
-                  item.def.trim() === '' &&
-                  item.rec.trim() === ''
-                ) {
-                  ctx.addIssue({
-                    code: z.ZodIssueCode.custom,
-                    message:
-                      'Хотя бы одно из полей должно быть заполнено',
-                    path: [index]
-                  })
-                }
-              })
-            })
+            .min(1, 'Обязательное поле')
 
           validator = z.object(objectCellSchema)
 
