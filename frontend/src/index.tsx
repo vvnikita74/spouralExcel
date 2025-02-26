@@ -3,10 +3,10 @@ import './index.css'
 import ReactDOM from 'react-dom/client'
 
 import {
-	createBrowserRouter,
-	createRoutesFromElements,
-	Route,
-	RouterProvider
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider
 } from 'react-router-dom'
 
 import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
@@ -22,85 +22,85 @@ import ProfilePage from 'pages/profile'
 
 import { QueryClient } from '@tanstack/react-query'
 import {
-	PersistedClient,
-	Persister,
-	PersistQueryClientProvider
+  PersistedClient,
+  Persister,
+  PersistQueryClientProvider
 } from '@tanstack/react-query-persist-client'
 import { del, get, set } from 'idb-keyval'
 
 import { deleteMutation, postMutation } from 'utils/mutations'
 
 const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			gcTime: 86400000,
-			staleTime: 2500,
-			retry: 0,
-			refetchOnWindowFocus: false,
-			networkMode: 'offlineFirst'
-		},
-		mutations: {
-			networkMode: 'offlineFirst'
-		}
-	}
+  defaultOptions: {
+    queries: {
+      gcTime: 86400000,
+      staleTime: 2500,
+      retry: 0,
+      refetchOnWindowFocus: false,
+      networkMode: 'offlineFirst'
+    },
+    mutations: {
+      networkMode: 'offlineFirst'
+    }
+  }
 })
 
 const persister = {
-	persistClient: async (client: PersistedClient) => {
-		await set('reactQuery', client)
-	},
-	restoreClient: async () => {
-		return await get<PersistedClient>('reactQuery')
-	},
-	removeClient: async () => {
-		await del('reactQuery')
-	}
+  persistClient: async (client: PersistedClient) => {
+    await set('reactQuery', client)
+  },
+  restoreClient: async () => {
+    return await get<PersistedClient>('reactQuery')
+  },
+  removeClient: async () => {
+    await del('reactQuery')
+  }
 } satisfies Persister
 
 const store = createStore({
-	authName: '_auth',
-	authType: 'localstorage'
+  authName: '_auth',
+  authType: 'localstorage'
 })
 
 queryClient.setMutationDefaults(['req-post'], postMutation)
 queryClient.setMutationDefaults(['req-delete'], deleteMutation)
 
 const router = createBrowserRouter(
-	createRoutesFromElements(
-		<>
-			<Route path='login' element={<LoginPage />} />
-			<Route element={<AuthOutlet fallbackPath='/login' />}>
-				<Route path='/' element={<IndexLayout />}>
-					<Route index element={<HomePage />} />
-					<Route
-						path='profile'
-						element={<ProfilePage />}
-						errorElement={
-							<ErrorHandler msg='Ошибка получения данных пользователя. Пожалуйста, проверьте интернет-соединение' />
-						}
-					/>
-					<Route
-						path='emergencyreport'
-						element={<EmergencyReportPage />}
-						errorElement={
-							<ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
-						}
-					/>
-				</Route>
-			</Route>
-		</>
-	)
+  createRoutesFromElements(
+    <>
+      <Route path='login' element={<LoginPage />} />
+      <Route element={<AuthOutlet fallbackPath='/login' />}>
+        <Route path='/' element={<IndexLayout />}>
+          <Route index element={<HomePage />} />
+          <Route
+            path='profile'
+            element={<ProfilePage />}
+            errorElement={
+              <ErrorHandler msg='Ошибка получения данных пользователя. Пожалуйста, проверьте интернет-соединение' />
+            }
+          />
+          <Route
+            path='emergencyreport'
+            element={<EmergencyReportPage />}
+            errorElement={
+              <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
+            }
+          />
+        </Route>
+      </Route>
+    </>
+  )
 )
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<PersistQueryClientProvider
-		client={queryClient}
-		persistOptions={{ persister }}
-		onSuccess={() => {
-			queryClient.resumePausedMutations()
-		}}>
-		<AuthProvider store={store}>
-			<RouterProvider router={router} />
-		</AuthProvider>
-	</PersistQueryClientProvider>
+  <PersistQueryClientProvider
+    client={queryClient}
+    persistOptions={{ persister }}
+    onSuccess={() => {
+      queryClient.resumePausedMutations()
+    }}>
+    <AuthProvider store={store}>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </PersistQueryClientProvider>
 )
