@@ -118,6 +118,6 @@ venv
 
 backend/media/reports/
 backend/media/user_images/
-
+backend/media/sheets/
 # mac os temp files
 .DS_Store
