@@ -125,8 +125,7 @@ class Sheet(models.Model):
         verbose_name_plural = 'Листы'
 
 
-class Recommendations(models.Model): # TODO изменение в админке срет ошибку
-    # исправить
+class Recommendations(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
@@ -139,10 +138,14 @@ class Recommendations(models.Model): # TODO изменение в админке
 
 class Defects(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    recommendations = models.ForeignKey('Recommendations', to_field='name',
-                                           on_delete=models.PROTECT,
-                                           related_name='defects', null=True,
-                                           blank=True, default=None)
+    recommendations = models.ForeignKey(
+        'Recommendations',
+        on_delete=models.PROTECT,
+        related_name='defects',
+        null=True,
+        blank=True,
+        default=None
+    )
 
     def __str__(self):
         return self.name

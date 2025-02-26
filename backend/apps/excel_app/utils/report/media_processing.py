@@ -1,6 +1,5 @@
 import json
 import os
-import uuid
 from io import BytesIO
 
 from openpyxl.styles import Alignment
@@ -258,7 +257,7 @@ def check_image_fits(current_img_cell, current_img_merge_cell, max_cell,
 
 
 def insert_image_description(ws, user_image, current_img_cell,
-                             current_img_merge_cell, cell_data):
+                             current_img_merge_cell, cell_data, image_counter):
     """
     Вставляет описание изображения в ячейку под изображением и делает мерж ячеек.
 
@@ -292,7 +291,9 @@ def insert_image_description(ws, user_image, current_img_cell,
         desc_merge_range = f"{desc_start_cell}:{desc_end_cell}"
 
         # Вставляем описание изображения в ячейку
-        ws[desc_start_cell] = user_image.description
+        ws[
+            desc_start_cell] = (f"Рисунок Б.{image_counter} –"
+                                f" {user_image.description}.")
 
         # Делаем мерж ячеек для описания
         ws.merge_cells(desc_merge_range)
@@ -349,7 +350,7 @@ def create_new_sheet(ws, ws_initial_copy, sheet_name, copy_count):
     # print(f"Создан новый лист {new_sheet_name}")
     # print(f'Текущий лист: {new_ws}')
     # print(f'Список листов: {ws.parent.sheetnames}')
-    return new_ws,previous_index
+    return new_ws, previous_index + 2
 
 
 def move_image_to_right(current_img_cell, current_img_merge_cell, cell_data):
@@ -394,6 +395,7 @@ def process_images(ws, cell_data, data, sheet,
     """
     img_width = int(cell_data.cells['width'])
     img_height = int(cell_data.cells['height'])
+    image_counter = 0
     # Извлечение данных из sheet.data
     sheet_data = sheet.get_data()
     code_cell = next(
@@ -426,14 +428,13 @@ def process_images(ws, cell_data, data, sheet,
         if not fits:
             # print(f"Изображение не помещается на листе")
             new_sheets_counter += 1
-            ws,idx = create_new_sheet(ws, ws_initial_copy,
-                                  original_sheet_name,
-                                  new_sheets_counter)
+            ws, idx = create_new_sheet(ws, ws_initial_copy,
+                                       original_sheet_name,
+                                       new_sheets_counter)
 
-
-            # if sheet.countCell:
-            #     ws[sheet.countCell] = idx
-            #     print(f"Индекс листа: {idx}")
+            if sheet.countCell:
+                ws[sheet.countCell] = idx
+                print(f"Индекс листа: {idx}")
 
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value
@@ -444,7 +445,9 @@ def process_images(ws, cell_data, data, sheet,
         insert_image(ws, user_image, current_img_cell)
         ws.merge_cells(f"{current_img_cell}:{current_img_merge_cell}")
         insert_image_description(ws, user_image, current_img_cell,
-                                 current_img_merge_cell, cell_data)
+                                 current_img_merge_cell, cell_data,
+                                 image_counter)
+        image_counter += 1
         current_img_cell, current_img_merge_cell = move_image_to_right(
             current_img_cell, current_img_merge_cell, cell_data)
     # print(f"Все изображения успешно обработаны")
