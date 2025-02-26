@@ -71,8 +71,9 @@ def generate_report(data, filename, user_files):
                 if s.index > sheet.index:
                     s.index += inserted_sheets_count
             indices_updated = True
-    if wb.worksheets:
-        wb.remove(wb.worksheets[-1])
+
+    # if wb.worksheets:
+    #     wb.remove(wb.worksheets[-2])
 
     if content_cell_data:
         content_ws = wb['Содержание']
