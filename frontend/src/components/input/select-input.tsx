@@ -13,6 +13,17 @@ import { memo } from 'react'
 import InputWithIcon from './input-with-icon'
 import InputWrapper from './input-wrapper'
 
+const selectTypes = ['single', 'multiple'] as const
+type selectType = (typeof selectTypes)[number]
+
+export function getSelectType(
+  type: string
+): (typeof selectTypes)[number] {
+  return selectTypes.includes(type as selectType)
+    ? (type as (typeof selectTypes)[number])
+    : selectTypes[0]
+}
+
 const handleOpen = (
   event?: MouseEvent<HTMLInputElement> | FocusEvent<HTMLInputElement>
 ) => {
@@ -49,12 +60,21 @@ const handleClose =
   }
 
 const handleSelect =
-  (onChange: (value: string | undefined) => void) =>
+  (
+    onChange: (value: string | undefined) => void,
+    { prev, type }: { prev: string; type: selectType }
+  ) =>
   (event?: MouseEvent<HTMLButtonElement>) => {
     const target = event.target as HTMLElement
     const { value } = target.dataset
 
-    onChange(value)
+    let additional = ''
+
+    if (type === 'multiple' && value && prev) {
+      additional += `${prev}, `
+    }
+
+    onChange(additional + value)
   }
 
 const SelectInput = memo(
@@ -63,6 +83,7 @@ const SelectInput = memo(
     values = [],
     placeholder = '',
     error = '',
+    type = 'single',
     required = false,
     inputProps,
     labelProps = {}
@@ -70,13 +91,17 @@ const SelectInput = memo(
     label?: string
     values?: string[]
     placeholder?: string
+    type?: selectType
     error?: string
     required?: boolean
     inputProps?: ControllerRenderProps
     labelProps?: LabelHTMLAttributes<HTMLLabelElement>
   }) => {
-    const { name, onBlur, onChange } = inputProps
-    const onSelect = handleSelect(onChange)
+    const { name, onBlur, onChange, value: prev } = inputProps
+    const onSelect = handleSelect(onChange, {
+      prev,
+      type
+    })
 
     return (
       <InputWrapper
@@ -127,7 +152,7 @@ const SelectInput = memo(
               {value}
             </button>
           ))}
-          {!required && (
+          {!required && type !== 'multiple' && (
             <button
               type='button'
               onMouseDown={onSelect}
@@ -135,6 +160,16 @@ const SelectInput = memo(
               className='base-text mt-2 px-2.5 text-left last:mb-2'
               data-value={placeholder}>
               {placeholder}
+            </button>
+          )}
+          {type === 'multiple' && (
+            <button
+              type='button'
+              onMouseDown={onSelect}
+              data-container-id={name}
+              className='base-text mt-2 px-2.5 text-left last:mb-2'
+              data-value=''>
+              Очистить
             </button>
           )}
         </div>

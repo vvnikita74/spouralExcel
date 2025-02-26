@@ -18,6 +18,7 @@ export interface TextField extends BaseField {
 export interface SelectField extends BaseField {
   type: 'select'
   settings: {
+    type?: string
     values: string[]
   }
 }
