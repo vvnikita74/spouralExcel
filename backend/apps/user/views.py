@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import UserData
-from .serializers import CustomTokenObtainPairSerializer, UserDataSerializer
+from .serializers import CustomTokenObtainPairSerializer, UserDataSerializer, \
+    UserDataFullSerializer
 from ..excel_app.models import Fields
 from ..excel_app.serializers import FieldsSerializer
 
@@ -95,7 +96,7 @@ class UserDataDetailView(APIView):
         """
         try:
             user_data = UserData.objects.get(pk=pk, user=request.user)
-            serializer = UserDataSerializer(user_data)
+            serializer = UserDataFullSerializer(user_data)
             return Response(serializer.data)
         except UserData.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
