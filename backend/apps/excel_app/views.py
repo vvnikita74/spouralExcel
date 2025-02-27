@@ -87,7 +87,7 @@ class ProcessInputView(APIView):
             ">", "(", ")", "`", "$", "\"", "'", "\\", "#", "!"
         )
         for char in special_chars:
-            filename = re.sub(re.escape(char), f"\\{char}", filename)
+            filename = re.sub(re.escape(char), f"_", filename)
         return filename
 
     @staticmethod
