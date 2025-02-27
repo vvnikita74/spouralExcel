@@ -19,7 +19,8 @@ const InputWithIcon = forwardRef<
       onFocus,
       onBlur,
       name,
-      className,
+      readOnly = true,
+      className = '',
       containerStyle,
       icon,
       ...props
@@ -54,7 +55,7 @@ const InputWithIcon = forwardRef<
           {...props}
           onFocus={onInputFocus}
           onBlur={onInputBlur}
-          readOnly
+          readOnly={readOnly}
           className={`${className} cursor-pointer`}
         />
         <div className='absolute right-2.5 size-6'>{icon}</div>

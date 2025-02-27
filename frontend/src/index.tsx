@@ -13,8 +13,8 @@ import AuthOutlet from '@auth-kit/react-router/AuthOutlet'
 import AuthProvider from 'react-auth-kit'
 import createStore from 'react-auth-kit/createStore'
 
-import IndexLayout from 'layout/index-layout'
 import ErrorHandler from 'layout/error-handler'
+import IndexLayout from 'layout/index-layout'
 import EmergencyReportPage from 'pages/emergency-report'
 import HomePage from 'pages/home'
 import LoginPage from 'pages/login'
@@ -82,9 +82,9 @@ const router = createBrowserRouter(
           <Route
             path='emergencyreport'
             element={<EmergencyReportPage />}
-            errorElement={
-              <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
-            }
+            // errorElement={
+            //   <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
+            // }
           />
         </Route>
       </Route>

@@ -1,18 +1,19 @@
-import type {
-  FieldError,
-  UseFormWatch,
-  Control,
-  FieldValues
-} from 'react-hook-form'
 import type { MouseEvent } from 'react'
+import type {
+  Control,
+  FieldError,
+  FieldValues,
+  UseFormWatch
+} from 'react-hook-form'
 import { ConstructionMaterials } from 'types/constructions'
 
 import { Fragment, useCallback } from 'react'
-import SelectInput from './select-input'
 import { Controller, useFieldArray } from 'react-hook-form'
+import SelectInput from './select-input'
 
-import PlusIcon from 'assets/icons/plus.svg?react'
 import MinusIcon from 'assets/icons/minus.svg?react'
+import PlusIcon from 'assets/icons/plus.svg?react'
+import MediaInput from './media-input'
 
 function getDefsAndRecs(
   data: ConstructionMaterials[],
@@ -81,7 +82,7 @@ const DefectsInputs = ({
   )
 
   const handleAddItem = useCallback(
-    () => append({ def: '', rec: '' }),
+    () => append({ def: '', rec: '', media: [] }),
     [append]
   )
 
@@ -157,6 +158,25 @@ const DefectsInputs = ({
                 />
               )}
             />
+            <Controller
+              name={`${name}.${index}.media`}
+              control={control}
+              render={({ field: arrField }) => (
+                <MediaInput
+                  placeholder='Загрузить изображение'
+                  required={false}
+                  inputProps={arrField}
+                  labelProps={{
+                    className: 'flex flex-col mt-2.5'
+                  }}
+                  error={
+                    ((errors as DefectsError[])?.values?.[index]
+                      ?.media?.message as string) || ''
+                  }
+                />
+              )}
+            />
+
             <div className='relative mt-2.5 min-h-9 w-full'>
               {index + 1 === fields.length && (
                 <button
