@@ -84,7 +84,7 @@ class ProcessInputView(APIView):
     def escape_special_chars(filename):
         special_chars = (
             " ", "\t", "\n", "*", "?", "[", "]", "{", "}", "&", "|", ";", "<",
-            ">", "(", ")", "`", "$", "\"", "'", "\\", "#", "!"
+            ">", "(", ")", "`", "$", "\"", "'", "\\", "#", "!", '/'
         )
         for char in special_chars:
             filename = re.sub(re.escape(char), f"_", filename)
