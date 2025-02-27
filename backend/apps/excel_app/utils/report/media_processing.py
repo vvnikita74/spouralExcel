@@ -298,9 +298,9 @@ def insert_image_description(ws, user_image, current_img_cell,
         # Делаем мерж ячеек для описания
         ws.merge_cells(desc_merge_range)
 
-        # Центрируем текст в ячейке
-        ws[desc_start_cell].alignment = Alignment(horizontal='center',
-                                                  vertical='center')
+        # # Центрируем текст в ячейке
+        # ws[desc_start_cell].alignment = Alignment(horizontal='center',
+        #                                           vertical='center')
 
         # print(
         #     f"Описание изображения успешно вставлено в диапазон {desc_merge_range}")

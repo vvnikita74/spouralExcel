@@ -154,41 +154,42 @@ class Table:
         original_sheet = ws.parent.copy_worksheet(
             ws)  # Сохранение ссылки на оригинальный лист
         added_defects = set()  # Отслеживание добавленных дефектов
+        if defects:
+            for defect in defects:
+                if defect in added_defects:
+                    continue  # Пропуск дефекта, если он уже был добавлен
+                if not self.check_table_height(ws, cell_data, start_row, start_col,
+                                               defect):
+                    # Создание копии оригинального листа
+                    new_ws = original_sheet
+                    new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Название нового листа с индексом
 
-        for defect in defects:
-            if defect in added_defects:
-                continue  # Пропуск дефекта, если он уже был добавлен
-            if not self.check_table_height(ws, cell_data, start_row, start_col,
-                                           defect):
-                # Создание копии оригинального листа
-                new_ws = original_sheet
-                new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Название нового листа с индексом
+                    # Перемещение нового листа сразу после последнего вставленного листа
+                    original_index = ws.parent.index(last_inserted_sheet)
+                    ws.parent._sheets.remove(new_ws)
+                    ws.parent._sheets.insert(original_index + 1, new_ws)
 
-                # Перемещение нового листа сразу после последнего вставленного листа
-                original_index = ws.parent.index(last_inserted_sheet)
-                ws.parent._sheets.remove(new_ws)
-                ws.parent._sheets.insert(original_index + 1, new_ws)
+                    ws = new_ws
+                    last_inserted_sheet = new_ws  # Обновление последнего вставленного листа
+                    start_row = ws[
+                        start_cell].row  # Сброс start_row для нового листа
+                    sheet_index += 1
+                    inserted_sheets_count += 1
 
-                ws = new_ws
-                last_inserted_sheet = new_ws  # Обновление последнего вставленного листа
-                start_row = ws[
-                    start_cell].row  # Сброс start_row для нового листа
-                sheet_index += 1
-                inserted_sheets_count += 1
+                    if sheet.countCell:
+                        ws[sheet.countCell] = sheet.index + sheet_index
 
-                if sheet.countCell:
-                    ws[sheet.countCell] = sheet.index + sheet_index
+                    # Вставка значений в соответствующие ячейки
+                    ws[code_cell.index] = code_value
+                    ws[report_date_cell.index] = report_date_value
 
-                # Вставка значений в соответствующие ячейки
-                ws[code_cell.index] = code_value
-                ws[report_date_cell.index] = report_date_value
-
-            header_name = cell_data.cells.get('names').get(defect.type)
-            start_row = self.draw_table_header(ws, cell_data, start_row,
-                                               start_col, header_name)
-            start_row = self.draw_table_elements(ws, cell_data, start_row,
-                                                 start_col, defect)
-            added_defects.add(defect)  # Пометка дефекта как добавленного
+                header_name = cell_data.cells.get('names').get(defect.type)
+                start_row = self.draw_table_header(ws, cell_data, start_row,
+                                                   start_col, header_name)
+                start_row = self.draw_table_elements(ws, cell_data, start_row,
+                                                     start_col, defect)
+                added_defects.add(defect)  # Пометка дефекта как добавленного
+        ws.parent._sheets.remove(original_sheet)
         return inserted_sheets_count
 
     @staticmethod
@@ -294,6 +295,7 @@ class Table:
 
     def _create_defects(self, cell_data, data):
         defects = []
+        defects_to_merge_exist = False
         for key in cell_data.cells['names'].keys():
             key_parts = key.split('.')
             if len(key_parts) > 1:
@@ -303,18 +305,20 @@ class Table:
                     if defect_data:  # Check if defect_data is not empty
                         defect = Defect.from_dict(type=part, data=defect_data)
                         defects_to_merge.append(defect)
-                merged_defect = Defect(
-                    type=key,  # Используем полный key как type
-                    values=sum([defect.values for defect in defects_to_merge],
-                               []),  # Объединяем все списки values
-                    physValue=sum(
-                        defect.physValue for defect in defects_to_merge),
-                    # Суммируем physValue
-                    condition=''.join(
-                        defect.condition for defect in defects_to_merge)
-                    # Конкатенируем condition
-                )
-                defects.append(merged_defect)
+                        defects_to_merge_exist = True
+                if defects_to_merge_exist:
+                    merged_defect = Defect(
+                        type=key,  # Используем полный key как type
+                        values=sum([defect.values for defect in defects_to_merge],
+                                   []),  # Объединяем все списки values
+                        physValue=sum(
+                            defect.physValue for defect in defects_to_merge),
+                        # Суммируем physValue
+                        condition=''.join(
+                            defect.condition for defect in defects_to_merge)
+                        # Конкатенируем condition
+                    )
+                    defects.append(merged_defect)
             else:
                 defect_data = json.loads(data.get(key, '{}'))
                 if defect_data:  # Check if defect_data is not empty
