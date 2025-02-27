@@ -42,35 +42,37 @@ def generate_report(data, filename, user_files):
     sheets_copy = copy.deepcopy(sheets)
     content_cell_data = None
     inserted_sheets_count = 0
-    indices_updated = False
     # print(f"Sheets in workbook before processing:{sheets_copy}")
     for sheet in sheets_copy:
         # print(f"Processing sheet {sheet.name} with index "
-              # f"{count} + {inserted_sheets_count}")
+        #       f"{count} + {inserted_sheets_count}")
 
         ws = wb.worksheets[sheet.index]
         count += 1
         if sheet.countCell:
-            # print(f"Setting count cell to {count + inserted_sheets_count} to list {sheet.name}")
+            # print(
+            #     f"Setting count cell to {count + inserted_sheets_count} to list {sheet.name}")
             ws[sheet.countCell] = count + inserted_sheets_count
-
+        inserted_sheets_count_this_time = 0
         for cell_data in sheet.get_data():
-            content_cell_data, inserted_sheets_count = process_cell_data(ws,
-                                                                         cell_data,
-                                                                         data,
-                                                                         content_cell_data,
-                                                                         sheet,
-                                                                         inserted_sheets_count,
-                                                                         user_files)
+            content_cell_data, inserted_sheets_count_this_time = process_cell_data(
+                ws,
+                cell_data,
+                data,
+                content_cell_data,
+                sheet,
+                inserted_sheets_count_this_time,
+                user_files)
         if sheet.contentSection:
             sections.extend(process_sections(sheet, count))
 
-            # Обновление индексов всех последующих листов only once
-        if inserted_sheets_count > 0 and not indices_updated:
+        inserted_sheets_count += inserted_sheets_count_this_time
+        # Если во время обработки текущего листа были вставлены новые листы,
+        # обновляем индексы последующих листов
+        if inserted_sheets_count_this_time > 0:
             for s in sheets_copy:
-                if s.index > sheet.index:
-                    s.index += inserted_sheets_count
-            indices_updated = True
+                if s.index >= sheet.index:
+                    s.index += inserted_sheets_count_this_time
 
     # if wb.worksheets:
     #     wb.remove(wb.worksheets[-2])
