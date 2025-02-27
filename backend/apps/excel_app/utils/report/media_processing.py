@@ -162,11 +162,12 @@ def get_image_description(image_key, cell_data, data):
     material_key, image_id = image_key.split('.')
     if material_key in cell_data.cells['materials']:
         material = data.get(material_key, {})
-        if isinstance(material, str):
-            material = json.loads(material)
-        values = material.get('values', [])
-        defect = values[int(image_id)].get('def')
-        return defect
+        if material:
+            if isinstance(material, str):
+                material = json.loads(material)
+            values = material.get('values', [])
+            defect = values[int(image_id)].get('def')
+            return defect
     return None
 
 
@@ -291,10 +292,12 @@ def insert_image_description(ws, user_image, current_img_cell,
         desc_merge_range = f"{desc_start_cell}:{desc_end_cell}"
 
         # Вставляем описание изображения в ячейку
-        ws[
-            desc_start_cell] = (f"Рисунок Б.{image_counter} –"
-                                f" {user_image.description}.")
-
+        if user_image.description:
+            ws[
+                desc_start_cell] = (f"Рисунок Б.{image_counter} –"
+                                    f" {user_image.description}.")
+        else:
+            ws[desc_start_cell] = f"Рисунок Б.{image_counter}"
         # Делаем мерж ячеек для описания
         ws.merge_cells(desc_merge_range)
 

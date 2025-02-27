@@ -1,4 +1,5 @@
 import os
+import re
 import threading
 from io import BytesIO
 
@@ -39,7 +40,8 @@ class ProcessInputView(APIView):
             data.pop(key, None)
         report_name = filename
         filename = translit(filename, language_code='ru',
-                            reversed=True).replace(' ', '-')
+                            reversed=True)
+        filename = self.escape_special_chars(filename)
         if uniqueId:
             user_data = UserData.objects.create(user=request.user, data=data,
                                                 isReady=0, filename=filename,
@@ -69,13 +71,24 @@ class ProcessInputView(APIView):
         return Response(response_data,
                         status=status.HTTP_200_OK)
 
-    def compress_image(self, uploaded_file):
+    @staticmethod
+    def compress_image(uploaded_file):
         image = Image.open(uploaded_file)
         image_io = BytesIO()
         image.save(image_io, format='WEBP', quality=60)
         new_filename = uploaded_file.name.rsplit('.', 1)[0] + '.webp'
         compressed_image = ContentFile(image_io.getvalue(), name=new_filename)
         return compressed_image
+
+    @staticmethod
+    def escape_special_chars(filename):
+        special_chars = (
+            " ", "\t", "\n", "*", "?", "[", "]", "{", "}", "&", "|", ";", "<",
+            ">", "(", ")", "`", "$", "\"", "'", "\\", "#", "!"
+        )
+        for char in special_chars:
+            filename = re.sub(re.escape(char), f"\\{char}", filename)
+        return filename
 
     @staticmethod
     def process_data(data, user_data_id, filename, user_files=None):
