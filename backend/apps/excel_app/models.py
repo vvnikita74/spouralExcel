@@ -5,27 +5,31 @@ from django.db import models
 from django.utils.text import slugify
 from unidecode import unidecode
 
+from enum import Enum
+
+
+class FieldType(Enum):
+    TEXT = ('text', 'Текстовое поле')
+    NUMBER = ('number', 'Числовое поле')
+    SELECT = ('select', 'Выбор')
+    MULTISELECT = ('multiselect', 'Множественный выбор')
+    MULTINUMBER = ('multinumber', 'Множественное число')
+    TABLE = ('table', 'Таблица')
+    DATE = ('date', 'Дата')
+    BOOL = ('bool', 'Да/Нет')
+    MEDIA = ('media', 'Изображение')
+
+    def __init__(self, value, description):
+        self._value_ = value
+        self.description = description
+
+    @classmethod
+    def choices(cls):
+        return [(field.value, field.description) for field in cls]
+
 
 class Fields(models.Model):
-    TEXT = 'text'
-    NUMBER = 'number'
-    SELECT = 'select'
-    MULTISELECT = 'multiselect'
-    MULTINUMBER = 'multinumber'
-    TABLE = 'table'
-    DATE = 'date'
-    BOOL = 'bool'
-    CHOICES = [
-        (TEXT, 'Text'),
-        (NUMBER, 'Number'),
-        (DATE, 'Date'),
-        (SELECT, 'Select'),
-        (MULTISELECT, 'MultiSelect'),
-        (MULTINUMBER, 'MultiNumber'),
-        (TABLE, 'Table'),
-        (BOOL, 'Bool')
-    ]
-    type = models.CharField(max_length=15, choices=CHOICES)
+    type = models.CharField(max_length=15, choices=FieldType.choices())
     key = models.CharField(max_length=255, unique=True)
     mask = models.CharField(max_length=255, null=True, blank=True)
     name = models.CharField(max_length=255)
