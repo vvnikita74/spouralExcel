@@ -44,7 +44,7 @@ export default function FormView({
 }: {
   validationSchema: ZodType
   fields: Field[]
-  defaultValues: { [key: string]: string }
+  defaultValues: Record<string, unknown>
   submitFn: (data: FormData) => void
 }) {
   const { btnRef, toggleLoader } = useLoader()
@@ -205,7 +205,7 @@ export default function FormView({
                     required={required || false}
                     inputProps={{
                       value: value
-                        ? stringToDate(dateType, value)
+                        ? stringToDate(dateType, String(value))
                         : null,
                       onBlur,
                       onChange: (date: Date | null) => {

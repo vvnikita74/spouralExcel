@@ -19,7 +19,7 @@ import { getDateMask, getDateType } from 'components/input/date-input'
 
 export function getErrorByKey(
   inputKey: string,
-  errors: FieldErrors<{ [key: string]: string }>
+  errors: FieldErrors<Record<string, unknown>>
 ): string {
   if (!inputKey.includes('.')) {
     return errors[inputKey]?.message
@@ -173,7 +173,7 @@ export function generateSchema(
             'Введите корректное значение'
           )
 
-        defaultValues[key] = required ? '' : placeholder || ''
+        // defaultValues[key] = required ? '' : placeholder || ''
 
         break
       }
@@ -184,7 +184,7 @@ export function generateSchema(
           .string()
           .min(required ? 1 : 0, 'Обязательное поле')
 
-        defaultValues[key] = required ? '' : placeholder
+        // defaultValues[key] = required ? '' : placeholder
 
         break
       }
@@ -202,8 +202,6 @@ export function generateSchema(
             new RegExp(regex),
             'Введите корректное значение'
           )
-
-        // setDefaultValue(key, '')
 
         break
       }
@@ -235,7 +233,7 @@ export function generateSchema(
             .array(z.object(objectCellSchema))
             .min(required ? 1 : 0, 'Обязательное поле')
 
-          defaultValues[key] = []
+          // defaultValues[key] = []
         } else {
           objectCellSchema['material'] = z
             .string()
@@ -253,10 +251,10 @@ export function generateSchema(
 
           validator = z.object(objectCellSchema)
 
-          defaultValues[key] = {
-            material: '',
-            values: []
-          }
+          // defaultValues[key] = {
+          //   material: '',
+          //   values: []
+          // }
         }
       }
     }
