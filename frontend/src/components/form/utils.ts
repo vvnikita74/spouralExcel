@@ -7,10 +7,10 @@ import type {
   TextField
 } from 'types/field'
 import type {
-  ZodString,
   ZodObject,
-  ZodTypeAny,
-  ZodRawShape
+  ZodRawShape,
+  ZodString,
+  ZodTypeAny
 } from 'zod'
 
 import { z } from 'zod'
@@ -50,16 +50,53 @@ export function getErrorByKey(
 }
 
 export function processValue(value: unknown): string | Blob {
+  if (value instanceof File) {
+    return value
+  }
   if (
     typeof value === 'object' &&
-    !Array.isArray(value) &&
-    value !== null
+    value !== null &&
+    !Array.isArray(value)
   ) {
     return JSON.stringify(value)
   } else if (Array.isArray(value)) {
     return JSON.stringify(value)
   }
-  return value as string
+  return String(value ?? '')
+}
+
+function extractPrefixAndIndex(str: string): string | null {
+  const firstPart = str.split('.')[0]
+  const indexMatch = str.match(/\[(\d+)\]/)
+  return indexMatch ? `${firstPart}.${indexMatch[1]}` : null
+}
+
+export function appendFormData(
+  formData: FormData,
+  data: Record<string, unknown> | object,
+  prefix = ''
+) {
+  for (const key in data) {
+    const value = data[key]
+    const fullKey = prefix ? `${prefix}.${key}` : key
+
+    if (value instanceof File) {
+      const extractedKey = extractPrefixAndIndex(fullKey)
+      if (extractedKey) formData.append(extractedKey, value)
+    } else if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        if (typeof item === 'object' && item !== null) {
+          appendFormData(formData, item, `${fullKey}[${index}]`)
+        } else {
+          formData.append(`${fullKey}[${index}]`, processValue(item))
+        }
+      })
+    } else if (typeof value === 'object' && value !== null) {
+      appendFormData(formData, value, fullKey)
+    } else {
+      formData.append(fullKey, processValue(value))
+    }
+  }
 }
 
 export function addFieldToSchema(
@@ -174,7 +211,8 @@ export function generateSchema(fields: Field[]) {
             .array(
               z.object({
                 def: z.string(),
-                rec: z.string()
+                rec: z.string(),
+                media: z.instanceof(File)
               })
             )
             .min(1, 'Обязательное поле')

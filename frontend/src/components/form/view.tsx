@@ -18,8 +18,8 @@ import { Controller, FieldError, useForm } from 'react-hook-form'
 import useLoader from 'utils/use-loader'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getErrorByKey, processValue } from './utils'
 import { v4 as uuidv4 } from 'uuid'
+import { appendFormData, getErrorByKey } from './utils'
 
 import { Spinner } from 'components/icons/Spinner'
 import DateInput, {
@@ -75,18 +75,25 @@ export default function FormView({
   )
 
   const onSubmit = useCallback(
-    async (data: { [key: string]: string }) => {
+    async (data: { [key: string]: string | object }) => {
       toggleLoader(true)
 
       const formData = new FormData()
-
-      for (const key in data) {
-        formData.append(key, processValue(data[key]) || '')
-      }
+      appendFormData(formData, data)
 
       const uniqueId = uuidv4()
-      formData.append('filename', data.address || uniqueId)
+      formData.append(
+        'filename',
+        (data.address as string) || uniqueId
+      )
       formData.append('uniqueId', uniqueId)
+
+      // for (const key of formData.keys()) {
+      //   const value = formData.get(key)
+      //   console.log(`${key}: ${value}`)
+      //   console.log(typeof value)
+      //   console.log(value instanceof File)
+      // }
 
       submitFn(formData)
 

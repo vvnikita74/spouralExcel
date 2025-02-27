@@ -8,7 +8,7 @@ import type {
 import type { ControllerRenderProps } from 'react-hook-form'
 
 import List from 'assets/icons/list.svg?react'
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 
 import InputWithIcon from './input-with-icon'
 import InputWrapper from './input-wrapper'
@@ -103,6 +103,8 @@ const SelectInput = memo(
       type
     })
 
+    const handleBlur = useMemo(() => handleClose(onBlur), [onBlur])
+
     return (
       <InputWrapper
         labelProps={{
@@ -124,7 +126,7 @@ const SelectInput = memo(
           data-container-id={name}
           onMouseDown={handleOpen}
           // onFocus={handleOpen}
-          onBlur={handleClose(onBlur)}
+          onBlur={handleBlur}
           readOnly
           containerStyle={{ width: '100%' }}
           placeholder={placeholder}
