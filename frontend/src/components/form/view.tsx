@@ -50,7 +50,7 @@ export default function FormView({
   const { btnRef, toggleLoader } = useLoader()
   const formContainerRef = useRef<HTMLDivElement>(null)
 
-  const [currentStep, setCurrentStep] = useState<number>(1)
+  const [currentStep, setCurrentStep] = useState<number>(5)
   const fieldsForCurrentStep = fields.filter(
     field => field.step === currentStep
   )
@@ -59,6 +59,7 @@ export default function FormView({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
     trigger,
     watch
@@ -75,29 +76,27 @@ export default function FormView({
   )
 
   const onSubmit = useCallback(
-    async (data: { [key: string]: string | object }) => {
+    async (data: { [key: string]: string | object | unknown }) => {
       toggleLoader(true)
 
       const formData = new FormData()
       appendFormData(formData, data)
 
       const uniqueId = uuidv4()
+
       formData.append(
         'filename',
         (data.address as string) || uniqueId
       )
       formData.append('uniqueId', uniqueId)
 
-      // for (const key of formData.keys()) {
-      //   const value = formData.get(key)
-      //   console.log(`${key}: ${value}`)
-      //   console.log(typeof value)
-      //   console.log(value instanceof File)
-      // }
+      if (!process.env.PRODUCTION) {
+        for (const pair of formData.entries()) {
+          console.log(pair[0] + ', ' + pair[1])
+        }
+      }
 
       submitFn(formData)
-
-      toggleLoader(false)
     },
     [toggleLoader, submitFn]
   )
@@ -253,8 +252,10 @@ export default function FormView({
                   const selectOnChange = (
                     value: string | undefined
                   ) => {
-                    // console.log('custom')
-                    // TODO: reset value in ${inputKey}.values
+                    // @ts-expect-error: Dynamic form types
+                    setValue<never[]>(`${inputKey}.values`, [], {
+                      shouldValidate: true
+                    })
                     onChange(value)
                   }
 
@@ -306,7 +307,7 @@ export default function FormView({
           return null
       }
     },
-    [control, errors, register, watch]
+    [control, errors, register, watch, setValue]
   )
 
   useEffect(() => {

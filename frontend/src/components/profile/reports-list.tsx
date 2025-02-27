@@ -1,7 +1,7 @@
 import type Report from 'types/report'
 import type { Ref } from 'react'
 
-import useAuthSuspenseQuery from 'utils/auth-suspense-query'
+import useSuspenseGetQuery from 'utils/suspense-get-query'
 
 import { forwardRef, MouseEvent, useCallback } from 'react'
 import { Link } from 'react-router-dom'
@@ -15,13 +15,14 @@ import { timeAgo } from './utils'
 import { useDeleteMutation } from 'utils/mutations'
 import { useQueryClient } from '@tanstack/react-query'
 import useLoader from 'utils/use-loader'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 const UpdatePanel = forwardRef<
   HTMLButtonElement,
   { handleClick: () => void }
 >(function UpdatePanel({ handleClick }, ref: Ref<HTMLButtonElement>) {
   return (
-    <div className='absolute bottom-0 right-0 z-10 mx-4 my-3 bg-transparent'>
+    <div className='absolute bottom-0 right-0 z-30 mx-4 my-3 bg-transparent'>
       <button
         type='button'
         ref={ref}
@@ -47,10 +48,13 @@ export default function ReportsList({
   queryKey: string[]
   path: string
 }) {
-  const { data: reports, authHeader } = useAuthSuspenseQuery(
+  const authHeader = useAuthHeader()
+
+  const reports = useSuspenseGetQuery(
     queryKey,
-    path
-  ) as { data: Report[]; authHeader: string }
+    path,
+    authHeader
+  ) as Report[]
 
   const { btnRef, toggleLoader } = useLoader()
 
@@ -136,8 +140,8 @@ export default function ReportsList({
                 </a>
               )}
               <Link
-                to='emergencyreport?continue=id'
-                className={`base-padding base-text mx-1 min-w-fit flex-1 rounded-xl opacity-60
+                to={`/emergencyreport?continue=${id}`}
+                className={`base-padding base-text mx-1 min-w-fit flex-1 rounded-xl
                 ${isReady !== 2 ? 'bg-indigo-500' : 'bg-red-500'}`}>
                 {isReady !== 2 ? 'Редактировать' : 'Повторить'}
               </Link>

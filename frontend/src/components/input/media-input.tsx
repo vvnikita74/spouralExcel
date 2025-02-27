@@ -57,8 +57,6 @@ const MediaInput = memo(
       }
     }, [])
 
-    console.log(value?.name)
-
     return (
       <InputWrapper
         labelProps={{ htmlFor: name, ...labelProps }}
@@ -70,7 +68,8 @@ const MediaInput = memo(
         <div className='relative flex w-full flex-row items-center'>
           <button
             type='button'
-            className='input-class flex flex-row items-center text-left'
+            className={`input-class flex flex-row items-center text-left
+              ${error ? 'input-error' : ''}`}
             onClick={handleBtnClick}>
             {value instanceof File && (
               <img

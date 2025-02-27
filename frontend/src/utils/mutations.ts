@@ -73,8 +73,6 @@ export const usePostMutation = () => {
         ]
       })
 
-      navigate('/profile')
-
       return { uniqueId, filename, dateCreated }
     },
     onError: (_error, _variables, context) => {
@@ -104,6 +102,9 @@ export const usePostMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-data'] })
+    },
+    onSettled: () => {
+      // navigate('/profile')
     }
   })
 }

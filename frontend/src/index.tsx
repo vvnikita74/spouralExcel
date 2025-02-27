@@ -82,6 +82,11 @@ const router = createBrowserRouter(
           <Route
             path='emergencyreport'
             element={<EmergencyReportPage />}
+            loader={({ request }) => {
+              const url = new URL(request.url)
+              const searchTerm = url.searchParams.get('continue')
+              return searchTerm || ''
+            }}
             // errorElement={
             //   <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
             // }
