@@ -19,7 +19,7 @@ import { getDateMask, getDateType } from 'components/input/date-input'
 
 export function getErrorByKey(
   inputKey: string,
-  errors: FieldErrors<{ [key: string]: string }>
+  errors: FieldErrors<Record<string, unknown>>
 ): string {
   if (!inputKey.includes('.')) {
     return errors[inputKey]?.message
@@ -49,7 +49,7 @@ export function getErrorByKey(
     : ''
 }
 
-export function processValue(value: unknown): string | Blob {
+function processValue(value: unknown): string | Blob {
   if (value instanceof File) {
     return value
   }
@@ -71,31 +71,56 @@ function extractPrefixAndIndex(str: string): string | null {
   return indexMatch ? `${firstPart}.${indexMatch[1]}` : null
 }
 
-export function appendFormData(
+function extractMediaFiles(
+  data: { [key: string]: unknown },
   formData: FormData,
-  data: Record<string, unknown> | object,
   prefix = ''
-) {
+): { [key: string]: unknown } {
+  const cleanedData: { [key: string]: unknown } = {}
+
   for (const key in data) {
     const value = data[key]
     const fullKey = prefix ? `${prefix}.${key}` : key
 
     if (value instanceof File) {
-      const extractedKey = extractPrefixAndIndex(fullKey)
-      if (extractedKey) formData.append(extractedKey, value)
+      formData.append(extractPrefixAndIndex(prefix), value)
     } else if (Array.isArray(value)) {
-      value.forEach((item, index) => {
+      cleanedData[key] = value.map((item, index) => {
         if (typeof item === 'object' && item !== null) {
-          appendFormData(formData, item, `${fullKey}[${index}]`)
-        } else {
-          formData.append(`${fullKey}[${index}]`, processValue(item))
+          return extractMediaFiles(
+            item,
+            formData,
+            `${fullKey}[${index}]`
+          )
         }
+        return item
       })
     } else if (typeof value === 'object' && value !== null) {
-      appendFormData(formData, value, fullKey)
+      cleanedData[key] = extractMediaFiles(
+        value as { [key: string]: unknown },
+        formData,
+        fullKey
+      )
     } else {
-      formData.append(fullKey, processValue(value))
+      cleanedData[key] = value
     }
+  }
+
+  return cleanedData
+}
+
+export function appendFormData(
+  formData: FormData,
+  data: { [key: string]: unknown }
+) {
+  for (const key in data) {
+    const value = data[key]
+    const cleanedValue = extractMediaFiles(
+      { [key]: value },
+      formData,
+      key
+    )
+    formData.append(key, processValue(cleanedValue[key]))
   }
 }
 
@@ -124,9 +149,12 @@ export function addFieldToSchema(
   }
 }
 
-export function generateSchema(fields: Field[]) {
+export function generateSchema(
+  fields: Field[],
+  initialValues?: Record<string, unknown>
+) {
   const schemaShape = {}
-  const defaultValues = {}
+  const defaultValues = initialValues || {}
 
   fields.forEach(({ type, key, ...rest }) => {
     let validator: z.ZodType
@@ -145,7 +173,8 @@ export function generateSchema(fields: Field[]) {
             'Введите корректное значение'
           )
 
-        defaultValues[key] = required ? '' : placeholder || ''
+        // defaultValues[key] = required ? '' : placeholder || ''
+
         break
       }
       case 'select': {
@@ -154,7 +183,9 @@ export function generateSchema(fields: Field[]) {
         validator = z
           .string()
           .min(required ? 1 : 0, 'Обязательное поле')
-        defaultValues[key] = required ? '' : placeholder
+
+        // defaultValues[key] = required ? '' : placeholder
+
         break
       }
       case 'date': {
@@ -201,7 +232,8 @@ export function generateSchema(fields: Field[]) {
           validator = z
             .array(z.object(objectCellSchema))
             .min(required ? 1 : 0, 'Обязательное поле')
-          defaultValues[key] = []
+
+          // defaultValues[key] = []
         } else {
           objectCellSchema['material'] = z
             .string()
@@ -212,17 +244,17 @@ export function generateSchema(fields: Field[]) {
               z.object({
                 def: z.string(),
                 rec: z.string(),
-                media: z.instanceof(File)
+                media: z.instanceof(File).optional()
               })
             )
             .min(1, 'Обязательное поле')
 
           validator = z.object(objectCellSchema)
 
-          defaultValues[key] = {
-            material: '',
-            values: []
-          }
+          // defaultValues[key] = {
+          //   material: '',
+          //   values: []
+          // }
         }
       }
     }

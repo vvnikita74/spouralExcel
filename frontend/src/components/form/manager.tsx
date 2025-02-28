@@ -3,23 +3,40 @@ import type { Field } from 'types/field'
 import { usePostMutation } from 'utils/mutations'
 import { generateSchema } from './utils'
 import FormView from './view'
-import useAuthSuspenseQuery from 'utils/auth-suspense-query'
+import useSuspenseGetQuery from 'utils/suspense-get-query'
+import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
 
 export default function FormManager({
   queryKey,
-  path
+  path,
+  search
 }: {
   queryKey: string[]
   path: string
+  search: string
 }) {
-  const { data: fields, authHeader } = useAuthSuspenseQuery(
+  const authHeader = useAuthHeader()
+
+  const { data: initialData } = (useSuspenseGetQuery(
+    [`user/data/${search}`],
+    search ? `user/data/${search}` : '',
+    authHeader
+  ) as { data: Record<string, unknown> }) || { data: null }
+
+  console.log(initialData)
+
+  const fields = useSuspenseGetQuery(
     queryKey,
-    'data'
-  ) as { data: Field[]; authHeader: string }
+    'data',
+    authHeader
+  ) as Field[]
 
   const mutation = usePostMutation()
 
-  const { schemaShape, defaultValues } = generateSchema(fields)
+  const { schemaShape, defaultValues } = generateSchema(
+    fields,
+    initialData
+  )
 
   const submitFn = (data: FormData) => {
     mutation.mutate({

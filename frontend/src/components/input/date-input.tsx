@@ -67,10 +67,7 @@ export function dateToString(type: dateType, date: Date | null) {
   }
 }
 
-export function stringToDate(
-  type: dateType,
-  dateString: string | null
-) {
+export function stringToDate(type: dateType, dateString: string) {
   switch (type) {
     case 'monthYear': {
       const [month, year] = dateString.split('.')

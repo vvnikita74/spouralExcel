@@ -44,6 +44,7 @@ function getDefsAndRecs(
 export interface DefectsError {
   def?: { message: string | FieldError }
   rec?: { message: string | FieldError }
+  media?: { message: string | FieldError }
 }
 
 // С мемоизации багается, не ререндериться несмотря на watch
@@ -85,6 +86,8 @@ const DefectsInputs = ({
     () => append({ def: '', rec: '', media: [] }),
     [append]
   )
+
+  console.log(errors)
 
   if (defs.length === 0) return null
 
@@ -133,7 +136,7 @@ const DefectsInputs = ({
                   }}
                   values={defs}
                   error={
-                    ((errors as DefectsError[])?.values?.[index]?.def
+                    ((errors as DefectsError[])?.[index]?.def
                       ?.message as string) || ''
                   }
                 />
@@ -152,7 +155,7 @@ const DefectsInputs = ({
                   }}
                   values={recs}
                   error={
-                    ((errors as DefectsError[])?.values?.[index]?.rec
+                    ((errors as DefectsError[])?.[index]?.rec
                       ?.message as string) || ''
                   }
                 />
@@ -170,13 +173,12 @@ const DefectsInputs = ({
                     className: 'flex flex-col mt-2.5'
                   }}
                   error={
-                    ((errors as DefectsError[])?.values?.[index]
-                      ?.media?.message as string) || ''
+                    ((errors as DefectsError[])?.[index]?.media
+                      ?.message as string) || ''
                   }
                 />
               )}
             />
-
             <div className='relative mt-2.5 min-h-9 w-full'>
               {index + 1 === fields.length && (
                 <button
