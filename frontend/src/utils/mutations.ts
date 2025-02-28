@@ -104,7 +104,7 @@ export const usePostMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['user-data'] })
     },
     onSettled: () => {
-      // navigate('/profile')
+      navigate('/profile')
     }
   })
 }

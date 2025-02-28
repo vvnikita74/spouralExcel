@@ -16,20 +16,51 @@ import type {
 import { z } from 'zod'
 
 import { getDateMask, getDateType } from 'components/input/date-input'
+import { API_URL } from 'utils/config'
 
-export function getErrorByKey(
-  inputKey: string,
-  errors: FieldErrors<Record<string, unknown>>
-): string {
+type TraverseCallback<R> = (
+  parent: Record<string, unknown>,
+  key: string,
+  value: unknown
+) => R
+
+function traverseNestedObject<T, R = void>(
+  obj: Record<string, unknown>,
+  callback: TraverseCallback<R>,
+  inputKey?: string
+): T | R {
+  if (!inputKey) {
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        const value = obj[key]
+        if (
+          typeof value === 'object' &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          traverseNestedObject(
+            value as Record<string, unknown>,
+            callback
+          )
+        }
+        callback(obj, key, value)
+      }
+    }
+    return obj as T
+  }
+
   if (!inputKey.includes('.')) {
-    return errors[inputKey]?.message
+    if (obj[inputKey] !== undefined) {
+      return callback(obj, inputKey, obj[inputKey])
+    }
+    return undefined as R
   }
 
   const keys = inputKey.split('.')
+  let current: unknown = obj
 
-  let current: unknown = errors
-
-  for (const key of keys) {
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i]
     if (
       current &&
       typeof current === 'object' &&
@@ -38,34 +69,67 @@ export function getErrorByKey(
     ) {
       current = (current as Record<string, unknown>)[key]
     } else {
-      return undefined
+      return undefined as R
     }
   }
 
-  return typeof current === 'object' &&
-    current !== null &&
-    'message' in current
-    ? (current as { message: string }).message
+  const lastKey = keys[keys.length - 1]
+  if (
+    current &&
+    typeof current === 'object' &&
+    !Array.isArray(current)
+  ) {
+    return callback(
+      current as Record<string, unknown>,
+      lastKey,
+      (current as Record<string, unknown>)[lastKey]
+    )
+  }
+
+  return undefined as R
+}
+
+const getErrorCallback: TraverseCallback<string> = (
+  _parent,
+  _key,
+  value
+) => {
+  return typeof value === 'object' &&
+    value !== null &&
+    'message' in value
+    ? (value as { message: string }).message
     : ''
 }
 
-function processValue(value: unknown): string | Blob {
-  if (value instanceof File) {
-    return value
-  }
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value)
-  ) {
-    return JSON.stringify(value)
-  } else if (Array.isArray(value)) {
-    return JSON.stringify(value)
-  }
-  return String(value ?? '')
+export function getErrorByKey(
+  inputKey: string,
+  errors: FieldErrors<Record<string, unknown>>
+): string {
+  return (
+    traverseNestedObject<string>(
+      errors,
+      getErrorCallback,
+      inputKey
+    ) || ''
+  )
 }
 
-function extractPrefixAndIndex(str: string): string | null {
+const convertNumbersCallback: TraverseCallback<unknown> = (
+  parent,
+  key,
+  value
+) => {
+  parent[key] = typeof value === 'number' ? value.toString() : value
+}
+
+function convertNumbersToStrings<T extends object>(obj: T): T {
+  return traverseNestedObject<T>(
+    obj as Record<string, unknown>,
+    convertNumbersCallback
+  ) as T
+}
+
+const extractPrefixAndIndex = (str: string) => {
   const firstPart = str.split('.')[0]
   const indexMatch = str.match(/\[(\d+)\]/)
   return indexMatch ? `${firstPart}.${indexMatch[1]}` : null
@@ -78,33 +142,39 @@ function extractMediaFiles(
 ): { [key: string]: unknown } {
   const cleanedData: { [key: string]: unknown } = {}
 
-  for (const key in data) {
-    const value = data[key]
-    const fullKey = prefix ? `${prefix}.${key}` : key
+  traverseNestedObject<{ [key: string]: unknown }>(
+    data as Record<string, unknown>,
+    (_parent, key, value) => {
+      const fullKey = prefix ? `${prefix}.${key}` : key
 
-    if (value instanceof File) {
-      formData.append(extractPrefixAndIndex(prefix), value)
-    } else if (Array.isArray(value)) {
-      cleanedData[key] = value.map((item, index) => {
-        if (typeof item === 'object' && item !== null) {
-          return extractMediaFiles(
-            item,
-            formData,
-            `${fullKey}[${index}]`
-          )
-        }
-        return item
-      })
-    } else if (typeof value === 'object' && value !== null) {
-      cleanedData[key] = extractMediaFiles(
-        value as { [key: string]: unknown },
-        formData,
-        fullKey
-      )
-    } else {
-      cleanedData[key] = value
+      if (value instanceof File) {
+        const cleanedKey = extractPrefixAndIndex(fullKey)
+
+        if (formData.get(cleanedKey)) formData.delete(cleanedKey)
+
+        formData.append(cleanedKey, value)
+      } else if (Array.isArray(value)) {
+        cleanedData[key] = value.map((item, index) => {
+          if (typeof item === 'object' && item !== null) {
+            return extractMediaFiles(
+              item as { [key: string]: unknown },
+              formData,
+              `${fullKey}[${index}]`
+            )
+          }
+          return item
+        })
+      } else if (typeof value === 'object' && value !== null) {
+        cleanedData[key] = extractMediaFiles(
+          value as { [key: string]: unknown },
+          formData,
+          fullKey
+        )
+      } else {
+        cleanedData[key] = value
+      }
     }
-  }
+  )
 
   return cleanedData
 }
@@ -114,54 +184,178 @@ export function appendFormData(
   data: { [key: string]: unknown }
 ) {
   for (const key in data) {
-    const value = data[key]
     const cleanedValue = extractMediaFiles(
-      { [key]: value },
+      { [key]: data[key] },
       formData,
       key
-    )
-    formData.append(key, processValue(cleanedValue[key]))
+    )[key]
+
+    let formValue: string | File = String(cleanedValue ?? '')
+
+    if (cleanedValue instanceof File) formValue = cleanedValue
+
+    if (typeof cleanedValue === 'object' && cleanedValue !== null)
+      formValue = JSON.stringify(cleanedValue)
+
+    formData.append(key, formValue)
   }
 }
 
-export function addFieldToSchema(
-  schemaShape: Record<string, ZodTypeAny>,
-  key: string,
-  validator: ZodTypeAny
-) {
-  const keysArr = key.split('.')
-
-  if (keysArr.length > 1) {
-    const parentKey = keysArr[0]
-    const childKey = keysArr[1]
-
-    if (schemaShape[parentKey] instanceof z.ZodObject) {
-      const parentSchema = schemaShape[
-        parentKey
-      ] as ZodObject<ZodRawShape>
-
-      schemaShape[parentKey] = parentSchema.extend({
-        [childKey]: validator
-      })
+const createFileFromImageURL = async (
+  imageURL: string,
+  filename: string
+): Promise<File | null> => {
+  try {
+    const response = await fetch(imageURL)
+    if (!response.ok) {
+      throw new Error(
+        `Не удалось загрузить изображение: ${response.statusText}`
+      )
     }
-  } else {
-    schemaShape[key] = validator
+    const blob = await response.blob()
+
+    const file = new File([blob], filename, { type: blob.type })
+    return file
+  } catch {
+    return null
   }
 }
 
-export function generateSchema(
+function findKeysWithNumber(
+  obj: Record<string, unknown>,
+  keyString?: string
+): {
+  key: string
+  number: number
+}[] {
+  const regex = keyString
+    ? new RegExp(`^${keyString.replace('.', '\\.')}\\.(\\d+)$`)
+    : /\.(\d+)$/
+
+  return Object.keys(obj)
+    .map(key => {
+      const match = key.match(regex)
+      if (match) {
+        return {
+          key: key,
+          number: Number(match[1])
+        }
+      }
+      return null
+    })
+    .filter(result => result !== null)
+    .sort((a, b) => a.number - b.number)
+}
+
+export async function generateDefaultValues(
   fields: Field[],
   initialValues?: Record<string, unknown>
 ) {
-  const schemaShape = {}
-  const defaultValues = initialValues || {}
+  const defaultValues = convertNumbersToStrings(initialValues) || {}
 
-  fields.forEach(({ type, key, ...rest }) => {
+  const setDefaultValue = (key: string, value: unknown) => {
+    const keys = key.split('.')
+    let current = defaultValues
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i]
+      if (
+        !(k in current) ||
+        typeof current[k] !== 'object' ||
+        current[k] === null
+      ) {
+        current[k] = {}
+      }
+      current = current[k] as Record<string, unknown>
+    }
+
+    const lastKey = keys[keys.length - 1]
+    if (
+      !(lastKey in current) ||
+      current[lastKey] === undefined ||
+      current[lastKey] === null
+    ) {
+      current[lastKey] = value
+    }
+  }
+
+  for (const { type, key, ...rest } of fields) {
+    switch (type) {
+      case 'text': {
+        const { required, placeholder } = rest as TextField
+        setDefaultValue(key, required ? '' : placeholder || '')
+        break
+      }
+      case 'select': {
+        const { required, placeholder } = rest as SelectField
+        setDefaultValue(key, required ? '' : placeholder)
+        break
+      }
+      case 'date': {
+        setDefaultValue(key, '')
+        break
+      }
+      case 'table': {
+        const { construction_type } = rest as TableField
+
+        if (!construction_type) {
+          setDefaultValue(key, [])
+        } else {
+          setDefaultValue(key, { material: '', values: [] })
+
+          for (const { key: numberKey, number } of findKeysWithNumber(
+            defaultValues,
+            key
+          )) {
+            const mediaFile = await createFileFromImageURL(
+              `${API_URL}/media/${initialValues[numberKey]}`,
+              (initialValues[numberKey] as string) || ''
+            )
+
+            ;(
+              defaultValues[key] as { values: { media: File }[] }
+            ).values[number].media = mediaFile
+          }
+        }
+
+        break
+      }
+    }
+  }
+
+  return defaultValues
+}
+
+export function generateSchema(fields: Field[]) {
+  const schemaShape = {}
+
+  const addFieldToSchema = (key: string, validator: ZodTypeAny) => {
+    const keysArr = key.split('.')
+
+    if (keysArr.length > 1) {
+      const parentKey = keysArr[0]
+      const childKey = keysArr[1]
+
+      if (schemaShape[parentKey] instanceof z.ZodObject) {
+        const parentSchema = schemaShape[
+          parentKey
+        ] as ZodObject<ZodRawShape>
+
+        schemaShape[parentKey] = parentSchema.extend({
+          [childKey]: validator
+        })
+      }
+    } else {
+      schemaShape[key] = validator
+    }
+  }
+
+  for (const { type, key, ...rest } of fields) {
     let validator: z.ZodType
 
     switch (type) {
       case 'text': {
-        const { required, mask, placeholder } = rest as TextField
+        const { required, mask } = rest as TextField
 
         validator = z
           .string()
@@ -173,18 +367,14 @@ export function generateSchema(
             'Введите корректное значение'
           )
 
-        // defaultValues[key] = required ? '' : placeholder || ''
-
         break
       }
       case 'select': {
-        const { required, placeholder } = rest as SelectField
+        const { required } = rest as SelectField
 
         validator = z
           .string()
           .min(required ? 1 : 0, 'Обязательное поле')
-
-        // defaultValues[key] = required ? '' : placeholder
 
         break
       }
@@ -232,8 +422,6 @@ export function generateSchema(
           validator = z
             .array(z.object(objectCellSchema))
             .min(required ? 1 : 0, 'Обязательное поле')
-
-          // defaultValues[key] = []
         } else {
           objectCellSchema['material'] = z
             .string()
@@ -250,17 +438,16 @@ export function generateSchema(
             .min(1, 'Обязательное поле')
 
           validator = z.object(objectCellSchema)
-
-          // defaultValues[key] = {
-          //   material: '',
-          //   values: []
-          // }
         }
+
+        break
       }
     }
 
-    if (validator) addFieldToSchema(schemaShape, key, validator)
-  })
+    if (validator) {
+      addFieldToSchema(key, validator)
+    }
+  }
 
-  return { schemaShape: z.object(schemaShape), defaultValues }
+  return z.object(schemaShape)
 }

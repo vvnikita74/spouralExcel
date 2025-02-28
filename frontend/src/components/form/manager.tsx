@@ -1,10 +1,12 @@
 import type { Field } from 'types/field'
-
-import { usePostMutation } from 'utils/mutations'
-import { generateSchema } from './utils'
-import FormView from './view'
-import useSuspenseGetQuery from 'utils/suspense-get-query'
 import useAuthHeader from 'react-auth-kit/hooks/useAuthHeader'
+import { useSuspenseQuery } from '@tanstack/react-query'
+
+import { generateSchema, generateDefaultValues } from './utils'
+import { usePostMutation } from 'utils/mutations'
+import useSuspenseGetQuery from 'utils/suspense-get-query'
+
+import FormView from './view'
 
 export default function FormManager({
   queryKey,
@@ -21,9 +23,9 @@ export default function FormManager({
     [`user/data/${search}`],
     search ? `user/data/${search}` : '',
     authHeader
-  ) as { data: Record<string, unknown> }) || { data: null }
-
-  console.log(initialData)
+  ) as { data: Record<string, unknown> }) || {
+    data: null
+  }
 
   const fields = useSuspenseGetQuery(
     queryKey,
@@ -33,10 +35,12 @@ export default function FormManager({
 
   const mutation = usePostMutation()
 
-  const { schemaShape, defaultValues } = generateSchema(
-    fields,
-    initialData
-  )
+  const { data: defaultData } = useSuspenseQuery({
+    queryKey: ['formConfig', queryKey, search],
+    queryFn: async () => generateDefaultValues(fields, initialData),
+    staleTime: 0,
+    gcTime: 0
+  })
 
   const submitFn = (data: FormData) => {
     mutation.mutate({
@@ -48,8 +52,8 @@ export default function FormManager({
 
   return (
     <FormView
-      defaultValues={defaultValues}
-      validationSchema={schemaShape}
+      defaultValues={defaultData}
+      validationSchema={generateSchema(fields)}
       fields={fields}
       submitFn={submitFn}
     />

@@ -9,11 +9,15 @@ export function Spinner({ className = '', ...props }) {
   )
 }
 
-export function SpinnerContainer() {
+export function SpinnerContainer({
+  text = 'Получение данных'
+}: {
+  text?: string
+}) {
   return (
     <div className='flex size-full flex-col items-center justify-center'>
       <Spinner className='size-6 rounded-full fill-black text-indigo-500' />
-      <span className='mt-1 text-sm'>Получение данных</span>
+      <span className='mt-1 text-sm'>{text}</span>
     </div>
   )
 }

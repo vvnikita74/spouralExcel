@@ -48,6 +48,8 @@ export interface DefectsError {
 }
 
 // С мемоизации багается, не ререндериться несмотря на watch
+// Мб починилось с использованием setValue у material
+// Надо тестить
 
 const DefectsInputs = ({
   errors,
@@ -86,8 +88,6 @@ const DefectsInputs = ({
     () => append({ def: '', rec: '', media: [] }),
     [append]
   )
-
-  console.log(errors)
 
   if (defs.length === 0) return null
 
@@ -164,20 +164,22 @@ const DefectsInputs = ({
             <Controller
               name={`${name}.${index}.media`}
               control={control}
-              render={({ field: arrField }) => (
-                <MediaInput
-                  placeholder='Загрузить изображение'
-                  required={false}
-                  inputProps={arrField}
-                  labelProps={{
-                    className: 'flex flex-col mt-2.5'
-                  }}
-                  error={
-                    ((errors as DefectsError[])?.[index]?.media
-                      ?.message as string) || ''
-                  }
-                />
-              )}
+              render={({ field: arrField }) => {
+                return (
+                  <MediaInput
+                    placeholder='Загрузить изображение'
+                    required={false}
+                    inputProps={arrField}
+                    labelProps={{
+                      className: 'flex flex-col mt-2.5'
+                    }}
+                    error={
+                      ((errors as DefectsError[])?.[index]?.media
+                        ?.message as string) || ''
+                    }
+                  />
+                )
+              }}
             />
             <div className='relative mt-2.5 min-h-9 w-full'>
               {index + 1 === fields.length && (
