@@ -87,9 +87,9 @@ const router = createBrowserRouter(
               const searchTerm = url.searchParams.get('continue')
               return searchTerm || ''
             }}
-            // errorElement={
-            //   <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
-            // }
+            errorElement={
+              <ErrorHandler msg='Ошибка получения данных для заполнения. Пожалуйста, проверьте интернет-соединение' />
+            }
           />
         </Route>
       </Route>

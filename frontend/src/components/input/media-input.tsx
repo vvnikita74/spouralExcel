@@ -35,6 +35,7 @@ const MediaInput = memo(
       ref: refCallback,
       ...inputFileProps
     } = inputProps
+
     const inputRef = useRef<HTMLInputElement>(null)
     const handleMediaChange = useMemo(
       () => handleChange(onChange),
