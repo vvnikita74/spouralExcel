@@ -154,11 +154,13 @@ class Table:
         original_sheet = ws.parent.copy_worksheet(
             ws)  # Сохранение ссылки на оригинальный лист
         added_defects = set()  # Отслеживание добавленных дефектов
+        delete_copy = False
         if defects:
             for defect in defects:
                 if defect in added_defects:
                     continue  # Пропуск дефекта, если он уже был добавлен
-                if not self.check_table_height(ws, cell_data, start_row, start_col,
+                if not self.check_table_height(ws, cell_data, start_row,
+                                               start_col,
                                                defect):
                     # Создание копии оригинального листа
                     new_ws = original_sheet
@@ -182,14 +184,19 @@ class Table:
                     # Вставка значений в соответствующие ячейки
                     ws[code_cell.index] = code_value
                     ws[report_date_cell.index] = report_date_value
-
+                else:
+                    delete_copy = True
                 header_name = cell_data.cells.get('names').get(defect.type)
                 start_row = self.draw_table_header(ws, cell_data, start_row,
                                                    start_col, header_name)
                 start_row = self.draw_table_elements(ws, cell_data, start_row,
                                                      start_col, defect)
                 added_defects.add(defect)  # Пометка дефекта как добавленного
-        ws.parent._sheets.remove(original_sheet)
+        if not delete_copy:
+            ws.parent._sheets.remove(original_sheet)
+        # TODO: БАГ - создается лишний лист в конце книги(копия) в случае
+        #  когда дефекты помещаются на один лист
+        # TODO: Проверить дефекты на >2 листах
         return inserted_sheets_count
 
     @staticmethod
@@ -299,7 +306,7 @@ class Table:
         for key in cell_data.cells['names'].keys():
             key_parts = key.split('.')
             if len(key_parts) > 1:
-                defects_to_merge= []
+                defects_to_merge = []
                 for part in key_parts:
                     defect_data = json.loads(data.get(part, '{}'))
                     if defect_data:  # Check if defect_data is not empty
@@ -309,8 +316,9 @@ class Table:
                 if defects_to_merge_exist:
                     merged_defect = Defect(
                         type=key,  # Используем полный key как type
-                        values=sum([defect.values for defect in defects_to_merge],
-                                   []),  # Объединяем все списки values
+                        values=sum(
+                            [defect.values for defect in defects_to_merge],
+                            []),  # Объединяем все списки values
                         physValue=sum(
                             defect.physValue for defect in defects_to_merge),
                         # Суммируем physValue
