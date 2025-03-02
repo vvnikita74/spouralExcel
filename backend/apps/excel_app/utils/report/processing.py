@@ -73,7 +73,8 @@ def generate_report(data, filename, user_files):
             for s in sheets_copy:
                 if s.index >= sheet.index:
                     s.index += inserted_sheets_count_this_time
-
+    # for index, sheet in enumerate(wb.sheetnames):
+    #     print(f"Sheet name: {sheet}, Index: {index}")
     if wb.worksheets:
         wb.remove(wb.worksheets[-1])
 
@@ -158,13 +159,13 @@ def process_sections(sheet: Sheet, count: int) -> List[Section]:
     :return: Список секций
     """
     sections = [Section(sectionId=sheet.section, sectionName=sheet.name,
-                        sheetId=count)]
+                        sheetId=count, isAppendix=sheet.is_appendix)]
     if sheet.subsections:
         subsections = json.loads(sheet.subsections)
         for subsection in subsections:
             sections.append(Section(sectionId=subsection.get('sectionId'),
                                     sectionName=subsection.get('sectionName'),
-                                    sheetId=count))
+                                    sheetId=count, isAppendix=False))
     return sections
 
 

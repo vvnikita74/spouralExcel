@@ -89,7 +89,7 @@ class SheetAdmin(admin.ModelAdmin):
     actions = [change_content_section, decrease_index, increase_index,
                copy_sheet]
     fields = ('index', 'section', 'name', 'countCell', 'data', 'subsections',
-              'contentSection', 'files')
+              'contentSection', 'is_appendix', 'files')
     readonly_fields = ('get_files',)
 
     def get_files(self, obj):

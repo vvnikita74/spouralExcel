@@ -106,26 +106,81 @@ class Table:
         data_objects = self._get_data_objects(input_value)
         max_sheet_id = get_max_sheet_id(input_value)
         if data_objects:
-            start_col, start_row, vertical_gap = Table.create_table(ws,
-                                                                    cell_data)
-            for idx, obj in enumerate(data_objects):
-                for cell_info in cell_data.cells:
-                    key = cell_info.get('key')
-                    width = cell_info.get('width')
-                    end_col = start_col + width - 1
-                    end_row = start_row + vertical_gap - 1
-                    try:
-                        value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
-                            obj, key, '')
-                    except AttributeError:
-                        value = ''
-                    ws.cell(row=start_row, column=start_col, value=value)
-                    Table.apply_cell_styles(ws, start_row, start_col, end_row,
-                                            end_col)
-                    start_col = end_col + 1
+            if self.table_type == TableType.CONTENT:
+                non_appendix_objects = [obj for obj in data_objects if
+                                        not obj.isAppendix]
+                appendix_objects = [obj for obj in data_objects if
+                                    obj.isAppendix]
 
+                start_col, start_row, vertical_gap = Table.create_table(ws,
+                                                                        cell_data)
+                for idx, obj in enumerate(non_appendix_objects):
+                    for cell_info in cell_data.cells:
+                        key = cell_info.get('key')
+                        width = cell_info.get('width')
+                        end_col = start_col + width - 1
+                        end_row = start_row + vertical_gap - 1
+                        try:
+                            value = getattr(obj, key, '')
+                        except AttributeError:
+                            value = ''
+                        ws.cell(row=start_row, column=start_col, value=value)
+                        Table.apply_cell_styles(ws, start_row, start_col,
+                                                end_row, end_col)
+                        start_col = end_col + 1
+
+                    start_row += vertical_gap
+                    start_col = ws[cell_data.index].column
+
+                # Вставка строки "Прилагаемые документы"
+                ws.cell(row=start_row, column=start_col,
+                        value="Прилагаемые документы")
+                total_width = sum(
+                    cell_info.get('width', 0) for cell_info in cell_data.cells)
+                ws.merge_cells(start_row=start_row, start_column=start_col,
+                               end_row=start_row + vertical_gap - 1,
+                               end_column=start_col + total_width - 1)
                 start_row += vertical_gap
-                start_col = ws[cell_data.index].column
+
+                for idx, obj in enumerate(appendix_objects):
+                    for cell_info in cell_data.cells:
+                        key = cell_info.get('key')
+                        width = cell_info.get('width')
+                        end_col = start_col + width - 1
+                        end_row = start_row + vertical_gap - 1
+                        try:
+                            value = getattr(obj, key, '')
+                        except AttributeError:
+                            value = ''
+                        ws.cell(row=start_row, column=start_col, value=value)
+                        Table.apply_cell_styles(ws, start_row, start_col,
+                                                end_row, end_col)
+                        start_col = end_col + 1
+
+                    start_row += vertical_gap
+                    start_col = ws[cell_data.index].column
+            else:
+                start_col, start_row, vertical_gap = Table.create_table(ws,
+                                                                        cell_data)
+                for idx, obj in enumerate(data_objects):
+                    for cell_info in cell_data.cells:
+                        key = cell_info.get('key')
+                        width = cell_info.get('width')
+                        end_col = start_col + width - 1
+                        end_row = start_row + vertical_gap - 1
+                        try:
+                            value = idx + 1 if self.table_type == TableType.DOCUMENTATION and key == 'index' else getattr(
+                                obj, key, '')
+                        except AttributeError:
+                            value = ''
+                        ws.cell(row=start_row, column=start_col, value=value)
+                        Table.apply_cell_styles(ws, start_row, start_col,
+                                                end_row, end_col)
+                        start_col = end_col + 1
+
+                    start_row += vertical_gap
+                    start_col = ws[cell_data.index].column
+
             if max_sheet_id and cell_data.listsCell:
                 ws[cell_data.listsCell].value = max_sheet_id
 
@@ -154,7 +209,7 @@ class Table:
         original_sheet = ws.parent.copy_worksheet(
             ws)  # Сохранение ссылки на оригинальный лист
         added_defects = set()  # Отслеживание добавленных дефектов
-        delete_copy = False
+        delete_copy = True
         if defects:
             for defect in defects:
                 if defect in added_defects:
@@ -177,26 +232,41 @@ class Table:
                         start_cell].row  # Сброс start_row для нового листа
                     sheet_index += 1
                     inserted_sheets_count += 1
-
+                    delete_copy = False
                     if sheet.countCell:
                         ws[sheet.countCell] = sheet.index + sheet_index
 
                     # Вставка значений в соответствующие ячейки
                     ws[code_cell.index] = code_value
                     ws[report_date_cell.index] = report_date_value
-                else:
-                    delete_copy = True
+
                 header_name = cell_data.cells.get('names').get(defect.type)
                 start_row = self.draw_table_header(ws, cell_data, start_row,
                                                    start_col, header_name)
                 start_row = self.draw_table_elements(ws, cell_data, start_row,
                                                      start_col, defect)
                 added_defects.add(defect)  # Пометка дефекта как добавленного
-        if not delete_copy:
+        if delete_copy:
+            print(f"Удаление лишнего листа {original_sheet.title}")
             ws.parent._sheets.remove(original_sheet)
         # TODO: БАГ - создается лишний лист в конце книги(копия) в случае
-        #  когда дефекты помещаются на один лист
-        # TODO: Проверить дефекты на >2 листах
+        #  когда дефекты помещаются на один лист.
+        # Результаты тестов:
+        # 1. 1 лист дефектов, 1 лист Б - OK
+        # 2. 1 лист дефектов, 2 листа Б - OK
+        # 3. 1 лист дефектов, 3 лист Б - Fail
+        # Б2 идет после Б, а следом B1 и В, В не заполнился
+        # 4. 2 листа дефектов, 1 лист Б - OK
+        # 5. 2 листа дефектов, 2 листа Б - OK
+        # 6. 2 листа дефектов, 3 лист Б - Fail
+        # Б2 идет после Б, а следом B1 и В, В не заполнился
+        # 7. 3 листа дефектов, 1 лист Б - Fail
+        # 3 лист дефектов все похерил
+        # 8. 3 листа дефектов, 2 листа Б - Fail
+        # 3 лист дефектов все похерил
+        # 9. 3 листа дефектов, 3 листа Б - Fail
+        # 3 лист дефектов все похерил + Б2 идет после Б, а следом B1 и В, В не заполнился
+
         return inserted_sheets_count
 
     @staticmethod

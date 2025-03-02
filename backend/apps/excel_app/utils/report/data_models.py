@@ -58,6 +58,7 @@ class Section:
     sectionId: int
     sectionName: str
     sheetId: int
+    isAppendix: bool
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Section':
@@ -73,7 +74,8 @@ class Section:
         return cls(
             sectionId=data.get('sectionId'),
             sectionName=data.get('sectionName'),
-            sheetId=data.get('sheetId')
+            sheetId=data.get('sheetId'),
+            isAppendix=data.get('isAppendix', False)
         )
 
     def __str__(self) -> str:
@@ -83,7 +85,8 @@ class Section:
         Возвращает:
             str: Строковое представление.
         """
-        return f'Section ID: {self.sectionId}, Section Name: {self.sectionName}, Sheet ID: {self.sheetId}'
+        return (f'Section ID: {self.sectionId}, Section Name: '
+                f'{self.sectionName}, Sheet ID: {self.sheetId}, Is Appendix: {self.isAppendix}')
 
 
 @dataclass
