@@ -107,7 +107,9 @@ class Sheet(models.Model):
                                  blank=True)
     data = models.JSONField()
     subsections = models.JSONField(blank=True, null=True, default=list)
-    contentSection = models.BooleanField(default=False)
+    contentSection = models.BooleanField(default=False, verbose_name='Включать в содержание')
+    is_appendix = models.BooleanField(default=False,
+                                      verbose_name='Является приложением')
     files = models.FileField(upload_to=sheet_upload_to, blank=True,
                              null=True)
 
