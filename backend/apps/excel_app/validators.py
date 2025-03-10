@@ -24,8 +24,8 @@ def validate_json_structure(value):
                 "Каждый элемент должен содержать либо 'template', либо 'inputKey'")
 
         if item.get('tableType') == 'documentation':
-            required_keys = {"nameIndex", "yearIndex", "developerIndex",
-                             "verticalGap", "lastColumn"}
+            required_keys = {
+                "verticalGap"}
             if not required_keys.issubset(item.keys()):
                 raise ValidationError(
                     f"Элементы с type='documentation' должны содержать ключи: {required_keys}")

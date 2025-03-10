@@ -44,14 +44,12 @@ def generate_report(data, filename, user_files):
     inserted_sheets_count = 0
     # print(f"Sheets in workbook before processing:{sheets_copy}")
     for sheet in sheets_copy:
-        # print(f"Processing sheet {sheet.name} with index "
+        # print(f"Processing sheet {sheet.excel_name} with index "
         #       f"{count} + {inserted_sheets_count}")
-
-        ws = wb.worksheets[sheet.index]
+        ws = wb[sheet.excel_name]
+        print(ws)
         count += 1
         if sheet.countCell:
-            # print(
-            #     f"Setting count cell to {count + inserted_sheets_count} to list {sheet.name}")
             ws[sheet.countCell] = count + inserted_sheets_count
         inserted_sheets_count_this_time = 0
         for cell_data in sheet.get_data():
@@ -75,8 +73,8 @@ def generate_report(data, filename, user_files):
                     s.index += inserted_sheets_count_this_time
     # for index, sheet in enumerate(wb.sheetnames):
     #     print(f"Sheet name: {sheet}, Index: {index}")
-    if wb.worksheets:
-        wb.remove(wb.worksheets[-1])
+    # if wb.worksheets:
+    #     wb.remove(wb.worksheets[-1])
 
     if content_cell_data:
         content_ws = wb['Содержание']
@@ -158,7 +156,7 @@ def process_sections(sheet: Sheet, count: int) -> List[Section]:
     :param count: Счетчик листов
     :return: Список секций
     """
-    sections = [Section(sectionId=sheet.section, sectionName=sheet.name,
+    sections = [Section(sectionId=sheet.section, sectionName=sheet.full_name,
                         sheetId=count, isAppendix=sheet.is_appendix)]
     if sheet.subsections:
         subsections = json.loads(sheet.subsections)

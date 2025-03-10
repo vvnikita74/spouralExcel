@@ -67,7 +67,7 @@ def increase_index(modeladmin, request, queryset):
 def copy_sheet(modeladmin, request, queryset):
     for sheet in queryset:
         sheet.pk = None  # Create a new object instead of updating the old one
-        sheet.name = f'{sheet.name}-копия'
+        sheet.full_name = f'{sheet.full_name}-копия'
         sheet.save()
 
 
@@ -84,11 +84,13 @@ class FieldsAdmin(admin.ModelAdmin):
 
 class SheetAdmin(admin.ModelAdmin):
     form = SheetAdminForm
-    list_display = ('name', 'index', 'contentSection')
+    list_display = ('full_name', 'index', 'contentSection')
     ordering = ('index',)
     actions = [change_content_section, decrease_index, increase_index,
                copy_sheet]
-    fields = ('index', 'section', 'name', 'countCell', 'data', 'subsections',
+    fields = ('index', 'section', 'full_name', 'excel_name', 'countCell',
+              'data',
+              'subsections',
               'contentSection', 'is_appendix', 'files')
     readonly_fields = ('get_files',)
 

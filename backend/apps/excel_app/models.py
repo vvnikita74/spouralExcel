@@ -95,19 +95,21 @@ class Cell:
 
 def sheet_upload_to(instance, filename):
     # Slugify the sheet name to create a valid directory name
-    sheet_name = slugify(unidecode(instance.name))
+    sheet_name = slugify(unidecode(instance.excel_name))
     return os.path.join('sheets', sheet_name, filename)
 
 
 class Sheet(models.Model):
     index = models.IntegerField()
     section = models.CharField(max_length=255, blank=True, null=True)
-    name = models.CharField(max_length=255)
+    excel_name = models.CharField(max_length=31, default='Лист')
+    full_name = models.CharField(max_length=255)
     countCell = models.CharField(max_length=10, default='AK56', null=True,
                                  blank=True)
     data = models.JSONField()
     subsections = models.JSONField(blank=True, null=True, default=list)
-    contentSection = models.BooleanField(default=False, verbose_name='Включать в содержание')
+    contentSection = models.BooleanField(default=False,
+                                         verbose_name='Включать в содержание')
     is_appendix = models.BooleanField(default=False,
                                       verbose_name='Является приложением')
     files = models.FileField(upload_to=sheet_upload_to, blank=True,
@@ -124,7 +126,7 @@ class Sheet(models.Model):
         return self.files.all()
 
     def __str__(self):
-        return f'{self.name}, {self.index}'
+        return f'{self.full_name}, {self.index}'
 
     class Meta:
         verbose_name = 'Лист'

@@ -218,21 +218,18 @@ class Table:
                                                start_col,
                                                defect):
                     # Создание копии оригинального листа
-                    new_ws = original_sheet
+                    new_ws = ws.parent.copy_worksheet(original_sheet)
                     new_ws.title = f"{original_sheet.title.replace('Copy', '')}{sheet_index}"  # Название нового листа с индексом
-
                     # Перемещение нового листа сразу после последнего вставленного листа
                     original_index = ws.parent.index(last_inserted_sheet)
                     ws.parent._sheets.remove(new_ws)
                     ws.parent._sheets.insert(original_index + 1, new_ws)
-
                     ws = new_ws
                     last_inserted_sheet = new_ws  # Обновление последнего вставленного листа
                     start_row = ws[
                         start_cell].row  # Сброс start_row для нового листа
                     sheet_index += 1
                     inserted_sheets_count += 1
-                    delete_copy = False
                     if sheet.countCell:
                         ws[sheet.countCell] = sheet.index + sheet_index
 
@@ -247,25 +244,7 @@ class Table:
                                                      start_col, defect)
                 added_defects.add(defect)  # Пометка дефекта как добавленного
         if delete_copy:
-            print(f"Удаление лишнего листа {original_sheet.title}")
             ws.parent._sheets.remove(original_sheet)
-        # TODO: БАГ - создается лишний лист в конце книги(копия) в случае
-        #  когда дефекты помещаются на один лист.
-        # Результаты тестов:
-        # 1. 1 лист дефектов, 1 лист Б - OK
-        # 2. 1 лист дефектов, 2 листа Б - OK
-        # 3. 1 лист дефектов, 3 лист Б - Fail
-        # Б2 идет после Б, а следом B1 и В, В не заполнился
-        # 4. 2 листа дефектов, 1 лист Б - OK
-        # 5. 2 листа дефектов, 2 листа Б - OK
-        # 6. 2 листа дефектов, 3 лист Б - Fail
-        # Б2 идет после Б, а следом B1 и В, В не заполнился
-        # 7. 3 листа дефектов, 1 лист Б - Fail
-        # 3 лист дефектов все похерил
-        # 8. 3 листа дефектов, 2 листа Б - Fail
-        # 3 лист дефектов все похерил
-        # 9. 3 листа дефектов, 3 листа Б - Fail
-        # 3 лист дефектов все похерил + Б2 идет после Б, а следом B1 и В, В не заполнился
 
         return inserted_sheets_count
 
