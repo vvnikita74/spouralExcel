@@ -47,7 +47,7 @@ def generate_report(data, filename, user_files):
         # print(f"Processing sheet {sheet.excel_name} with index "
         #       f"{count} + {inserted_sheets_count}")
         ws = wb[sheet.excel_name]
-        print(ws)
+        # print(ws)
         count += 1
         if sheet.countCell:
             ws[sheet.countCell] = count + inserted_sheets_count
@@ -73,8 +73,8 @@ def generate_report(data, filename, user_files):
                     s.index += inserted_sheets_count_this_time
     # for index, sheet in enumerate(wb.sheetnames):
     #     print(f"Sheet name: {sheet}, Index: {index}")
-    # if wb.worksheets:
-    #     wb.remove(wb.worksheets[-1])
+    if wb.worksheets:
+        wb.remove(wb.worksheets[-1])
 
     if content_cell_data:
         content_ws = wb['Содержание']

@@ -426,16 +426,16 @@ def process_images(ws, cell_data, data, sheet,
             current_img_merge_cell,
             max_cell, cell_data)
         if not fits:
-            print(f"Изображение не помещается на листе {index + 1}")
+            # print(f"Изображение не помещается на листе {index + 1}")
             new_sheets_counter += 1
             ws, idx = create_new_sheet(ws, ws_initial_copy,
                                        original_sheet_name,
                                        new_sheets_counter, index)
 
-            print(f"curent ws : {ws.title} idx: {idx}")
+            # print(f"curent ws : {ws.title} idx: {idx}")
             if sheet.countCell:
                 ws[sheet.countCell] = idx+1
-                print(f"Индекс листа: {idx}")
+                # print(f"Индекс листа: {idx}")
             index = ws.parent.worksheets.index(ws)
             # Вставка значений в соответствующие ячейки
             ws[code_cell.index] = code_value
@@ -451,8 +451,8 @@ def process_images(ws, cell_data, data, sheet,
         image_counter += 1
         current_img_cell, current_img_merge_cell = move_image_to_right(
             current_img_cell, current_img_merge_cell, cell_data)
-    print(f"Все изображения успешно обработаны")
-    print(f"Количество вставленных листов: {new_sheets_counter}")
+    # print(f"Все изображения успешно обработаны")
+    # print(f"Количество вставленных листов: {new_sheets_counter}")
     # print(inserted_sheets_count)
     # return new_sheets_counter + inserted_sheets_count
     ws.parent._sheets.remove(ws_initial_copy)
