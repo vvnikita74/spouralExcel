@@ -97,7 +97,7 @@ const MediaInput = memo(
         </div>
         <input
           type='file'
-          accept='image/*'
+          accept='.jpg,.jpeg,.png'
           name={name}
           className='hidden'
           ref={setRef}
