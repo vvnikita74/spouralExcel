@@ -71,7 +71,7 @@ const handleSelect =
     let additional = ''
 
     if (type === 'multiple' && value && prev) {
-      additional += `${prev}, `
+      additional += `${prev.toLowerCase()}, `
     }
 
     onChange(additional + value)
