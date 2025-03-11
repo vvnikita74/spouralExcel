@@ -102,8 +102,9 @@ def sheet_upload_to(instance, filename):
 class Sheet(models.Model):
     index = models.IntegerField()
     section = models.CharField(max_length=255, blank=True, null=True)
-    excel_name = models.CharField(max_length=31, default='Лист')
-    full_name = models.CharField(max_length=255)
+    excel_name = models.CharField(max_length=31,
+                                  default='Название листа в Excel')
+    full_name = models.CharField(max_length=255, default='Название листа')
     countCell = models.CharField(max_length=10, default='AK56', null=True,
                                  blank=True)
     data = models.JSONField()
