@@ -84,7 +84,7 @@ class FieldsAdmin(admin.ModelAdmin):
 
 class SheetAdmin(admin.ModelAdmin):
     form = SheetAdminForm
-    list_display = ('full_name', 'index', 'contentSection')
+    list_display = ('full_name', 'excel_name', 'index', 'contentSection')
     ordering = ('index',)
     actions = [change_content_section, decrease_index, increase_index,
                copy_sheet]
