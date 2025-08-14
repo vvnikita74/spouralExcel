@@ -1,3 +1,2 @@
 https://app.spo-ural.ru/ - фронт
 https://app-back.spo-ural.ru/admin - бек
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjo0ODg0MjMyNTkwLCJpYXQiOjE3MzA2MzI1OTAsImp0aSI6ImY4OTlkZTllOWIxYzRlMzdiNTdiZDkzOWEwYWQ0NGI0IiwidXNlcl9pZCI6MX0.w3jW26PI_WRi-IAX2BA4nRKsLGkxngDK-G3FZ-NTAOk -токен авторизации
